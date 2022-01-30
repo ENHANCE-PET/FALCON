@@ -1,3 +1,21 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+# **********************************************************************************************************************
+# File: run_falcon.py
+# Project: falcon
+# Created: 27.01.2022
+# Author: Lalith Kumar Shiyam Sundar
+# Email: lalith.shiyamsundar@meduniwien.ac.at
+# Institute: Quantitative Imaging and Medical Physics, Medical University of Vienna
+# Description: Falcon (FALCON) is a tool for the performing dynamic PET motion correction. It is based on the greedy
+# algorithm developed by the Paul Yushkevich. The algorithm is capable of performing fast rigid/affine/deformable
+# registration.
+# License: Apache 2.0
+# **********************************************************************************************************************
+
+
 # Libraries to import
 
 import os
