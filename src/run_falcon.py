@@ -4,15 +4,16 @@
 
 # **********************************************************************************************************************
 # File: run_falcon.py
-# Author: Lalith Kumar Shiyam Sundar <
-# Email: lalith.shiyamsundar@meduniwien.ac.at
-# Date: 27.01.19
 # Project: falcon
+# Created: 27.01.2022
+# Author: Lalith Kumar Shiyam Sundar
+# Email: lalith.shiyamsundar@meduniwien.ac.at
+# Institute: Quantitative Imaging and Medical Physics, Medical University of Vienna
 # Description: Falcon (FALCON) is a tool for the performing dynamic PET motion correction. It is based on the greedy
 # algorithm developed by the Paul Yushkevich. The algorithm is capable of performing fast rigid/affine/deformable
 # registration.
+# License: Apache 2.0
 # **********************************************************************************************************************
-
 
 
 import os
@@ -63,8 +64,8 @@ if __name__ == "__main__":
         sys.exit(f"Multiple file formats found: {unique_extensions} - please check the "
                  f"directory!")
 
-    # If the folder has only one unique image format (e.g, dicom, nifti, analyze, metaimage), convert the non-nifti files
-    # to nifti files
+    # If the folder has only one unique image format (e.g, dicom, nifti, analyze, metaimage), convert the non-nifti
+    # files to nifti files
 
     elif len(unique_extensions) == 1:
         print(f"Found files with following extension: {unique_extensions[0]}")
@@ -102,7 +103,7 @@ if __name__ == "__main__":
         print(f"PET files to motion correct are stored here: {split3d_folder}")
 
     # Motion correction
-    
+
     print('*' * 50)
     print('Starting motion correction...')
     print('*' * 50)
@@ -135,4 +136,4 @@ if __name__ == "__main__":
         os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
 
     # Merge the split 3d motion corrected file into a single 4d file using fsl.
-    imageio.merge3d(nifti_dir=moco_dir,wild_card='moco-*nii*',nifti_outfile='4d-moco.nii.gz')
+    imageio.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
