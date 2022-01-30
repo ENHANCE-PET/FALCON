@@ -2,7 +2,12 @@
 echo '[1] Installing python packages for running FALCON...'
 pip install halo==0.0.31 SimpleITK==2.1.1
 echo '[2] Downloading required files IBM cloud storage...'
-wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"  
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        brew install wget
+fi
 echo '[3] Unzipping FALCON files...'
 unzip FALCON-files.zip
 echo '[4] Removing FALCON zip files...'
