@@ -1,0 +1,2 @@
+halo==0.0.31
+SimpleITK==2.1.1

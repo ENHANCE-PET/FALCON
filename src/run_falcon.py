@@ -47,7 +47,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     working_dir = args.main_folder
-    start_frame = args.start_frame
+    start_frame = int(args.start_frame)
     registration_type = args.registration
 
     # Sanity checks (File type | 3d or 4d ) and file conversion (non-nifti to nifti)

@@ -16,9 +16,10 @@
 
 import glob
 import os
+import shutil
+
 
 # Function that gets a list of folders inside a directory using glob and returns the list of paths sorted by name
-import shutil
 
 
 def get_folders(dir_path):
