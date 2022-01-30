@@ -101,7 +101,8 @@ if __name__ == "__main__":
         split3d_folder = nifti_dir
         print(f"PET files to motion correct are stored here: {split3d_folder}")
 
-    # Motion correction engine
+    # Motion correction
+    
     print('*' * 50)
     print('Starting motion correction...')
     print('*' * 50)
