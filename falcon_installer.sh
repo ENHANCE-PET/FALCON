@@ -49,7 +49,9 @@ sudo ln -s "$falcon_bin"/'greedy' $root_path/'greedy'
 echo '[6] Building dcm2niix from source...'
 
 git clone https://github.com/rordenlab/dcm2niix.git
+# shellcheck disable=SC2164
 cd dcm2niix
+# shellcheck disable=SC2164
 mkdir build && cd build
 cmake -DZLIB_IMPLEMENTATION=Cloudflare -DUSE_JPEGLS=ON -DUSE_OPENJPEG=ON ..
 sudo make install 
