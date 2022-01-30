@@ -28,7 +28,9 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
         wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"  
         brew install pkg-config
         brew install git
-        brew install python@2
+        wget https://raw.githubusercontent.com/Homebrew/homebrew-core/86a44a0a552c673a05f11018459c9f5faae3becc/Formula/python@2.rb
+        brew install python@2.rb
+        rm python@2.rb
 fi
 echo '[3] Unzipping FALCON files...'
 unzip FALCON-files.zip
