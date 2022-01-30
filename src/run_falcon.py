@@ -133,5 +133,5 @@ if __name__ == "__main__":
         os.chdir(moco_dir)
         os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
 
-
+    # Merge the split 3d motion corrected file into a single 4d file using fsl.
     imageio.merge3d(nifti_dir=moco_dir,wild_card='moco-*nii*',nifti_outfile='4d-moco.nii.gz')
