@@ -20,13 +20,32 @@ import sys
 import fileop as fop
 import greedy
 import imageio
+import argparse
 
-# Inputs that need to be set by the user
-# ======================================
-working_dir = '/home/kyloren/Documents/Projects/Falcon/'
-start_frame = 1
-registration_type = 'deformable'
-# ======================================
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-i",
+        "--main_folder",
+        help="path containing all the subjects with the required structure",
+        required=True,
+    )
+    parser.add_argument(
+        "-s",
+        "--start_frame",
+        default=True,
+        help="frame to which the motion correction need to be performed"
+    )
+    parser.add_argument(
+        "-r",
+        "--registration",
+        default=True,
+        help="Type of registration: rigid | affine | deformable"
+    )
+    args = parser.parse_args()
+    working_dir = args.main_folder
+    start_frame = args.start_frame
+    registration_type = args.registration
 
 # Sanity checks (File type | 3d or 4d ) and file conversion (non-nifti to nifti)
 
