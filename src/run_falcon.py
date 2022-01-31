@@ -47,7 +47,7 @@ if __name__ == "__main__":
         help="Type of registration: rigid | affine | deformable"
     )
     args = parser.parse_args()
-    working_dir = re.escape(args.main_folder)
+    working_dir = args.main_folder
     start_frame = int(args.start_frame)
     registration_type = args.registration
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
         print(f"Image type: {image_type}")
         if image_type == 'Dicom':  # if the image type is dicom, convert the dicom files to nifti files
             nifti_dir = fop.make_dir(working_dir, 'nifti')
-            imageio.dcm2nii(dicom_dir=working_dir)
+            imageio.dcm2nii(dicom_dir=re.escape(working_dir))
             nifti_file = fop.get_files(working_dir, wildcard='*nii*')
             fop.move_files(working_dir, nifti_dir, '*.nii*')
         elif image_type == 'Nifti':  # do nothing if the files are already in nifti
@@ -97,12 +97,12 @@ if __name__ == "__main__":
         elif img_dimensions == 4:
             print('Type of nifti file : 4d')
             imageio.split4d(nifti_files[0])
-            split3d_folder = fop.make_dir(nifti_dir, 'split3d')
+            split3d_folder = re.escape(fop.make_dir(nifti_dir, 'split3d'))
             fop.move_files(nifti_dir, split3d_folder, 'vol*.nii*')
             print(f"PET files to motion correct are stored here: {split3d_folder}")
     elif len(nifti_files) > 1:
         print('Multiple nifti files found, assuming we have 3d nifti files!')
-        split3d_folder = nifti_dir
+        split3d_folder = re.escape(nifti_dir)
         print(f"PET files to motion correct are stored here: {split3d_folder}")
 
     # Motion correction

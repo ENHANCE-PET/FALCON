@@ -83,7 +83,7 @@ def nondcm2nii(medimg_dir, file_extension, new_dir):
 # Function to convert a given DICOM series into a nifti file using dcm2niix
 
 def dcm2nii(dicom_dir):
-    cmd_to_run = f"dcm2niix {re.escape(dicom_dir)}"
+    cmd_to_run = f"dcm2niix {dicom_dir}"
     print(f"Converting DICOM images in {dicom_dir} to NIFTI")
     spinner = Halo(text=f"Running command: {cmd_to_run}", spinner='dots')
     spinner.start()
