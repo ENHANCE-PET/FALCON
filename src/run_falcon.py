@@ -50,6 +50,8 @@ if __name__ == "__main__":
     start_frame = int(args.start_frame)
     registration_type = args.registration
 
+    fop.display_logo()
+
     # Sanity checks (File type | 3d or 4d ) and file conversion (non-nifti to nifti)
 
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
