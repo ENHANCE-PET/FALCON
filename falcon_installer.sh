@@ -61,3 +61,4 @@ echo '[7] Installing fsl, please answer the required questions via the terminal.
 python2 "$falcon_bin"/fslinstaller.py
 sudo chmod +x "$falcon_src"
 sudo ln -s "$falcon_src" $root_path/'falcon'
+echo '[8] Finished installing FALCON!'
