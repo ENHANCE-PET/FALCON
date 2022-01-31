@@ -18,6 +18,7 @@
 
 import os
 import pathlib
+import re
 import sys
 
 import fileop as fop
@@ -46,7 +47,7 @@ if __name__ == "__main__":
         help="Type of registration: rigid | affine | deformable"
     )
     args = parser.parse_args()
-    working_dir = args.main_folder
+    working_dir = re.escape(args.main_folder)
     start_frame = int(args.start_frame)
     registration_type = args.registration
 
