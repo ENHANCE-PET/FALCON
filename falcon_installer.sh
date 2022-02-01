@@ -17,6 +17,7 @@
 echo '[1] Installing python packages for running FALCON...'
 pip install halo==0.0.31 SimpleITK==2.1.1
 echo '[2] Downloading required files IBM cloud storage...'
+# Check if the OS is Mac or Linux and change subsequent commands accordingly
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"  
         sudo apt-get install cmake pkg-config
