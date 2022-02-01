@@ -19,12 +19,19 @@
 # Libraries to import
 
 import os
-
-# Call to greedy to perform rigid registration
 import re
 
 
-def rigid(fixed_img, moving_img, cost_function):
+# Functions that call greedy
+
+
+def rigid(fixed_img: str, moving_img: str, cost_function: str):
+    """ Performs rigid registration between a fixed and moving image using the greedy registration toolkit.
+    :param fixed_img: Reference image
+    :param moving_img: Moving image
+    :param cost_function: Cost function
+    :return none
+    """
     cmd_to_run = f"greedy -d 3 -a -i " \
                  f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o rigid.mat -n 100x50x25 " \
                  f"-m {cost_function}"
@@ -41,9 +48,13 @@ def rigid(fixed_img, moving_img, cost_function):
     print("Rigid registration complete")
 
 
-# Call to greedy to perform affine registration
-
-def affine(fixed_img, moving_img, cost_function):
+def affine(fixed_img: str, moving_img: str, cost_function: str):
+    """ Performs affine registration between a fixed and moving image using the greedy registration toolkit.
+    :param fixed_img: Reference image
+    :param moving_img: Moving image
+    :param cost_function: Cost function
+    :return none
+    """
     cmd_to_run = f"greedy -d 3 -a -i {re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 12 -o " \
                  f"affine.mat -n " \
                  f"100x50x25 " \
@@ -61,9 +72,14 @@ def affine(fixed_img, moving_img, cost_function):
     print("Affine registration complete")
 
 
-# call to greedy to perform deformable registration
-
-def deformable(fixed_img, moving_img, cost_function):
+def deformable(fixed_img: str, moving_img: str, cost_function: str):
+    """
+    Performs deformable registration between a fixed and moving image using the greedy registration toolkit.
+    :param fixed_img: Reference image
+    :param moving_img: Moving image
+    :param cost_function: Cost function
+    :return:
+    """
     print("*******************************************************************************************")
     print("Performing affine registration for initial global alignment")
     affine(fixed_img, moving_img, cost_function)
@@ -84,9 +100,18 @@ def deformable(fixed_img, moving_img, cost_function):
     print("Deformable registration complete")
 
 
-# call to greedy to perform resampling based on the deformation field
-
-def resample(fixed_img, moving_img, resampled_moving_img, registration_type, segmentation="", resampled_seg=""):
+def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registration_type: str, segmentation="",
+             resampled_seg=""):
+    """
+    Resamples a moving image to match the resolution of a fixed image.
+    :param fixed_img: Reference image
+    :param moving_img: Moving image
+    :param resampled_moving_img: Resampled moving image
+    :param registration_type: 'rigid', 'affine', or 'deformable'
+    :param segmentation: Mask image corresponding to moving image that needs to be resampled to match reference image
+    :param resampled_seg: Resampled mask image
+    :return:
+    """
     if registration_type == 'rigid':
         if segmentation and resampled_seg:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
