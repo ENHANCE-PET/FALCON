@@ -16,15 +16,14 @@
 # **********************************************************************************************************************
 
 
+import argparse
 import os
 import pathlib
-import re
 import sys
 
 import fileop as fop
 import greedy
 import imageio
-import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -52,7 +51,7 @@ if __name__ == "__main__":
     registration_type = args.registration
     fop.display_logo()
 
-    # Sanity checks (File type | 3d or 4d ) and file conversion (non-nifti to nifti)
+    # -----------------------------------SANITY CHECKS AND DATA-WRANGLING-----------------------------------------------
 
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
 
@@ -104,7 +103,7 @@ if __name__ == "__main__":
         split3d_folder = nifti_dir
         print(f"PET files to motion correct are stored here: {split3d_folder}")
 
-    # Motion correction
+    # -------------------------------------------ACTUAL MOTION CORRECTION----------------------------------------------
 
     print('*' * 50)
     print('Starting motion correction...')
