@@ -25,7 +25,7 @@ import re
 # Functions that call greedy
 
 
-def rigid(fixed_img: str, moving_img: str, cost_function: str):
+def rigid(fixed_img: str, moving_img: str, cost_function: str) -> None:
     """ Performs rigid registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
     :param moving_img: Moving image
@@ -48,7 +48,7 @@ def rigid(fixed_img: str, moving_img: str, cost_function: str):
     print("Rigid registration complete")
 
 
-def affine(fixed_img: str, moving_img: str, cost_function: str):
+def affine(fixed_img: str, moving_img: str, cost_function: str) -> None:
     """ Performs affine registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
     :param moving_img: Moving image
@@ -72,7 +72,7 @@ def affine(fixed_img: str, moving_img: str, cost_function: str):
     print("Affine registration complete")
 
 
-def deformable(fixed_img: str, moving_img: str, cost_function: str):
+def deformable(fixed_img: str, moving_img: str, cost_function: str) -> None:
     """
     Performs deformable registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
@@ -101,7 +101,7 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str):
 
 
 def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registration_type: str, segmentation="",
-             resampled_seg=""):
+             resampled_seg="") -> None:
     """
     Resamples a moving image to match the resolution of a fixed image.
     :param fixed_img: Reference image

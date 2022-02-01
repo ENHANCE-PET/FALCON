@@ -19,8 +19,11 @@ import os
 import shutil
 
 
-# Function to display the logo of the software
 def display_logo():
+    """
+    Display Falcon logo
+    :return:
+    """
     print("""                                             
                                                                                                                                                                                                                            
                                                                                                                                                                                                   @@@@@ 
@@ -90,10 +93,12 @@ def display_logo():
                                             """)
 
 
-# Function that gets a list of folders inside a directory using glob and returns the list of paths sorted by name
-
-
-def get_folders(dir_path):
+def get_folders(dir_path: str) -> list:
+    """
+    Returns a list of all folders in a directory
+    :param dir_path: Main directory containing all folders
+    :return: List of folder paths
+    """
     # Get a list of folders inside a directory using glob
     folders = glob.glob(os.path.join(dir_path, "*"))
     # Sort the list of folders by name
@@ -101,10 +106,13 @@ def get_folders(dir_path):
     return folders
 
 
-# Functions that gets a list of files using wildcard inside a directory using glob and returns the list of paths sorted
-# by name
-
-def get_files(dir_path, wildcard):
+def get_files(dir_path: str, wildcard: str) -> list:
+    """
+    Returns a list of all files in a directory
+    :param dir_path: Folder containing all files
+    :param wildcard: Wildcard to filter files
+    :return: List of file paths
+    """
     # Get a list of files inside a directory using glob
     files = glob.glob(os.path.join(dir_path, wildcard))
     # Sort the list of files by name
@@ -112,9 +120,13 @@ def get_files(dir_path, wildcard):
     return files
 
 
-# Function for making directories if they do not exist inside a given directory with user specified name
-
-def make_dir(dir_path, dir_name):
+def make_dir(dir_path: str, dir_name: str) -> str:
+    """
+    Creates a new directory
+    :param dir_path: Directory path to create the new directory in
+    :param dir_name: Name of the new directory
+    :return: Path to the new directory
+    """
     # Create a directory with user specified name if it does not exist
     if not os.path.exists(os.path.join(dir_path, dir_name)):
         os.mkdir(os.path.join(dir_path, dir_name))
@@ -122,9 +134,14 @@ def make_dir(dir_path, dir_name):
     return os.path.join(dir_path, dir_name)
 
 
-# Function that moves multiple files from one directory to another based on a wildcard
-
-def move_files(src_dir, dest_dir, wildcard):
+def move_files(src_dir: str, dest_dir: str, wildcard: str) -> None:
+    """
+    Moves files from one directory to another
+    :param src_dir: Source directory from which files are moved
+    :param dest_dir: Target directory to which files are moved
+    :param wildcard: Wildcard to filter files that are moved
+    :return:
+    """
     # Get a list of files using wildcard
     files = get_files(src_dir, wildcard)
     # Move each file from source directory to destination directory
@@ -132,9 +149,14 @@ def move_files(src_dir, dest_dir, wildcard):
         os.rename(file, os.path.join(dest_dir, os.path.basename(file)))
 
 
-# Function that copies multiple files from one directory to another based on a wildcard using shutil
-
-def copy_files(src_dir, dest_dir, wildcard):
+def copy_files(src_dir: str, dest_dir: str, wildcard: str) -> None:
+    """
+    Copies files from one directory to another
+    :param src_dir: Source directory from which files are copied
+    :param dest_dir: Target directory to which files are copied
+    :param wildcard: Wildcard to filter files that are copied
+    :return:
+    """
     # Get a list of files using wildcard
     files = get_files(src_dir, wildcard)
     # Copy each file from source directory to destination directory
@@ -142,9 +164,13 @@ def copy_files(src_dir, dest_dir, wildcard):
         shutil.copy(file, dest_dir)
 
 
-# Function to delete a list of files
-
-def delete_files(dir_path, wildcard):
+def delete_files(dir_path: str, wildcard: str) -> None:
+    """
+    Deletes files from a directory
+    :param dir_path: Path to the directory from which files are deleted
+    :param wildcard: Wildcard to filter files that are deleted
+    :return:
+    """
     # Get a list of files using wildcard
     files = get_files(dir_path, wildcard)
     # Delete each file from directory

@@ -67,7 +67,7 @@ def check_image_type(file_extension: str) -> str:
         return "Unknown"
 
 
-def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str):
+def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str) -> None:
     """ Function to convert non-DICOM images to NIFTI
     :param medimg_dir: Directory containing the non-DICOM images (e.g. Analyze, Metaimage)
     :param file_extension: File extension of the non-DICOM images (e.g. .hdr, .mha)
@@ -86,7 +86,7 @@ def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str):
         print("Done")
 
 
-def dcm2nii(dicom_dir: str):
+def dcm2nii(dicom_dir: str) -> None:
     """ Function to convert DICOM images to NIFTI using dcm2niix
     :param dicom_dir: Directory containing the DICOM images
     """
@@ -99,7 +99,7 @@ def dcm2nii(dicom_dir: str):
     print("Done")
 
 
-def split4d(nifti_file: str):
+def split4d(nifti_file: str) -> None:
     """ Function to split a 4D NIFTI file into 3D NIFTI files using fslsplit
     :param nifti_file: 4D NIFTI file to split
     """
@@ -114,7 +114,7 @@ def split4d(nifti_file: str):
     print("Done")
 
 
-def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str):
+def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     """
     Function to merge 3D NIFTI files into a 4D NIFTI file using fslmerge
     :param nifti_dir: Directory containing the 3D NIFTI files
@@ -130,7 +130,7 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str):
     print("Done")
 
 
-def check_dimensions(nifti_file: str):
+def check_dimensions(nifti_file: str) -> int:
     """
     Function to check the dimensions of a NIFTI image file
     :param nifti_file: NIFTI file to check
