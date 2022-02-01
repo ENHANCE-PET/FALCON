@@ -89,6 +89,7 @@ def display_logo():
                                             
                                             """)
 
+
 # Function that gets a list of folders inside a directory using glob and returns the list of paths sorted by name
 
 
@@ -149,3 +150,4 @@ def delete_files(dir_path, wildcard):
     # Delete each file from directory
     for file in files:
         os.remove(file)
+

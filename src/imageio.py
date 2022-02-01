@@ -26,9 +26,11 @@ from halo import Halo
 import fileop as fop
 
 
-# Function to check the number of unique file extensions in a directory by getting all the file extensions
-
-def check_unique_extensions(directory):
+def check_unique_extensions(directory: str) -> list:
+    """ Function to check the number of unique file extensions in a directory by getting all the file extensions
+    :param directory: Directory to check
+    :return: Identified unique file extensions
+    """
     extensions = []
     for file in os.listdir(directory):
         if file.endswith(".nii") or file.endswith(".nii.gz"):
@@ -48,9 +50,11 @@ def check_unique_extensions(directory):
     return unique_extensions
 
 
-# Function to check if a given extension is nifti, dicom, analyze or metaimage in a given directory
-
-def check_image_type(file_extension):
+def check_image_type(file_extension: str) -> str:
+    """ Function to check if a given extension is nifti, dicom, analyze or metaimage in a given directory
+    :param file_extension: File extension to check
+    :return: Image type
+    """
     if file_extension == ".nii":
         return "Nifti"
     elif file_extension == ".dcm" or file_extension == ".ima":
@@ -63,10 +67,12 @@ def check_image_type(file_extension):
         return "Unknown"
 
 
-# Function to convert non-nifti files in a given directory to nifti format using convert3d and store it in a new
-# directory
-
-def nondcm2nii(medimg_dir, file_extension, new_dir):
+def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str):
+    """ Function to convert non-DICOM images to NIFTI
+    :param medimg_dir: Directory containing the non-DICOM images (e.g. Analyze, Metaimage)
+    :param file_extension: File extension of the non-DICOM images (e.g. .hdr, .mha)
+    :param new_dir: Directory to save the converted images
+    """
     non_dcm_files = fop.get_files(medimg_dir, wildcard='*' + file_extension)
     for file in non_dcm_files:
         file_stem = pathlib.Path(file).stem
@@ -80,9 +86,10 @@ def nondcm2nii(medimg_dir, file_extension, new_dir):
         print("Done")
 
 
-# Function to convert a given DICOM series into a nifti file using dcm2niix
-
-def dcm2nii(dicom_dir):
+def dcm2nii(dicom_dir: str):
+    """ Function to convert DICOM images to NIFTI using dcm2niix
+    :param dicom_dir: Directory containing the DICOM images
+    """
     cmd_to_run = f"dcm2niix {re.escape(dicom_dir)}"
     print(f"Converting DICOM images in {dicom_dir} to NIFTI")
     spinner = Halo(text=f"Running command: {cmd_to_run}", spinner='dots')
@@ -92,9 +99,10 @@ def dcm2nii(dicom_dir):
     print("Done")
 
 
-# Function to split a given 4D nifti file into 3D nifti files
-
-def split4d(nifti_file):
+def split4d(nifti_file: str):
+    """ Function to split a 4D NIFTI file into 3D NIFTI files using fslsplit
+    :param nifti_file: 4D NIFTI file to split
+    """
     nifti_file_escaped = re.escape(nifti_file)
     cmd_to_run = f"fslsplit {nifti_file_escaped}"
     print(f"Splitting {nifti_file} into 3D nifti files")
@@ -106,9 +114,13 @@ def split4d(nifti_file):
     print("Done")
 
 
-# Function to merge 3D nifti files using wildcard and writing out a single 4D nifti file with a user defined name
-
-def merge3d(nifti_dir, wild_card, nifti_outfile):
+def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str):
+    """
+    Function to merge 3D NIFTI files into a 4D NIFTI file using fslmerge
+    :param nifti_dir: Directory containing the 3D NIFTI files
+    :param wild_card: Wildcard to use to find the 3D NIFTI files
+    :param nifti_outfile: User-defined output file name for the 4D NIFTI file
+    """
     os.chdir(nifti_dir)
     cmd_to_run = f"fslmerge -t {nifti_outfile} {wild_card}"
     print(f"Merging 3D nifti files in {nifti_dir} with wildcard {wild_card}")
@@ -118,9 +130,11 @@ def merge3d(nifti_dir, wild_card, nifti_outfile):
     print("Done")
 
 
-# Function to check image dimensions of a given nifti file using simpleitk
-
-def check_dimensions(nifti_file):
+def check_dimensions(nifti_file: str):
+    """
+    Function to check the dimensions of a NIFTI image file
+    :param nifti_file: NIFTI file to check
+    """
     nifti_img = SimpleITK.ReadImage(nifti_file)
     img_dim = nifti_img.GetDimension()
     return img_dim
