@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
 
     unique_extensions = imageio.check_unique_extensions(
-        directory=re.escape(working_dir))
+        directory=working_dir)
 
     # If the folder has multiple image formats, conversion is a hassle. Therefore, throw an error to clean up the given
     # directory
