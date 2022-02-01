@@ -20,18 +20,21 @@
 
 import os
 
-
 # Call to greedy to perform rigid registration
+import re
+
+
 def rigid(fixed_img, moving_img, cost_function):
-    cmd_to_run = f"greedy -d 3 -a -i {fixed_img} {moving_img} -ia-image-centers -dof 6 -o rigid.mat -n 100x50x25 " \
+    cmd_to_run = f"greedy -d 3 -a -i " \
+                 f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o rigid.mat -n 100x50x25 " \
                  f"-m {cost_function}"
     print("*******************************************************************************************")
     print(f"Registration type: Rigid")
-    print(f"Reference image: {fixed_img}")
-    print(f"Moving image: {moving_img}")
+    print(f"Reference image: {re.escape(fixed_img)}")
+    print(f"Moving image: {re.escape(moving_img)}")
     print(f"Cost function: {cost_function}")
     print(f"Initial alignment: Image centers")
-    print(f"Multiresolution level iterations: 100x50x25")
+    print(f"Multi-resolution level iterations: 100x50x25")
     print(f"Transform file generated: rigid.mat")
     print("*******************************************************************************************")
     os.system(cmd_to_run)
@@ -41,15 +44,17 @@ def rigid(fixed_img, moving_img, cost_function):
 # Call to greedy to perform affine registration
 
 def affine(fixed_img, moving_img, cost_function):
-    cmd_to_run = f"greedy -d 3 -a -i {fixed_img} {moving_img} -ia-image-centers -dof 12 -o affine.mat -n 100x50x25 " \
+    cmd_to_run = f"greedy -d 3 -a -i {re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 12 -o " \
+                 f"affine.mat -n " \
+                 f"100x50x25 " \
                  f"-m {cost_function} "
     print("*******************************************************************************************")
     print(f"- Registration type: Affine")
-    print(f"- Reference image: {fixed_img}")
-    print(f"- Moving image: {moving_img}")
+    print(f"- Reference image: {re.escape(fixed_img)}")
+    print(f"- Moving image: {re.escape(moving_img)}")
     print(f"- Cost function: {cost_function}")
     print(f"- Initial alignment: Image centers")
-    print(f"- Multiresolution level iterations: 100x50x25")
+    print(f"- Multi-resolution level iterations: 100x50x25")
     print(f"- Transform file generated: affine.mat")
     print("*******************************************************************************************")
     os.system(cmd_to_run)
@@ -62,12 +67,13 @@ def deformable(fixed_img, moving_img, cost_function):
     print("*******************************************************************************************")
     print("Performing affine registration for initial global alignment")
     affine(fixed_img, moving_img, cost_function)
-    cmd_to_run = f"greedy -d 3 -m {cost_function} -i {fixed_img} {moving_img} -it affine.mat -o warp.nii.gz -oinv " \
+    cmd_to_run = f"greedy -d 3 -m {cost_function} -i {re.escape(fixed_img)} {re.escape(moving_img)} -it affine.mat -o " \
+                 f"warp.nii.gz -oinv " \
                  f"inverse_warp.nii.gz -n 100x50x25"
     print("*******************************************************************************************")
     print(f"- Registration type: deformable")
-    print(f"- Reference image: {fixed_img}")
-    print(f"- Moving image: {moving_img}")
+    print(f"- Reference image: {re.escape(fixed_img)}")
+    print(f"- Moving image: {re.escape(moving_img)}")
     print(f"- Cost function: {cost_function}")
     print(f"- Initial alignment: based on affine.mat")
     print(f"- Multiresolution level iterations: 100x50x25")
@@ -83,29 +89,35 @@ def deformable(fixed_img, moving_img, cost_function):
 def resample(fixed_img, moving_img, resampled_moving_img, registration_type, segmentation="", resampled_seg=""):
     if registration_type == 'rigid':
         if segmentation and resampled_seg:
-            cmd_to_run = f"greedy -d 3 -rf {fixed_img} -ri NN -rm {moving_img} {resampled_moving_img} -ri LABEL " \
-                         f"0.2vox -rm {segmentation} {resampled_seg} -r rigid.mat"
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+                         f"{re.escape(resampled_moving_img)} -ri LABEL " \
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r rigid.mat"
         else:
-            cmd_to_run = f"greedy -d 3 -rf {fixed_img} -ri NN -rm {moving_img} {resampled_moving_img} -r rigid.mat"
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+                         f"{re.escape(resampled_moving_img)} -r rigid.mat "
     elif registration_type == 'affine':
         if segmentation and resampled_seg:
-            cmd_to_run = f"greedy -d 3 -rf {fixed_img} -ri NN -rm {moving_img} {resampled_moving_img} -ri LABEL " \
-                         f"0.2vox -rm {segmentation} {resampled_seg} -r affine.mat"
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+                         f"{re.escape(resampled_moving_img)} -ri LABEL " \
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r affine.mat"
         else:
-            cmd_to_run = f"greedy -d 3 -rf {fixed_img} -ri NN -rm {moving_img} {resampled_moving_img} -r affine.mat"
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+                         f"{re.escape(resampled_moving_img)} -r affine.mat"
     elif registration_type == 'deformable':
         if segmentation and resampled_seg:
-            cmd_to_run = f"greedy -d 3 -rf {fixed_img} -ri NN -rm {moving_img} {resampled_moving_img} -ri LABEL " \
-                         f"0.2vox -rm {segmentation} {resampled_seg} -r warp.nii.gz affine.mat"
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+                         f"{re.escape(resampled_moving_img)} -ri LABEL " \
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r warp.nii.gz affine.mat"
         else:
-            cmd_to_run = f"greedy -d 3 -rf {fixed_img} -ri NN -rm {moving_img} {resampled_moving_img} -r warp.nii.gz " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+                         f"{re.escape(resampled_moving_img)} -r warp.nii.gz " \
                          f"affine.mat"
     os.system(cmd_to_run)
     print("*******************************************************************************************")
     print(f"Resampling parameters")
     print("*******************************************************************************************")
-    print(f"- Reference image: {fixed_img}")
-    print(f"- Moving image: {moving_img}")
+    print(f"- Reference image: {re.escape(fixed_img)}")
+    print(f"- Moving image: {re.escape(moving_img)}")
     print(f"- Resampled moving image: {resampled_moving_img}")
     print(f"- Segmentation: {segmentation}")
     print(f"- Resampled segmentation: {resampled_seg}")
