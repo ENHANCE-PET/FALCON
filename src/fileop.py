@@ -140,7 +140,7 @@ def move_files(src_dir: str, dest_dir: str, wildcard: str) -> None:
     :param src_dir: Source directory from which files are moved
     :param dest_dir: Target directory to which files are moved
     :param wildcard: Wildcard to filter files that are moved
-    :return:
+    :return: None
     """
     # Get a list of files using wildcard
     files = get_files(src_dir, wildcard)
@@ -155,7 +155,7 @@ def copy_files(src_dir: str, dest_dir: str, wildcard: str) -> None:
     :param src_dir: Source directory from which files are copied
     :param dest_dir: Target directory to which files are copied
     :param wildcard: Wildcard to filter files that are copied
-    :return:
+    :return: None
     """
     # Get a list of files using wildcard
     files = get_files(src_dir, wildcard)
@@ -169,7 +169,7 @@ def delete_files(dir_path: str, wildcard: str) -> None:
     Deletes files from a directory
     :param dir_path: Path to the directory from which files are deleted
     :param wildcard: Wildcard to filter files that are deleted
-    :return:
+    :return: None
     """
     # Get a list of files using wildcard
     files = get_files(dir_path, wildcard)
