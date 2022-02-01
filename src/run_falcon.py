@@ -47,10 +47,9 @@ if __name__ == "__main__":
         help="Type of registration: rigid | affine | deformable"
     )
     args = parser.parse_args()
-    working_dir = re.escape(args.main_folder)
+    working_dir = args.main_folder
     start_frame = int(args.start_frame)
     registration_type = args.registration
-
     fop.display_logo()
 
     # Sanity checks (File type | 3d or 4d ) and file conversion (non-nifti to nifti)
@@ -58,7 +57,7 @@ if __name__ == "__main__":
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
 
     unique_extensions = imageio.check_unique_extensions(
-        directory=working_dir)
+        directory=re.escape(working_dir))
 
     # If the folder has multiple image formats, conversion is a hassle. Therefore, throw an error to clean up the given
     # directory
