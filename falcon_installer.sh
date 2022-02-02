@@ -12,8 +12,6 @@
 # License: Apache 2.0
 # **********************************************************************************************************************
 
-
-
 echo '[1] Installing python packages for running FALCON...'
 pip install halo==0.0.31 SimpleITK==2.1.1
 
