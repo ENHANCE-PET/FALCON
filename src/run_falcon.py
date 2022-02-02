@@ -125,7 +125,7 @@ if __name__ == "__main__":
     reference_img = fop.get_files(moco_dir, '*nii*')[0]
     if alignment_strategy == 'single':
         print(f"Alignment strategy: {alignment_strategy}")
-        for y in range(start_frame, len(non_moco_files)-1):
+        for y in range(start_frame, len(non_moco_files) - 1):
             print(f"Aligning: {pathlib.Path(non_moco_files[y]).name} -> {pathlib.Path(reference_img).name}")
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[y]).name
@@ -150,4 +150,5 @@ if __name__ == "__main__":
             os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
 
     # Merge the split 3d motion corrected file into a single 4d file using fsl.
+
     imageio.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
