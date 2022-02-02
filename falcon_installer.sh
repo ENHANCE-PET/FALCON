@@ -16,6 +16,7 @@
 
 echo '[1] Installing python packages for running FALCON...'
 pip install halo==0.0.31 SimpleITK==2.1.1
+
 echo '[2] Downloading required files IBM cloud storage...'
 # Check if the OS is Mac or Linux and change subsequent commands accordingly
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -33,11 +34,12 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
         brew install python@2.rb
         rm python@2.rb
 fi
+
 echo '[3] Unzipping FALCON files...'
 unzip FALCON-files.zip
+
 echo '[4] Removing FALCON zip files...'
 rm FALCON-files.zip
-
 # shellcheck disable=SC2006
 main_dir=`pwd`
 # shellcheck disable=SC2006
@@ -49,8 +51,8 @@ falcon_src=$main_dir/'src'/'run_falcon.py'
 echo '[5] Setting up symlinks for dependencies...'
 sudo ln -s "$falcon_bin"/'c3d' $root_path/'c3d'
 sudo ln -s "$falcon_bin"/'greedy' $root_path/'greedy'
-echo '[6] Building dcm2niix from source...'
 
+echo '[6] Building dcm2niix from source...'
 git clone https://github.com/rordenlab/dcm2niix.git
 # shellcheck disable=SC2164
 cd dcm2niix
@@ -58,8 +60,10 @@ cd dcm2niix
 mkdir build && cd build
 cmake -DZLIB_IMPLEMENTATION=Cloudflare -DUSE_JPEGLS=ON -DUSE_OPENJPEG=ON ..
 sudo make install 
+
 echo '[7] Installing fsl, please answer the required questions via the terminal...'
 python2 "$falcon_bin"/fslinstaller.py
 sudo chmod +x "$falcon_src"
 sudo ln -s "$falcon_src" $root_path/'falcon'
+
 echo '[8] Finished installing FALCON!'
