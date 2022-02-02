@@ -45,10 +45,17 @@ if __name__ == "__main__":
         default=True,
         help="Type of registration: rigid | affine | deformable"
     )
+    parser.add_argument(
+        "-a",
+        "--alignment_strategy",
+        default=True,
+        help="Type of alignment: single | rolling"
+    )
     args = parser.parse_args()
     working_dir = args.main_folder
     start_frame = int(args.start_frame)
     registration_type = args.registration
+    alignment_strategy = args.alignment_strategy
     fop.display_logo()
 
     # -----------------------------------SANITY CHECKS AND DATA-WRANGLING-----------------------------------------------
@@ -103,7 +110,7 @@ if __name__ == "__main__":
         split3d_folder = nifti_dir
         print(f"PET files to motion correct are stored here: {split3d_folder}")
 
-    # -------------------------------------------ACTUAL MOTION CORRECTION----------------------------------------------
+    # -------------------------------------------MOTION CORRECTION------------------------------------------------------
 
     print('*' * 50)
     print('Starting motion correction...')
@@ -116,25 +123,31 @@ if __name__ == "__main__":
     fixed_img_filename = pathlib.Path(non_moco_files[-1]).name
     os.rename(fixed_img_filename, 'moco-' + fixed_img_filename)
     reference_img = fop.get_files(moco_dir, '*nii*')[0]
-    for x in range(len(non_moco_files) - 2, start_frame, -1):
-        print(f"Aligning: {pathlib.Path(non_moco_files[x]).name} -> {pathlib.Path(reference_img).name}")
-        if registration_type == 'rigid':
-            greedy.rigid(fixed_img=reference_img, moving_img=non_moco_files[x], cost_function='NMI')
-        elif registration_type == 'affine':
-            greedy.affine(fixed_img=reference_img, moving_img=non_moco_files[x], cost_function='NMI')
-        elif registration_type == 'deformable':
-            greedy.deformable(fixed_img=reference_img, moving_img=non_moco_files[x], cost_function='NCC 2x2x2')
-        else:
-            sys.exit("Registration type not supported!")
-        moving_img_filename = pathlib.Path(non_moco_files[x]).name
-        greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[x], resampled_moving_img=os.path.join(
-            moco_dir, 'moco-' + moving_img_filename), registration_type='deformable')
-        reference_img = os.path.join(moco_dir, 'moco-' + moving_img_filename)
-
-    for x in range(0, start_frame + 1):
-        fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
-        os.chdir(moco_dir)
-        os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
+    if alignment_strategy == 'single':
+        print(f"Alignment strategy: {alignment_strategy}")
+        for y in range(start_frame, len(non_moco_files)-1):
+            print(f"Aligning: {pathlib.Path(non_moco_files[y]).name} -> {pathlib.Path(reference_img).name}")
+            greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y], registration_type=registration_type)
+            moving_img_filename = pathlib.Path(non_moco_files[y]).name
+            greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[y], resampled_moving_img=os.path.join(
+                moco_dir, 'moco-' + moving_img_filename), registration_type='deformable')
+        for x in range(0, start_frame):
+            fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
+            os.chdir(moco_dir)
+            os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
+    elif alignment_strategy == 'rolling':
+        print(f"Alignment strategy: {alignment_strategy}")
+        for x in range(len(non_moco_files) - 2, start_frame, -1):
+            print(f"Aligning: {pathlib.Path(non_moco_files[x]).name} -> {pathlib.Path(reference_img).name}")
+            greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[x], registration_type=registration_type)
+            moving_img_filename = pathlib.Path(non_moco_files[x]).name
+            greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[x], resampled_moving_img=os.path.join(
+                moco_dir, 'moco-' + moving_img_filename), registration_type='deformable')
+            reference_img = os.path.join(moco_dir, 'moco-' + moving_img_filename)
+        for x in range(0, start_frame + 1):
+            fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
+            os.chdir(moco_dir)
+            os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
 
     # Merge the split 3d motion corrected file into a single 4d file using fsl.
     imageio.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')

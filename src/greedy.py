@@ -21,8 +21,8 @@
 import os
 import re
 
-
 # Functions that call greedy
+import sys
 
 
 def rigid(fixed_img: str, moving_img: str, cost_function: str) -> None:
@@ -100,6 +100,24 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str) -> None:
     print("Deformable registration complete")
 
 
+def registration(fixed_img: str, moving_img: str, registration_type: str) -> None:
+    """
+    Registers the fixed and the moving image using the greedy registration toolkit based on the user given cost function
+    :param fixed_img: Reference image
+    :param moving_img: Moving image
+    :param registration_type: Type of registration ('rigid', 'affine' or 'deformable')
+    :return: None
+    """
+    if registration_type == 'rigid':
+        rigid(fixed_img, moving_img, cost_function='NMI')
+    elif registration_type == 'affine':
+        affine(fixed_img, moving_img, cost_function='NMI')
+    elif registration_type == 'deformable':
+        deformable(fixed_img, moving_img, cost_function='NCC 2x2x2')
+    else:
+        sys.exit("Registration type not supported!")
+
+
 def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registration_type: str, segmentation="",
              resampled_seg="") -> None:
     """
@@ -110,7 +128,7 @@ def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registr
     :param registration_type: 'rigid', 'affine', or 'deformable'
     :param segmentation: Mask image corresponding to moving image that needs to be resampled to match reference image
     :param resampled_seg: Resampled mask image
-    :return:
+    :return: None
     """
     if registration_type == 'rigid':
         if segmentation and resampled_seg:
