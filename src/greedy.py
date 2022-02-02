@@ -19,6 +19,7 @@
 # Libraries to import
 
 import os
+import pathlib
 import re
 
 # Functions that call greedy
@@ -108,6 +109,7 @@ def registration(fixed_img: str, moving_img: str, registration_type: str) -> Non
     :param registration_type: Type of registration ('rigid', 'affine' or 'deformable')
     :return: None
     """
+    print(f"Aligning: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name}")
     if registration_type == 'rigid':
         rigid(fixed_img, moving_img, cost_function='NMI')
     elif registration_type == 'affine':

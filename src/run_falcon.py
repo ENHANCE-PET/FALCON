@@ -126,7 +126,6 @@ if __name__ == "__main__":
     if alignment_strategy == 'single':
         print(f"Alignment strategy: {alignment_strategy}")
         for y in range(start_frame, len(non_moco_files) - 1):
-            print(f"Aligning: {pathlib.Path(non_moco_files[y]).name} -> {pathlib.Path(reference_img).name}")
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[y]).name
             greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[y], resampled_moving_img=os.path.join(
@@ -138,7 +137,6 @@ if __name__ == "__main__":
     elif alignment_strategy == 'rolling':
         print(f"Alignment strategy: {alignment_strategy}")
         for x in range(len(non_moco_files) - 2, start_frame, -1):
-            print(f"Aligning: {pathlib.Path(non_moco_files[x]).name} -> {pathlib.Path(reference_img).name}")
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[x], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[x]).name
             greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[x], resampled_moving_img=os.path.join(
