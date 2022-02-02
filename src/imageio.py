@@ -27,7 +27,7 @@ import fileop as fop
 
 
 def check_unique_extensions(directory: str) -> list:
-    """ Function to check the number of unique file extensions in a directory by getting all the file extensions
+    """Check the number of unique file extensions in a directory by getting all the file extensions
     :param directory: Directory to check
     :return: Identified unique file extensions
     """
@@ -51,7 +51,7 @@ def check_unique_extensions(directory: str) -> list:
 
 
 def check_image_type(file_extension: str) -> str:
-    """ Function to check if a given extension is nifti, dicom, analyze or metaimage in a given directory
+    """Check if a given extension is nifti, dicom, analyze or metaimage in a given directory
     :param file_extension: File extension to check
     :return: Image type
     """
@@ -68,7 +68,7 @@ def check_image_type(file_extension: str) -> str:
 
 
 def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str) -> None:
-    """ Function to convert non-DICOM images to NIFTI
+    """Convert non-DICOM images to NIFTI
     :param medimg_dir: Directory containing the non-DICOM images (e.g. Analyze, Metaimage)
     :param file_extension: File extension of the non-DICOM images (e.g. .hdr, .mha)
     :param new_dir: Directory to save the converted images
@@ -87,7 +87,7 @@ def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str) -> None:
 
 
 def dcm2nii(dicom_dir: str) -> None:
-    """ Function to convert DICOM images to NIFTI using dcm2niix
+    """Convert DICOM images to NIFTI using dcm2niix
     :param dicom_dir: Directory containing the DICOM images
     """
     cmd_to_run = f"dcm2niix {re.escape(dicom_dir)}"
@@ -100,7 +100,7 @@ def dcm2nii(dicom_dir: str) -> None:
 
 
 def split4d(nifti_file: str) -> None:
-    """ Function to split a 4D NIFTI file into 3D NIFTI files using fslsplit
+    """Split a 4D NIFTI file into 3D NIFTI files using fslsplit
     :param nifti_file: 4D NIFTI file to split
     """
     nifti_file_escaped = re.escape(nifti_file)
@@ -116,7 +116,7 @@ def split4d(nifti_file: str) -> None:
 
 def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     """
-    Function to merge 3D NIFTI files into a 4D NIFTI file using fslmerge
+    Merge 3D NIFTI files into a 4D NIFTI file using fslmerge
     :param nifti_dir: Directory containing the 3D NIFTI files
     :param wild_card: Wildcard to use to find the 3D NIFTI files
     :param nifti_outfile: User-defined output file name for the 4D NIFTI file
@@ -132,7 +132,7 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
 
 def check_dimensions(nifti_file: str) -> int:
     """
-    Function to check the dimensions of a NIFTI image file
+    Check the dimensions of a NIFTI image file
     :param nifti_file: NIFTI file to check
     """
     nifti_img = SimpleITK.ReadImage(nifti_file)
