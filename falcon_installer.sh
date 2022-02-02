@@ -33,6 +33,14 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
         wget https://raw.githubusercontent.com/Homebrew/homebrew-core/86a44a0a552c673a05f11018459c9f5faae3becc/Formula/python@2.rb
         brew install python@2.rb
         rm python@2.rb
+elif [[ "$OSTYPE" == "msys" ]]; then
+        echo 'MSYS is not supported'
+elif [[ "$OSTYPE" == "win32" ]]; then
+        echo 'Windows is not supported'
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+        echo 'FreeBSD is not supported'
+else
+        echo 'Unknown OS'
 fi
 
 echo '[3] Unzipping FALCON files...'
