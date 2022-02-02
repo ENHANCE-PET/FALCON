@@ -12,10 +12,8 @@
 # License: Apache 2.0
 # **********************************************************************************************************************
 
-echo '[1] Installing python packages for running FALCON...'
-pip install halo==0.0.31 SimpleITK==2.1.1
 
-echo '[2] Downloading required files IBM cloud storage...'
+echo '[1] Downloading required files IBM cloud storage...'
 # Check if the OS is Mac or Linux and change subsequent commands accordingly
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"  
@@ -33,13 +31,20 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
         rm python@2.rb
 elif [[ "$OSTYPE" == "msys" ]]; then
         echo 'MSYS is not supported'
+        exit 1
 elif [[ "$OSTYPE" == "win32" ]]; then
         echo 'Windows is not supported'
+        exit 1
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
         echo 'FreeBSD is not supported'
+        exit 1
 else
         echo 'Unknown OS'
+        exit 1
 fi
+
+echo '[2] Installing python packages for running FALCON...'
+pip install halo==0.0.31 SimpleITK==2.1.1
 
 echo '[3] Unzipping FALCON files...'
 unzip FALCON-files.zip
