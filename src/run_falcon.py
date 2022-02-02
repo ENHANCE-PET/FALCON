@@ -49,7 +49,7 @@ if __name__ == "__main__":
         "-a",
         "--alignment_strategy",
         default=True,
-        help="Type of alignment: single | rolling"
+        help="Type of alignment: fixed | rolling"
     )
     args = parser.parse_args()
     working_dir = args.main_folder
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     fixed_img_filename = pathlib.Path(non_moco_files[-1]).name
     os.rename(fixed_img_filename, 'moco-' + fixed_img_filename)
     reference_img = fop.get_files(moco_dir, '*nii*')[0]
-    if alignment_strategy == 'single':
+    if alignment_strategy == 'fixed':
         print(f"Alignment strategy: {alignment_strategy}")
         for y in range(start_frame, len(non_moco_files) - 1):
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y], registration_type=registration)
