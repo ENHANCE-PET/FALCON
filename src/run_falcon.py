@@ -129,7 +129,7 @@ if __name__ == "__main__":
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[y]).name
             greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[y], resampled_moving_img=os.path.join(
-                moco_dir, 'moco-' + moving_img_filename), registration_type='deformable')
+                moco_dir, 'moco-' + moving_img_filename), registration_type=registration)
         for x in range(0, start_frame):
             fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
             os.chdir(moco_dir)
@@ -140,7 +140,7 @@ if __name__ == "__main__":
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[x], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[x]).name
             greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[x], resampled_moving_img=os.path.join(
-                moco_dir, 'moco-' + moving_img_filename), registration_type='deformable')
+                moco_dir, 'moco-' + moving_img_filename), registration_type=registration)
             reference_img = os.path.join(moco_dir, 'moco-' + moving_img_filename)
         for x in range(0, start_frame + 1):
             fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)

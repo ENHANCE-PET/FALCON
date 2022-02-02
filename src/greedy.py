@@ -110,6 +110,7 @@ def registration(fixed_img: str, moving_img: str, registration_type: str) -> Non
     :return: None
     """
     print(f"Aligning: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name}")
+    print(f"Registration mode: {registration_type}")
     if registration_type == 'rigid':
         rigid(fixed_img, moving_img, cost_function='NMI')
     elif registration_type == 'affine':
