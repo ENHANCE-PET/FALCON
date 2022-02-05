@@ -36,19 +36,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "-s",
         "--start_frame",
-        default=True,
+        default=0,
         help="frame to which the motion correction need to be performed"
     )
     parser.add_argument(
         "-r",
         "--registration",
-        default=True,
+        default='affine',
         help="Type of registration: rigid | affine | deformable"
     )
     parser.add_argument(
         "-a",
         "--alignment_strategy",
-        default=True,
+        default='fixed',
         help="Type of alignment: fixed | rolling"
     )
     args = parser.parse_args()
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         elif image_type == 'Nifti':  # do nothing if the files are already in nifti
             print('Files are already in nifti format!')
             nifti_dir = working_dir
-        else:  # any other format convert to nifti
+        else:  # any other format (analyze or metaimage) convert to nifti
             nifti_dir = fop.make_dir(working_dir, 'nifti')
             imageio.nondcm2nii(medimg_dir=working_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
 
