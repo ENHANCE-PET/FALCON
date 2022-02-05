@@ -24,7 +24,7 @@ import re
 
 import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, filename='greedy.log',
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, filename='logs/greedy.log',
                     filemode='w')
 
 # Functions that call greedy
