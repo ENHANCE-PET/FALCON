@@ -24,6 +24,10 @@ import sys
 import fileop as fop
 import greedy
 import imageio
+import logging
+
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, filename='falcon.log',
+                    filemode='w')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -56,7 +60,16 @@ if __name__ == "__main__":
     start_frame = int(args.start_frame)
     registration = args.registration
     alignment_strategy = args.alignment_strategy
+    logging.info('Starting FALCON')
+    logging.info('****************************************************************************************************')
     fop.display_logo()
+    logging.info('Working directory: ' + working_dir)
+    logging.info('Starting frame: ' + str(start_frame))
+    logging.info('Registration type: ' + registration)
+    logging.info('Alignment strategy: ' + alignment_strategy)
+    logging.info('****************************************************************************************************')
+    logging.info('                                       SANITY CHECKS                                                ')
+    logging.info('****************************************************************************************************')
 
     # -----------------------------------SANITY CHECKS AND DATA-WRANGLING-----------------------------------------------
 
@@ -69,23 +82,23 @@ if __name__ == "__main__":
     # directory
 
     if len(unique_extensions) > 1:
-        sys.exit(f"Multiple file formats found: {unique_extensions} - please check the "
-                 f"directory!")
+        logging.error(f"Multiple file formats found: {unique_extensions} - please check the "
+                      f"directory!")
 
     # If the folder has only one unique image format (e.g, dicom, nifti, analyze, metaimage), convert the non-nifti
     # files to nifti files
 
     elif len(unique_extensions) == 1:
-        print(f"Found files with following extension: {unique_extensions[0]}")
+        logging.info(f"Found files with following extension: {unique_extensions[0]}")
         image_type = imageio.check_image_type(*unique_extensions)
-        print(f"Image type: {image_type}")
+        logging.info(f"Image type: {image_type}")
         if image_type == 'Dicom':  # if the image type is dicom, convert the dicom files to nifti files
             nifti_dir = fop.make_dir(working_dir, 'nifti')
             imageio.dcm2nii(dicom_dir=working_dir)
             nifti_file = fop.get_files(working_dir, wildcard='*nii*')
             fop.move_files(working_dir, nifti_dir, '*.nii*')
         elif image_type == 'Nifti':  # do nothing if the files are already in nifti
-            print('Files are already in nifti format!')
+            logging.info('Files are already in nifti format!')
             nifti_dir = working_dir
         else:  # any other format (analyze or metaimage) convert to nifti
             nifti_dir = fop.make_dir(working_dir, 'nifti')
@@ -95,28 +108,25 @@ if __name__ == "__main__":
 
     nifti_files = fop.get_files(nifti_dir, '*nii*')
     if len(nifti_files) == 1:
-        print(f"Number of nifti files: {len(nifti_files)}")
+        logging.info(f"Number of nifti files: {len(nifti_files)}")
         img_dimensions = imageio.check_dimensions(nifti_files[0])
         if img_dimensions == 3:
-            sys.exit('Single 3d nifti file found: Cannot perform motion correction!')
+            logging.error('Single 3d nifti file found: Cannot perform motion correction!')
         elif img_dimensions == 4:
-            print('Type of nifti file : 4d')
+            logging.info('Type of nifti file : 4d')
             imageio.split4d(nifti_files[0])
             split3d_folder = (fop.make_dir(nifti_dir, 'split3d'))
             fop.move_files(nifti_dir, split3d_folder, 'vol*.nii*')
-            print(f"PET files to motion correct are stored here: {split3d_folder}")
+            logging.info(f"PET files to motion correct are stored here: {split3d_folder}")
     elif len(nifti_files) > 1:
-        print('Multiple nifti files found, assuming we have 3d nifti files!')
+        logging.info('Multiple nifti files found, assuming we have 3d nifti files!')
         split3d_folder = nifti_dir
-        print(f"PET files to motion correct are stored here: {split3d_folder}")
-
-    # -------------------------------------------MOTION CORRECTION------------------------------------------------------
-
-    print('*' * 50)
-    print('Starting motion correction...')
-    print('*' * 50)
+        logging.info(f"PET files to motion correct are stored here: {split3d_folder}")
+    logging.info('****************************************************************************************************')
+    logging.info('                                      MOTION CORRECTION                                             ')
+    logging.info('****************************************************************************************************')
     non_moco_files = fop.get_files(split3d_folder, '*nii*')
-    print(f"Number of files to motion correct: {len(non_moco_files) - 1}")
+    logging.info(f"Number of files to motion correct: {len(non_moco_files) - 1}")
     moco_dir = fop.make_dir(split3d_folder, 'moco')
     fop.copy_files(split3d_folder, moco_dir, non_moco_files[-1])
     os.chdir(moco_dir)
@@ -124,7 +134,7 @@ if __name__ == "__main__":
     os.rename(fixed_img_filename, 'moco-' + fixed_img_filename)
     reference_img = fop.get_files(moco_dir, '*nii*')[0]
     if alignment_strategy == 'fixed':
-        print(f"Alignment strategy: {alignment_strategy}")
+        logging.info(f"Alignment strategy: {alignment_strategy}")
         for y in range(start_frame, len(non_moco_files) - 1):
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[y]).name
@@ -135,7 +145,7 @@ if __name__ == "__main__":
             os.chdir(moco_dir)
             os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
     elif alignment_strategy == 'rolling':
-        print(f"Alignment strategy: {alignment_strategy}")
+        logging.info(f"Alignment strategy: {alignment_strategy}")
         for x in range(len(non_moco_files) - 2, start_frame, -1):
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[x], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[x]).name
