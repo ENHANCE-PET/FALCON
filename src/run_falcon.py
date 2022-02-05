@@ -17,14 +17,13 @@
 
 
 import argparse
+import logging
 import os
 import pathlib
-import sys
 
 import fileop as fop
 import greedy
 import imageio
-import logging
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, filename='falcon.log',
                     filemode='w')
