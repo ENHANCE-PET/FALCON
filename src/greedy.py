@@ -18,13 +18,10 @@
 
 # Libraries to import
 
+import logging
 import os
 import pathlib
 import re
-
-import logging
-
-
 # Functions that call greedy
 import sys
 
@@ -39,7 +36,7 @@ def rigid(fixed_img: str, moving_img: str, cost_function: str) -> None:
     cmd_to_run = f"greedy -d 3 -a -i " \
                  f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o rigid.mat -n 100x50x25 " \
                  f"-m {cost_function}"
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")
     logging.info(f"Registration type: Rigid")
     logging.info(f"Reference image: {re.escape(fixed_img)}")
     logging.info(f"Moving image: {re.escape(moving_img)}")
@@ -47,7 +44,7 @@ def rigid(fixed_img: str, moving_img: str, cost_function: str) -> None:
     logging.info(f"Initial alignment: Image centers")
     logging.info(f"Multi-resolution level iterations: 100x50x25")
     logging.info(f"Transform file generated: rigid.mat")
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")
     os.system(cmd_to_run)
     print("Rigid registration complete")
 
@@ -63,7 +60,7 @@ def affine(fixed_img: str, moving_img: str, cost_function: str) -> None:
                  f"affine.mat -n " \
                  f"100x50x25 " \
                  f"-m {cost_function} "
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")
     logging.info(f"- Registration type: Affine")
     logging.info(f"- Reference image: {re.escape(fixed_img)}")
     logging.info(f"- Moving image: {re.escape(moving_img)}")
@@ -71,7 +68,7 @@ def affine(fixed_img: str, moving_img: str, cost_function: str) -> None:
     logging.info(f"- Initial alignment: Image centers")
     logging.info(f"- Multi-resolution level iterations: 100x50x25")
     logging.info(f"- Transform file generated: affine.mat")
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")
     os.system(cmd_to_run)
     print("Affine registration complete")
 
@@ -84,13 +81,12 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str) -> None:
     :param cost_function: Cost function
     :return:
     """
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")
     logging.info("Performing affine registration for initial global alignment")
     affine(fixed_img, moving_img, cost_function)
     cmd_to_run = f"greedy -d 3 -m {cost_function} -i {re.escape(fixed_img)} {re.escape(moving_img)} -it affine.mat -o " \
                  f"warp.nii.gz -oinv " \
                  f"inverse_warp.nii.gz -n 100x50x25"
-    logging.info("*******************************************************************************************")
     logging.info(f"- Registration type: deformable")
     logging.info(f"- Reference image: {re.escape(fixed_img)}")
     logging.info(f"- Moving image: {re.escape(moving_img)}")
@@ -98,7 +94,7 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str) -> None:
     logging.info(f"- Initial alignment: based on affine.mat")
     logging.info(f"- Multiresolution level iterations: 100x50x25")
     logging.info(f"- Deformation field generated: warp.nii.gz + inverse_warp.nii.gz")
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")
 
     os.system(cmd_to_run)
     print("Deformable registration complete")
@@ -112,8 +108,10 @@ def registration(fixed_img: str, moving_img: str, registration_type: str) -> Non
     :param registration_type: Type of registration ('rigid', 'affine' or 'deformable')
     :return: None
     """
+    logging.info("=============================================================================================")
     logging.info(f"Aligning: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name}")
     logging.info(f"Registration mode: {registration_type}")
+    logging.info("=============================================================================================")
     if registration_type == 'rigid':
         rigid(fixed_img, moving_img, cost_function='NMI')
     elif registration_type == 'affine':
@@ -162,13 +160,13 @@ def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registr
                          f"{re.escape(resampled_moving_img)} -r warp.nii.gz " \
                          f"affine.mat"
     os.system(cmd_to_run)
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")
     logging.info(f"Resampling parameters")
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")
     logging.info(f"- Reference image: {re.escape(fixed_img)}")
     logging.info(f"- Moving image: {re.escape(moving_img)}")
     logging.info(f"- Resampled moving image: {resampled_moving_img}")
     logging.info(f"- Segmentation: {segmentation}")
     logging.info(f"- Resampled segmentation: {resampled_seg}")
     logging.info(f"- Interpolation scheme for resampling: Nearest neighbor for images and segmentations")
-    logging.info("*******************************************************************************************")
+    logging.info("---------------------------------------------------------------------------------------------")

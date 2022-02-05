@@ -59,16 +59,18 @@ if __name__ == "__main__":
     start_frame = int(args.start_frame)
     registration = args.registration
     alignment_strategy = args.alignment_strategy
-    logging.info('Starting FALCON')
+    logging.info('****************************************************************************************************')
+    logging.info('                                       Starting FALCON                                              ')
     logging.info('****************************************************************************************************')
     fop.display_logo()
-    logging.info('Working directory: ' + working_dir)
-    logging.info('Starting frame: ' + str(start_frame))
-    logging.info('Registration type: ' + registration)
-    logging.info('Alignment strategy: ' + alignment_strategy)
-    logging.info('****************************************************************************************************')
+    logging.info('Input arguments:')
+    logging.info(' - Working directory: ' + working_dir)
+    logging.info(' - Starting frame: ' + str(start_frame))
+    logging.info(' - Registration type: ' + registration)
+    logging.info(' - Alignment strategy: ' + alignment_strategy)
+    logging.info('----------------------------------------------------------------------------------------------------')
     logging.info('                                       SANITY CHECKS                                                ')
-    logging.info('****************************************************************************************************')
+    logging.info('----------------------------------------------------------------------------------------------------')
 
     # -----------------------------------SANITY CHECKS AND DATA-WRANGLING-----------------------------------------------
 
@@ -121,9 +123,9 @@ if __name__ == "__main__":
         logging.info('Multiple nifti files found, assuming we have 3d nifti files!')
         split3d_folder = nifti_dir
         logging.info(f"PET files to motion correct are stored here: {split3d_folder}")
-    logging.info('****************************************************************************************************')
+    logging.info('----------------------------------------------------------------------------------------------------')
     logging.info('                                      MOTION CORRECTION                                             ')
-    logging.info('****************************************************************************************************')
+    logging.info('----------------------------------------------------------------------------------------------------')
     non_moco_files = fop.get_files(split3d_folder, '*nii*')
     logging.info(f"Number of files to motion correct: {len(non_moco_files) - 1}")
     moco_dir = fop.make_dir(split3d_folder, 'moco')
