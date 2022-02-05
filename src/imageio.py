@@ -24,7 +24,7 @@ import SimpleITK
 from halo import Halo
 
 import fileop as fop
-
+import logging
 
 def check_unique_extensions(directory: str) -> list:
     """Check the number of unique file extensions in a directory by getting all the file extensions
@@ -78,12 +78,12 @@ def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str) -> None:
         file_stem = pathlib.Path(file).stem
         nifti_file = os.path.join(new_dir, file_stem + ".nii.gz")
         cmd_to_run = f"c3d {file} -o {nifti_file}"
-        print(f"Converting {file} to {nifti_file}")
+        logging.info(f"Converting {file} to {nifti_file}")
         spinner = Halo(text=f"Running command: {cmd_to_run}", spinner='dots')
         spinner.start()
         os.system(cmd_to_run)
         spinner.succeed()
-        print("Done")
+        logging.info("Done")
 
 
 def dcm2nii(dicom_dir: str) -> None:
@@ -91,12 +91,12 @@ def dcm2nii(dicom_dir: str) -> None:
     :param dicom_dir: Directory containing the DICOM images
     """
     cmd_to_run = f"dcm2niix {re.escape(dicom_dir)}"
-    print(f"Converting DICOM images in {dicom_dir} to NIFTI")
+    logging.info(f"Converting DICOM images in {dicom_dir} to NIFTI")
     spinner = Halo(text=f"Running command: {cmd_to_run}", spinner='dots')
     spinner.start()
     os.system(cmd_to_run)
     spinner.succeed()
-    print("Done")
+    logging.info("Done")
 
 
 def split4d(nifti_file: str) -> None:
@@ -105,13 +105,13 @@ def split4d(nifti_file: str) -> None:
     """
     nifti_file_escaped = re.escape(nifti_file)
     cmd_to_run = f"fslsplit {nifti_file_escaped}"
-    print(f"Splitting {nifti_file} into 3D nifti files")
+    logging.info(f"Splitting {nifti_file} into 3D nifti files")
     spinner = Halo(text=f"Running command: {cmd_to_run}", spinner='dots')
     spinner.start()
     os.chdir(pathlib.Path(nifti_file).parent)
     os.system(cmd_to_run)
     spinner.succeed()
-    print("Done")
+    logging.info("Done")
 
 
 def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
@@ -123,11 +123,11 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     """
     os.chdir(nifti_dir)
     cmd_to_run = f"fslmerge -t {nifti_outfile} {wild_card}"
-    print(f"Merging 3D nifti files in {nifti_dir} with wildcard {wild_card}")
-    print(f"Running command: {cmd_to_run}")
+    logging.info(f"Merging 3D nifti files in {nifti_dir} with wildcard {wild_card}")
+    logging.info(f"Running command: {cmd_to_run}")
     os.chdir(nifti_dir)
     os.system(cmd_to_run)
-    print("Done")
+    logging.info("Done")
 
 
 def check_dimensions(nifti_file: str) -> int:
