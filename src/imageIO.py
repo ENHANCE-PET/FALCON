@@ -24,7 +24,7 @@ import re
 import SimpleITK
 from halo import Halo
 
-import fileOP as fop
+import fileOps as fop
 
 
 def check_unique_extensions(directory: str) -> list:
