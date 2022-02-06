@@ -3,7 +3,7 @@
 
 
 # **********************************************************************************************************************
-# File: imageio.py
+# File: imageIO.py
 # Project: falcon
 # Created: 27.01.2022
 # Author: Lalith Kumar Shiyam Sundar
@@ -16,6 +16,7 @@
 # **********************************************************************************************************************
 
 
+import logging
 import os
 import pathlib
 import re
@@ -23,8 +24,8 @@ import re
 import SimpleITK
 from halo import Halo
 
-import fileop as fop
-import logging
+import fileOP as fop
+
 
 def check_unique_extensions(directory: str) -> list:
     """Check the number of unique file extensions in a directory by getting all the file extensions

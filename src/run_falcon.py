@@ -22,9 +22,9 @@ import os
 import pathlib
 import timeit
 
-import fileop as fop
+import fileOP as fop
 import greedy
-import imageio
+import imageIO
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename='falcon.log',
@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
 
-    unique_extensions = imageio.check_unique_extensions(
+    unique_extensions = imageIO.check_unique_extensions(
         directory=working_dir)
 
     # If the folder has multiple image formats, conversion is a hassle. Therefore, throw an error to clean up the given
@@ -96,11 +96,11 @@ if __name__ == "__main__":
 
     elif len(unique_extensions) == 1:
         logging.info(f"Found files with following extension: {unique_extensions[0]}")
-        image_type = imageio.check_image_type(*unique_extensions)
+        image_type = imageIO.check_image_type(*unique_extensions)
         logging.info(f"Image type: {image_type}")
         if image_type == 'Dicom':  # if the image type is dicom, convert the dicom files to nifti files
             nifti_dir = fop.make_dir(working_dir, 'nifti')
-            imageio.dcm2nii(dicom_dir=working_dir)
+            imageIO.dcm2nii(dicom_dir=working_dir)
             nifti_file = fop.get_files(working_dir, wildcard='*nii*')
             fop.move_files(working_dir, nifti_dir, '*.nii*')
         elif image_type == 'Nifti':  # do nothing if the files are already in nifti
@@ -108,19 +108,19 @@ if __name__ == "__main__":
             nifti_dir = working_dir
         else:  # any other format (analyze or metaimage) convert to nifti
             nifti_dir = fop.make_dir(working_dir, 'nifti')
-            imageio.nondcm2nii(medimg_dir=working_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
+            imageIO.nondcm2nii(medimg_dir=working_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
 
     # Check if the nifti files are 3d or 4d
 
     nifti_files = fop.get_files(nifti_dir, '*nii*')
     if len(nifti_files) == 1:
         logging.info(f"Number of nifti files: {len(nifti_files)}")
-        img_dimensions = imageio.check_dimensions(nifti_files[0])
+        img_dimensions = imageIO.check_dimensions(nifti_files[0])
         if img_dimensions == 3:
             logging.error('Single 3d nifti file found: Cannot perform motion correction!')
         elif img_dimensions == 4:
             logging.info('Type of nifti file : 4d')
-            imageio.split4d(nifti_files[0])
+            imageIO.split4d(nifti_files[0])
             split3d_folder = (fop.make_dir(nifti_dir, 'split3d'))
             fop.move_files(nifti_dir, split3d_folder, 'vol*.nii*')
             logging.info(f"PET files to motion correct are stored here: {split3d_folder}")
@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
     # Merge the split 3d motion corrected file into a single 4d file using fsl.
 
-    imageio.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
+    imageIO.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
     stop = timeit.default_timer()
     logging.info(' ')
     logging.info(f"Total time taken for motion correction: {(stop - start)/60:.2f} minutes")
