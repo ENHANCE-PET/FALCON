@@ -35,14 +35,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "-i",
         "--main_folder",
-        help="path containing all the subjects with the required structure",
+        help="path containing the images to motion correct",
         required=True,
     )
     parser.add_argument(
         "-s",
         "--start_frame",
         default=0,
-        help="frame to which the motion correction need to be performed"
+        help="frame from which the motion correction will be performed"
     )
     parser.add_argument(
         "-r",
