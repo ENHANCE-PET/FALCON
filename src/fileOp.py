@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # ***********************************************************************************************************************
-# File: fileOps.py
+# File: fileOp.py
 # Project: falcon
 # Created: 27.01.2022
 # Author: Lalith Kumar Shiyam Sundar

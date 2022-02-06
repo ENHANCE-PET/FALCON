@@ -22,7 +22,7 @@ import os
 import pathlib
 import timeit
 
-import fileOps as fop
+import fileOp as fop
 import greedy
 import imageIO
 
