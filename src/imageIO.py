@@ -131,9 +131,9 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     logging.info("Done")
 
 
-def check_dimensions(nifti_file: str) -> int:
+def get_dimensions(nifti_file: str) -> int:
     """
-    Check the dimensions of a NIFTI image file
+    Get the dimensions of a NIFTI image file
     :param nifti_file: NIFTI file to check
     """
     nifti_img = SimpleITK.ReadImage(nifti_file)
