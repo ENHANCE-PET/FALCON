@@ -141,6 +141,7 @@ if __name__ == "__main__":
     reference_img = fop.get_files(moco_dir, '*nii*')[0]
     if alignment_strategy == 'fixed':
         logging.info(f"Alignment strategy: {alignment_strategy}")
+        logging.info(f"Reference image (is fixed): {reference_img}")
         for y in range(start_frame, len(non_moco_files) - 1):
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[y]).name
@@ -153,6 +154,7 @@ if __name__ == "__main__":
     elif alignment_strategy == 'rolling':
         logging.info(f"Alignment strategy: {alignment_strategy}")
         for x in range(len(non_moco_files) - 2, start_frame, -1):
+            logging.info(f"Reference image (is rolling): {non_moco_files[x]}")
             greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[x], registration_type=registration)
             moving_img_filename = pathlib.Path(non_moco_files[x]).name
             greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[x], resampled_moving_img=os.path.join(
