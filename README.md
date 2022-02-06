@@ -23,4 +23,6 @@ falcon -i path_to_4d_images -s frame_from_which_moco_needs_to_start -r rigid_aff
 #example: 
 falcon -i /Documents/Sub001 -s 3 -r deformable -a fixed
 
+#help: 
+falcon --help
 ```
