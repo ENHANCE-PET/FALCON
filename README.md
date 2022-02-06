@@ -13,6 +13,8 @@ sudo bash falcon_installer.sh
 ```
 ## 🖥 Usage
 
+Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a single 4D image or multiple 3D images. Just point to the directory where the files resides and FALCON should ideally take care of the rest.
+
 ```bash
 
 #syntax:
