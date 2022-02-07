@@ -205,5 +205,6 @@ if __name__ == "__main__":
     imageIO.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
     stop = timeit.default_timer()
     logging.info(' ')
+    logging.info('MOTION CORRECTION DONE!')
     logging.info(f"Total time taken for motion correction: {(stop - start) / 60:.2f} minutes")
     logging.info(' ')
