@@ -30,7 +30,8 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d
                     filename='falcon.log',
                     filemode='w')
 
-# logging function for saving stderr to log file
+# logging function for writing stderr to log file
+
 logging.getLogger().addHandler(logging.StreamHandler())
 
 if __name__ == "__main__":
@@ -88,7 +89,7 @@ if __name__ == "__main__":
     logging.info('SANITY CHECKS AND DATA PREPARATION')
     logging.info('-----------------------------------')
 
-    # -----------------------------------SANITY CHECKS AND DATA-WRANGLING-----------------------------------------------
+    # -----------------------------------SANITY CHECKS AND DATA-PREPARATION---------------------------------------------
 
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
 
@@ -183,5 +184,5 @@ if __name__ == "__main__":
     imageIO.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
     stop = timeit.default_timer()
     logging.info(' ')
-    logging.info(f"Total time taken for motion correction: {(stop - start)/60:.2f} minutes")
+    logging.info(f"Total time taken for motion correction: {(stop - start) / 60:.2f} minutes")
     logging.info(' ')
