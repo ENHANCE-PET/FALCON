@@ -71,14 +71,18 @@ if __name__ == "__main__":
         help="Number of iterations for each resolution level"
     )
     args = parser.parse_args()
+
     working_dir = args.main_folder
     if not verifyArgs.check_dir(working_dir):
         logging.error("Main folder does not exist")
+
     start_frame = args.start_frame
     if not verifyArgs.is_non_negative(start_frame):
         logging.error("Start frame must be non-negative")
+
     registration = args.registration
     alignment_strategy = args.alignment_strategy
+
     multi_resolution_iterations = args.multi_resolution_iterations
     if verifyArgs.is_string_alpha(verifyArgs.remove_char(multi_resolution_iterations, 'x')):
         logging.error("Multi-resolution iterations must be a string of integers separated by 'x'")
