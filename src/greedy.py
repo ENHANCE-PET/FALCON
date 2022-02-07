@@ -87,7 +87,7 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str, multi_resolu
     """
     logging.info(" ")
     logging.info("Performing affine registration for initial global alignment")
-    affine(fixed_img, moving_img, cost_function)
+    affine(fixed_img, moving_img, cost_function, multi_resolution_iterations)
     cmd_to_run = f"greedy -d 3 -m {cost_function} -i {re.escape(fixed_img)} {re.escape(moving_img)} -it affine.mat -o " \
                  f"warp.nii.gz -oinv " \
                  f"inverse_warp.nii.gz -n {multi_resolution_iterations}"

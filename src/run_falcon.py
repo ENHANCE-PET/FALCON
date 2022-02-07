@@ -67,7 +67,7 @@ if __name__ == "__main__":
     start_frame = int(args.start_frame)
     registration = args.registration
     alignment_strategy = args.alignment_strategy
-    multi_resolution_iterations = args.multi_resolution_iterations
+    multi_resolution_iterations = str(args.multi_resolution_iterations)
     logging.info('****************************************************************************************************')
     logging.info('                                       STARTING FALCON                                              ')
     logging.info('****************************************************************************************************')
