@@ -123,7 +123,8 @@ def registration(fixed_img: str, moving_img: str, registration_type: str, multi_
     elif registration_type == 'affine':
         affine(fixed_img, moving_img, cost_function='NMI', multi_resolution_iterations=multi_resolution_iterations)
     elif registration_type == 'deformable':
-        deformable(fixed_img, moving_img, cost_function='NCC 2x2x2', multi_resolution_iterations=multi_resolution_iterations)
+        deformable(fixed_img, moving_img, cost_function='NCC 2x2x2',
+                   multi_resolution_iterations=multi_resolution_iterations)
     else:
         sys.exit("Registration type not supported!")
 
