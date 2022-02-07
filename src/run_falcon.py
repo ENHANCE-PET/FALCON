@@ -21,9 +21,11 @@ import logging
 import os
 import pathlib
 import timeit
+
 import fileOp as fop
 import greedy
 import imageIO
+import verifyArgs
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename='falcon.log',
@@ -34,39 +36,53 @@ if __name__ == "__main__":
     parser.add_argument(
         "-m",
         "--main_folder",
+        type=str,
         help="path containing the images to motion correct",
         required=True,
     )
     parser.add_argument(
         "-s",
         "--start_frame",
+        type=int,
         default=0,
         help="frame from which the motion correction will be performed"
     )
     parser.add_argument(
         "-r",
         "--registration",
+        type=str,
+        choices=["rigid", "affine", "deformable"],
         default='affine',
         help="Type of registration: rigid | affine | deformable"
     )
     parser.add_argument(
         "-a",
         "--alignment_strategy",
+        type=str,
+        choices=['fixed', 'rolling'],
         default='fixed',
         help="Type of alignment: fixed | rolling"
     )
     parser.add_argument(
         "-i",
         "--multi_resolution_iterations",
+        type=str,
         default='100x50x25',
         help="Number of iterations for each resolution level"
     )
     args = parser.parse_args()
     working_dir = args.main_folder
-    start_frame = int(args.start_frame)
+    if not verifyArgs.check_dir(working_dir):
+        logging.error("Main folder does not exist")
+    start_frame = args.start_frame
+    if not verifyArgs.is_non_negative(start_frame):
+        logging.error("Start frame must be non-negative")
     registration = args.registration
     alignment_strategy = args.alignment_strategy
-    multi_resolution_iterations = str(args.multi_resolution_iterations)
+    multi_resolution_iterations = args.multi_resolution_iterations
+    if verifyArgs.is_string_alpha(verifyArgs.remove_char(multi_resolution_iterations, 'x')):
+        logging.error("Multi-resolution iterations must be a string of integers separated by 'x'")
+
     logging.info('****************************************************************************************************')
     logging.info('                                       STARTING FALCON                                              ')
     logging.info('****************************************************************************************************')
