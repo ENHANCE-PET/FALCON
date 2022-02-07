@@ -77,11 +77,13 @@ if __name__ == "__main__":
         logging.error("Main folder does not exist")
         print("Main folder does not exist")
         exit(1)
+
     start_frame = args.start_frame
     if not checkArgs.is_non_negative(start_frame):
         logging.error("Start frame must be non-negative")
         print("Start frame must be non-negative")
         exit(1)
+
     registration = args.registration
     alignment_strategy = args.alignment_strategy
 
