@@ -21,7 +21,6 @@ import logging
 import os
 import pathlib
 import timeit
-
 import fileOp as fop
 import greedy
 import imageIO
@@ -29,10 +28,6 @@ import imageIO
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename='falcon.log',
                     filemode='w')
-
-# logging function for writing stderr to log file
-
-logging.getLogger().addHandler(logging.StreamHandler())
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
