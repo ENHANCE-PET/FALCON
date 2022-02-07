@@ -33,7 +33,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-i",
+        "-m",
         "--main_folder",
         help="path containing the images to motion correct",
         required=True,
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         help="Type of alignment: fixed | rolling"
     )
     parser.add_argument(
-        "-m",
+        "-i",
         "--multi_resolution_iterations",
         default='100x50x25',
         help="Number of iterations for each resolution level"
@@ -151,7 +151,8 @@ if __name__ == "__main__":
         logging.info(f"Alignment strategy: {alignment_strategy}")
         logging.info(f"Reference image (is fixed): {reference_img}")
         for y in range(start_frame, len(non_moco_files) - 1):
-            greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y], registration_type=registration)
+            greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y],
+                                registration_type=registration, multi_resolution_iterations=multi_resolution_iterations)
             moving_img_filename = pathlib.Path(non_moco_files[y]).name
             greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[y], resampled_moving_img=os.path.join(
                 moco_dir, 'moco-' + moving_img_filename), registration_type=registration)
@@ -163,7 +164,8 @@ if __name__ == "__main__":
         logging.info(f"Alignment strategy: {alignment_strategy}")
         for x in range(len(non_moco_files) - 2, start_frame, -1):
             logging.info(f"Reference image (is rolling): {reference_img}")
-            greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[x], registration_type=registration)
+            greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[x],
+                                registration_type=registration, multi_resolution_iterations=multi_resolution_iterations)
             moving_img_filename = pathlib.Path(non_moco_files[x]).name
             greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[x], resampled_moving_img=os.path.join(
                 moco_dir, 'moco-' + moving_img_filename), registration_type=registration)
