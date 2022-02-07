@@ -22,10 +22,10 @@ import os
 import pathlib
 import timeit
 
+import checkArgs
 import fileOp as fop
 import greedy
 import imageIO
-import verifyArgs
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename='falcon.log',
@@ -73,12 +73,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     working_dir = args.main_folder
-    if not verifyArgs.check_dir(working_dir):
+    if not checkArgs.dir_exists(working_dir):
         logging.error("Main folder does not exist")
         print("Main folder does not exist")
         exit(1)
     start_frame = args.start_frame
-    if not verifyArgs.is_non_negative(start_frame):
+    if not checkArgs.is_non_negative(start_frame):
         logging.error("Start frame must be non-negative")
         print("Start frame must be non-negative")
         exit(1)
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     alignment_strategy = args.alignment_strategy
 
     multi_resolution_iterations = args.multi_resolution_iterations
-    if verifyArgs.is_string_alpha(verifyArgs.remove_char(multi_resolution_iterations, 'x')):
+    if checkArgs.is_string_alpha(checkArgs.remove_char(multi_resolution_iterations, 'x')):
         logging.error("Multi-resolution iterations must be a string of integers separated by 'x'")
         print("Multi-resolution iterations must be a string of integers separated by 'x'")
         exit(1)

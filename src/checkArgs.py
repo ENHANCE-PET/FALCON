@@ -16,7 +16,7 @@
 import os
 
 
-def check_dir(dir_path: str) -> bool:
+def dir_exists(dir_path: str) -> bool:
     """
     Checks if a directory exists
     :param dir_path: Path to the directory
