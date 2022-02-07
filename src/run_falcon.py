@@ -90,6 +90,7 @@ if __name__ == "__main__":
         logging.error("Multi-resolution iterations must be a string of integers separated by 'x'")
         print("Multi-resolution iterations must be a string of integers separated by 'x'")
         exit(1)
+
     logging.info('****************************************************************************************************')
     logging.info('                                       STARTING FALCON                                              ')
     logging.info('****************************************************************************************************')
