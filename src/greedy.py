@@ -22,7 +22,6 @@ import logging
 import os
 import pathlib
 import re
-# Functions that call greedy
 import sys
 
 
