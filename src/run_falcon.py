@@ -56,11 +56,18 @@ if __name__ == "__main__":
         default='fixed',
         help="Type of alignment: fixed | rolling"
     )
+    parser.add_argument(
+        "-m",
+        "--multi_resolution_iterations",
+        default='100x50x25',
+        help="Number of iterations for each resolution level"
+    )
     args = parser.parse_args()
     working_dir = args.main_folder
     start_frame = int(args.start_frame)
     registration = args.registration
     alignment_strategy = args.alignment_strategy
+    multi_resolution_iterations = args.multi_resolution_iterations
     logging.info('****************************************************************************************************')
     logging.info('                                       STARTING FALCON                                              ')
     logging.info('****************************************************************************************************')
@@ -73,6 +80,7 @@ if __name__ == "__main__":
     logging.info(' - Starting frame: ' + str(start_frame))
     logging.info(' - Registration type: ' + registration)
     logging.info(' - Alignment strategy: ' + alignment_strategy)
+    logging.info(' - Multi-resolution iterations: ' + multi_resolution_iterations)
     logging.info(' ')
     logging.info('SANITY CHECKS AND DATA PREPARATION')
     logging.info('-----------------------------------')

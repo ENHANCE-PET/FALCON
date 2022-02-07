@@ -26,59 +26,64 @@ import re
 import sys
 
 
-def rigid(fixed_img: str, moving_img: str, cost_function: str) -> None:
+def rigid(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> None:
     """ Performs rigid registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
     :param moving_img: Moving image
     :param cost_function: Cost function
+    :param multi_resolution_iterations: Amount of iterations for each resolution level
     :return none
     """
     logging.info(" ")
     cmd_to_run = f"greedy -d 3 -a -i " \
-                 f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o rigid.mat -n 100x50x25 " \
+                 f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o rigid.mat -n " \
+                 f"{multi_resolution_iterations} " \
                  f"-m {cost_function}"
     logging.info(f"Registration type: Rigid")
     logging.info(f"Reference image: {re.escape(fixed_img)}")
     logging.info(f"Moving image: {re.escape(moving_img)}")
     logging.info(f"Cost function: {cost_function}")
     logging.info(f"Initial alignment: Image centers")
-    logging.info(f"Multi-resolution level iterations: 100x50x25")
+    logging.info(f"Multi-resolution level iterations: {multi_resolution_iterations}")
     logging.info(f"Transform file generated: rigid.mat")
     logging.info(" ")
     os.system(cmd_to_run)
     print("Rigid registration complete")
 
 
-def affine(fixed_img: str, moving_img: str, cost_function: str) -> None:
+def affine(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> None:
     """ Performs affine registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
     :param moving_img: Moving image
     :param cost_function: Cost function
+    :param multi_resolution_iterations: Amount of iterations for each resolution level
+
     :return none
     """
     logging.info(" ")
     cmd_to_run = f"greedy -d 3 -a -i {re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 12 -o " \
                  f"affine.mat -n " \
-                 f"100x50x25 " \
+                 f"{multi_resolution_iterations} " \
                  f"-m {cost_function} "
     logging.info(f"- Registration type: Affine")
     logging.info(f"- Reference image: {re.escape(fixed_img)}")
     logging.info(f"- Moving image: {re.escape(moving_img)}")
     logging.info(f"- Cost function: {cost_function}")
     logging.info(f"- Initial alignment: Image centers")
-    logging.info(f"- Multi-resolution level iterations: 100x50x25")
+    logging.info(f"- Multi-resolution level iterations: {multi_resolution_iterations}")
     logging.info(f"- Transform file generated: affine.mat")
     logging.info(" ")
     os.system(cmd_to_run)
     print("Affine registration complete")
 
 
-def deformable(fixed_img: str, moving_img: str, cost_function: str) -> None:
+def deformable(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> None:
     """
     Performs deformable registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
     :param moving_img: Moving image
     :param cost_function: Cost function
+    :param multi_resolution_iterations: Amount of iterations for each resolution level
     :return:
     """
     logging.info(" ")
@@ -86,26 +91,27 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str) -> None:
     affine(fixed_img, moving_img, cost_function)
     cmd_to_run = f"greedy -d 3 -m {cost_function} -i {re.escape(fixed_img)} {re.escape(moving_img)} -it affine.mat -o " \
                  f"warp.nii.gz -oinv " \
-                 f"inverse_warp.nii.gz -n 100x50x25"
+                 f"inverse_warp.nii.gz -n {multi_resolution_iterations}"
     logging.info("Performing deformable registration for local alignment")
     logging.info(f"- Registration type: deformable")
     logging.info(f"- Reference image: {re.escape(fixed_img)}")
     logging.info(f"- Moving image: {re.escape(moving_img)}")
     logging.info(f"- Cost function: {cost_function}")
     logging.info(f"- Initial alignment: based on affine.mat")
-    logging.info(f"- Multiresolution level iterations: 100x50x25")
+    logging.info(f"- Multiresolution level iterations: {multi_resolution_iterations}")
     logging.info(f"- Deformation field generated: warp.nii.gz + inverse_warp.nii.gz")
     logging.info(' ')
     os.system(cmd_to_run)
     print("Deformable registration complete")
 
 
-def registration(fixed_img: str, moving_img: str, registration_type: str) -> None:
+def registration(fixed_img: str, moving_img: str, registration_type: str, multi_resolution_iterations: str) -> None:
     """
     Registers the fixed and the moving image using the greedy registration toolkit based on the user given cost function
     :param fixed_img: Reference image
     :param moving_img: Moving image
     :param registration_type: Type of registration ('rigid', 'affine' or 'deformable')
+    :param multi_resolution_iterations: Amount of iterations for each resolution level
     :return: None
     """
     logging.info(" ")
@@ -114,11 +120,11 @@ def registration(fixed_img: str, moving_img: str, registration_type: str) -> Non
     logging.info(f"Registration mode: {registration_type}")
     logging.info("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
     if registration_type == 'rigid':
-        rigid(fixed_img, moving_img, cost_function='NMI')
+        rigid(fixed_img, moving_img, cost_function='NMI', multi_resolution_iterations=multi_resolution_iterations)
     elif registration_type == 'affine':
-        affine(fixed_img, moving_img, cost_function='NMI')
+        affine(fixed_img, moving_img, cost_function='NMI', multi_resolution_iterations=multi_resolution_iterations)
     elif registration_type == 'deformable':
-        deformable(fixed_img, moving_img, cost_function='NCC 2x2x2')
+        deformable(fixed_img, moving_img, cost_function='NCC 2x2x2', multi_resolution_iterations=multi_resolution_iterations)
     else:
         sys.exit("Registration type not supported!")
 
