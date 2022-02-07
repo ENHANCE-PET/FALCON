@@ -30,6 +30,9 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d
                     filename='falcon.log',
                     filemode='w')
 
+# logging function for saving stderr to log file
+logging.getLogger().addHandler(logging.StreamHandler())
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
