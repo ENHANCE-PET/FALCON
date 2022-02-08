@@ -37,7 +37,7 @@ def get_pixel_id_type(nifti_file: str) -> str:
     return pixel_id_type
 
 
-def get_intensity_statistics(nifti_file: str, multi_label_file: str):
+def get_intensity_statistics(nifti_file: str, multi_label_file: str) -> object:
     """
     Get the intensity statistics of a NIFTI image file
     :param nifti_file: NIFTI file to check
