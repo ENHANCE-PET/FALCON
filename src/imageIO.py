@@ -21,7 +21,6 @@ import os
 import pathlib
 import re
 
-import SimpleITK
 from halo import Halo
 
 import fileOp as fop
@@ -131,11 +130,5 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     logging.info("Done")
 
 
-def get_dimensions(nifti_file: str) -> int:
-    """
-    Get the dimensions of a NIFTI image file
-    :param nifti_file: NIFTI file to check
-    """
-    nifti_img = SimpleITK.ReadImage(nifti_file)
-    img_dim = nifti_img.GetDimension()
-    return img_dim
+
+

@@ -26,6 +26,7 @@ import checkArgs
 import fileOp as fop
 import greedy
 import imageIO
+import imageOp
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename='falcon.log',
@@ -148,7 +149,7 @@ if __name__ == "__main__":
     nifti_files = fop.get_files(nifti_dir, '*nii*')
     if len(nifti_files) == 1:
         logging.info(f"Number of nifti files: {len(nifti_files)}")
-        img_dimensions = imageIO.get_dimensions(nifti_files[0])
+        img_dimensions = imageOp.get_dimensions(nifti_files[0])
         if img_dimensions == 3:
             logging.error('Single 3d nifti file found: Cannot perform motion correction!')
         elif img_dimensions == 4:
