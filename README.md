@@ -5,7 +5,7 @@ FALCON (Fast algorithms for motion correction) is a python wrapper program for p
 
 ## 🗂 Required folder structure 
 
-```Falcon``` just requires only the dynamic PET images of a subject, once the path is set (along with the minimalistic arguments), it takes care of the rest. The output folders that will be created by the script itself are highlighted using CAPS. 
+```falcon``` just requires only the dynamic PET images of a subject, once the path is set (along with the minimalistic arguments), it takes care of the rest. The output folders that will be created by the script itself are highlighted using CAPS. 
 
 ```bash
 ├── dynamic_pet_data                                               # The mother folder that contain the dynamic pet image to motion correct 
@@ -20,11 +20,11 @@ FALCON (Fast algorithms for motion correction) is a python wrapper program for p
 
 ## ⛔️ Hard requirements 
 
-The entire program has been *ONLY* tested on **Ubuntu linux OS and Mac OS**. There are no special hardware requirements for running falcon. Just remember that the speed of ```Falcon``` increases with the number of CPU cores, as greedy registration library effectively uses all the available cores.
+The entire program has been *ONLY* tested on **Ubuntu linux OS and Mac OS**. There are no special hardware requirements for running falcon. Just remember that the speed of ```falcon``` increases with the number of CPU cores, as greedy registration library effectively uses all the available cores.
 
 ## ⚙️ Installation
 
-As of now ```FALCON``` only works on mac and linux. The entire installation should take ~15 min. 
+As of now ```falcon``` only works on mac and linux. The entire installation should take ~15 min. 
 ```bash
 git clone https://github.com/LalithShiyam/FALCON.git
 cd FALCON
