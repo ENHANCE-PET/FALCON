@@ -161,4 +161,4 @@ def convert_all_non_nifti(medimg_dir: str) -> str:
             nondcm2nii(medimg_dir=medimg_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
     else:  # if the folder is empty, throw an error
         logging.error(f"No files found in {medimg_dir}")
-    return nifti_dir
+    return nifti_dir, image_type
