@@ -118,6 +118,7 @@ if __name__ == "__main__":
     # Check if the nifti files are 3d or 4d
 
     nifti_files = fop.get_files(nifti_dir, '*nii*')
+
     if len(nifti_files) == 1:
         logging.info(f"Number of nifti files: {len(nifti_files)}")
         img_dimensions = imageOp.get_dimensions(nifti_files[0])
