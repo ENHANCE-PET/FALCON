@@ -44,7 +44,7 @@ else
 fi
 
 echo '[2] Installing python packages for running FALCON...'
-pip install halo==0.0.31 SimpleITK==2.1.1
+pip install -r requirements.txt
 
 echo '[3] Unzipping FALCON files...'
 unzip FALCON-files.zip
