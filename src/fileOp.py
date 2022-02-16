@@ -15,8 +15,10 @@
 # **********************************************************************************************************************
 
 import glob
+import json
 import os
 import shutil
+from pathlib import Path
 
 
 def display_logo():
@@ -177,3 +179,47 @@ def delete_files(dir_path: str, wildcard: str) -> None:
     for file in files:
         os.remove(file)
 
+
+def compress_files(dir_path: str, wildcard: str) -> None:
+    """
+    Compresses files using pigz
+    :param dir_path: Directory containing files to be compressed
+    :param wildcard: Wildcard to filter files that are compressed
+    :return: None
+    """
+    # Get a list of files using wildcard
+    files = get_files(dir_path, wildcard)
+    # Compress each file using pigz
+    for file in files:
+        os.system("pigz " + file)
+
+
+def read_json(file_path: str) -> dict:
+    """
+    Reads a json file and returns a dictionary
+    :param file_path: Path to the json file
+    :return: Dictionary
+    """
+    # Open the json file
+    with open(file_path, "r") as json_file:
+        # Read the json file and return the dictionary
+        return json.load(json_file)
+
+
+def organise_nii_files_in_folders(dir_path: str, json_files: list) -> None:
+    """
+    Organises the nifti files in their respective 'modality' folders
+    :param dir_path: Directory containing nifti files
+    :param json_files: Path to the JSON file
+    :return: None
+    """
+    os.chdir(dir_path)
+    for json_file in json_files:
+        nifti_file = Path(json_file).stem + ".nii"
+        if os.path.exists(nifti_file):
+            # Get the modality from the json file
+            modality = read_json(json_file)["modality"]
+            # Create a new directory for the modality if it does not exist
+            make_dir(dir_path, modality)
+            # Move the nifti file to the new directory
+            move_files(src_dir=dir_path, dest_dir=os.path.join(dir_path, modality), file=nifti_file)
