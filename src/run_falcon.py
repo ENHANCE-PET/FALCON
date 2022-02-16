@@ -136,6 +136,9 @@ if __name__ == "__main__":
         split3d_folder = nifti_dir
         logging.info(f"PET files to motion correct are stored here: {split3d_folder}")
     logging.info(' ')
+
+    # Motion correction starts here
+
     logging.info('MOTION CORRECTION')
     logging.info('--------------------')
     non_moco_files = fop.get_files(split3d_folder, '*nii*')
