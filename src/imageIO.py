@@ -130,10 +130,10 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     logging.info("Done")
 
 
-def convert_all_non_nifti(medimg_dir: str) -> str:
+def convert_all_non_nifti(medimg_dir: str):
     """Convert all non-nifti files to nifti
     :param medimg_dir: Directory containing the non-nifti files
-    :return: Directory containing the converted nifti files
+    :return: A tuple containing the Directory that contains the converted nifti files and the original image type
     """
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
     unique_extensions = check_unique_extensions(
@@ -143,6 +143,8 @@ def convert_all_non_nifti(medimg_dir: str) -> str:
     if len(unique_extensions) > 1:
         logging.error(f"Multiple file formats found: {unique_extensions} - please check the "
                       f"directory!")
+        image_type = ''
+        nifti_dir = ''
     # If the folder has only one unique image format (e.g, dicom, nifti, analyze, metaimage), convert the non-nifti
     # files to nifti files
     elif len(unique_extensions) == 1:
@@ -159,6 +161,4 @@ def convert_all_non_nifti(medimg_dir: str) -> str:
         else:  # any other format (analyze or metaimage) convert to nifti
             nifti_dir = fop.make_dir(medimg_dir, 'nifti')
             nondcm2nii(medimg_dir=medimg_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
-    else:  # if the folder is empty, throw an error
-        logging.error(f"No files found in {medimg_dir}")
     return nifti_dir, image_type
