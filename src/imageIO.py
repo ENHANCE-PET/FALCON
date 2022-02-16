@@ -136,6 +136,7 @@ def convert_all_non_nifti(medimg_dir: str) -> str:
     :return: A tuple containing the Directory that contains the converted nifti files and the original image type
     """
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
+    nifti_dir = ''
     unique_extensions = check_unique_extensions(
         directory=medimg_dir)
     # If the folder has multiple image formats, conversion is a hassle. Therefore, throw an error to clean up the given
@@ -143,6 +144,7 @@ def convert_all_non_nifti(medimg_dir: str) -> str:
     if len(unique_extensions) > 1:
         logging.error(f"Multiple file formats found: {unique_extensions} - please check the "
                       f"directory!")
+        exit(1)
     # If the folder has only one unique image format (e.g, dicom, nifti, analyze, metaimage), convert the non-nifti
     # files to nifti files
     elif len(unique_extensions) == 1:
