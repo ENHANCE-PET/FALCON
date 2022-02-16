@@ -130,5 +130,35 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     logging.info("Done")
 
 
-
-
+def convert_all_non_nifti(medimg_dir: str) -> str:
+    """Convert all non-nifti files to nifti
+    :param medimg_dir: Directory containing the non-nifti files
+    :return: Directory containing the converted nifti files
+    """
+    # Getting unique extensions in a given folder to check if the folder has multiple image formats
+    unique_extensions = check_unique_extensions(
+        directory=medimg_dir)
+    # If the folder has multiple image formats, conversion is a hassle. Therefore, throw an error to clean up the given
+    # directory
+    if len(unique_extensions) > 1:
+        logging.error(f"Multiple file formats found: {unique_extensions} - please check the "
+                      f"directory!")
+    # If the folder has only one unique image format (e.g, dicom, nifti, analyze, metaimage), convert the non-nifti
+    # files to nifti files
+    elif len(unique_extensions) == 1:
+        logging.info(f"Found files with following extension: {unique_extensions[0]}")
+        image_type = check_image_type(*unique_extensions)
+        logging.info(f"Image type: {image_type}")
+        if image_type == 'Dicom':  # if the image type is dicom, convert the dicom files to nifti files
+            nifti_dir = fop.make_dir(medimg_dir, 'nifti')
+            dcm2nii(dicom_dir=medimg_dir)
+            fop.move_files(medimg_dir, nifti_dir, '*.nii*')
+        elif image_type == 'Nifti':  # do nothing if the files are already in nifti
+            logging.info('Files are already in nifti format!')
+            nifti_dir = medimg_dir
+        else:  # any other format (analyze or metaimage) convert to nifti
+            nifti_dir = fop.make_dir(medimg_dir, 'nifti')
+            nondcm2nii(medimg_dir=medimg_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
+    else:  # if the folder is empty, throw an error
+        logging.error(f"No files found in {medimg_dir}")
+    return nifti_dir

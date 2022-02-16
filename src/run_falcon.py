@@ -113,36 +113,7 @@ if __name__ == "__main__":
 
     # -----------------------------------SANITY CHECKS AND DATA-PREPARATION---------------------------------------------
 
-    # Getting unique extensions in a given folder to check if the folder has multiple image formats
-
-    unique_extensions = imageIO.check_unique_extensions(
-        directory=working_dir)
-
-    # If the folder has multiple image formats, conversion is a hassle. Therefore, throw an error to clean up the given
-    # directory
-
-    if len(unique_extensions) > 1:
-        logging.error(f"Multiple file formats found: {unique_extensions} - please check the "
-                      f"directory!")
-
-    # If the folder has only one unique image format (e.g, dicom, nifti, analyze, metaimage), convert the non-nifti
-    # files to nifti files
-
-    elif len(unique_extensions) == 1:
-        logging.info(f"Found files with following extension: {unique_extensions[0]}")
-        image_type = imageIO.check_image_type(*unique_extensions)
-        logging.info(f"Image type: {image_type}")
-        if image_type == 'Dicom':  # if the image type is dicom, convert the dicom files to nifti files
-            nifti_dir = fop.make_dir(working_dir, 'nifti')
-            imageIO.dcm2nii(dicom_dir=working_dir)
-            nifti_file = fop.get_files(working_dir, wildcard='*nii*')
-            fop.move_files(working_dir, nifti_dir, '*.nii*')
-        elif image_type == 'Nifti':  # do nothing if the files are already in nifti
-            logging.info('Files are already in nifti format!')
-            nifti_dir = working_dir
-        else:  # any other format (analyze or metaimage) convert to nifti
-            nifti_dir = fop.make_dir(working_dir, 'nifti')
-            imageIO.nondcm2nii(medimg_dir=working_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
+    nifti_dir = imageIO.convert_all_non_nifti(working_dir)
 
     # Check if the nifti files are 3d or 4d
 
