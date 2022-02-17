@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     # -----------------------------------SANITY CHECKS AND DATA-PREPARATION---------------------------------------------
 
-    nifti_dir = imageIO.convert_all_non_nifti(working_dir)
+    nifti_dir, input_image_type = imageIO.convert_all_non_nifti(working_dir)
 
     # Check if the nifti files are 3d or 4d
 
