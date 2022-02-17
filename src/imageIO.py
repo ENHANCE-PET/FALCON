@@ -169,4 +169,5 @@ def convert_all_non_nifti(medimg_dir: str):
         else:  # any other format (analyze or metaimage) convert to nifti
             nifti_dir = fop.make_dir(medimg_dir, 'nifti')
             nondcm2nii(medimg_dir=medimg_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
+
     return nifti_dir, image_type
