@@ -20,6 +20,7 @@ import logging
 import os
 import pathlib
 import re
+import sys
 
 from halo import Halo
 
@@ -135,18 +136,24 @@ def convert_all_non_nifti(medimg_dir: str) -> str:
     :param medimg_dir: Directory containing the non-nifti files
     :return: A tuple containing the Directory that contains the converted nifti files and the original image type
     """
+
     # Getting unique extensions in a given folder to check if the folder has multiple image formats
+
     nifti_dir = ''
     unique_extensions = check_unique_extensions(
         directory=medimg_dir)
+
     # If the folder has multiple image formats, conversion is a hassle. Therefore, throw an error to clean up the given
     # directory
+
     if len(unique_extensions) > 1:
         logging.error(f"Multiple file formats found: {unique_extensions} - please check the "
                       f"directory!")
-        exit(1)
+        sys.exit(f"Multiple file formats found: {unique_extensions} - please check the directory!")
+
     # If the folder has only one unique image format (e.g, dicom, nifti, analyze, metaimage), convert the non-nifti
     # files to nifti files
+
     elif len(unique_extensions) == 1:
         logging.info(f"Found files with following extension: {unique_extensions[0]}")
         image_type = check_image_type(*unique_extensions)
