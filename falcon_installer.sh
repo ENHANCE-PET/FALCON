@@ -80,4 +80,10 @@ sudo python2 "$falcon_bin"/fslinstaller.py
 sudo chmod +x "$falcon_src"
 sudo ln -s "$falcon_src" $root_path/'falcon'
 
-echo '[8] Finished installing FALCON!'
+echo '[8] Setting up fsl environment variables in the .bashrc'
+echo "FSLDIR=/usr/local/fsl" >> ~/.bashrc
+echo ". ${FSLDIR}/etc/fslconf/fsl.sh" >> ~/.bashrc
+echo "PATH=${FSLDIR}/bin:${PATH}" >> ~/.bashrc
+echo "export FSLDIR PATH" >> ~/.bashrc
+
+echo '[9] Finished installing FALCON!'
