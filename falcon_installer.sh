@@ -22,6 +22,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         sudo apt update
         sudo apt install python3-pip
         sudo apt install python2
+        sudo apt install cmake-curses-gui
         
 elif [[ "$OSTYPE" == "darwin"* ]]; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -103,6 +104,6 @@ cd nii2dcm
 # shellcheck disable=SC2164
 cmake .
 sudo make
-sudo ln -s "$falcon_bin"/'nii2dcm'/'nii2dcm' /usr/local/bin/'nii2dcm'
+sudo ln -s "$falcon_bin"/'nii2dcm'/'nii2dcm' $root_path/'nii2dcm'
 echo '[11] Finished installing FALCON!'
 
