@@ -202,11 +202,12 @@ def nii2dcm(nifti_file=str) -> None:
     logging.info("Done")
 
 
-def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str):
+def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str, new_dir=str) -> None:
     """
     Revert nifti images to original file format
     :param nifti_file: Nifti file to revert
     :param org_image_fmt: Original image format
+    :param new_dir: Directory containing the converted files
     """
     logging.info(f"Reverting {nifti_file} to {org_image_fmt} format")
     if org_image_fmt == 'Dicom':
@@ -215,4 +216,4 @@ def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str):
         logging.info('Files are already in nifti format!')
     else:
         logging.info(f"Converting {nifti_file} to {org_image_fmt} format")
-        nii2nondcm(nifti_file=nifti_file, new_img_type=org_image_fmt, new_dir=nifti_file)
+        nii2nondcm(nifti_file=nifti_file, new_img_type=org_image_fmt, new_dir=new_dir)
