@@ -73,7 +73,7 @@ cmake -DZLIB_IMPLEMENTATION=Cloudflare -DUSE_JPEGLS=ON -DUSE_OPENJPEG=ON ..
 sudo make install 
 
 echo '[7] Installing fsl, please answer the required questions via the terminal...'
-python2 "$falcon_bin"/fslinstaller.py
+sudo python2 "$falcon_bin"/fslinstaller.py
 sudo chmod +x "$falcon_src"
 sudo ln -s "$falcon_src" $root_path/'falcon'
 
