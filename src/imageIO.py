@@ -171,3 +171,48 @@ def convert_all_non_nifti(medimg_dir: str):
             nondcm2nii(medimg_dir=medimg_dir, file_extension=unique_extensions[0], new_dir=nifti_dir)
 
     return nifti_dir, image_type
+
+
+def nii2nondcm(nifti_file=str, new_img_type=str, new_dir=str):
+    """
+    Convert nifti to non-dicom format (e.g, analyze, metaimage)
+    :param nifti_file: path of the NIFTI file to convert
+    :param new_img_type: File extension to use for the converted file
+    :param new_dir: Directory to save the converted file
+    """
+    logging.info(f"Converting {nifti_file} to {new_img_type} format")
+    file_stem = pathlib.Path(nifti_file).stem
+    new_img_file = os.path.join(new_dir, file_stem + new_img_type)
+    cmd_to_run = f"c3d {nifti_file} -o {new_img_file}"
+    logging.info(f"Running command: {cmd_to_run}")
+    os.system(cmd_to_run)
+    logging.info("Done")
+
+
+def nii2dcm(nifti_file=str):
+    """
+    Convert nifti to dicom format
+    :param nifti_file: path of the NIFTI file to convert
+    :return dicom_dir: Directory containing the converted dicom files
+    """
+    logging.info(f"Converting {nifti_file} to dicom format")
+    cmd_to_run = f"nii2dcm {nifti_file}"
+    logging.info(f"Running command: {cmd_to_run}")
+    os.system(cmd_to_run)
+    logging.info("Done")
+
+
+def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str):
+    """
+    Revert nifti images to original file format
+    :param nifti_file: Nifti file to revert
+    :param org_image_fmt: Original image format
+    """
+    logging.info(f"Reverting {nifti_file} to {org_image_fmt} format")
+    if org_image_fmt == 'Dicom':
+        nii2dcm(nifti_file=nifti_file)
+    elif org_image_fmt == 'Nifti':
+        logging.info('Files are already in nifti format!')
+    else:
+        logging.info(f"Converting {nifti_file} to {org_image_fmt} format")
+        nii2nondcm(nifti_file=nifti_file, new_img_type=org_image_fmt, new_dir=nifti_file)
