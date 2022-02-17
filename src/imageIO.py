@@ -173,7 +173,7 @@ def convert_all_non_nifti(medimg_dir: str):
     return nifti_dir, image_type
 
 
-def nii2nondcm(nifti_file=str, new_img_type=str, new_dir=str):
+def nii2nondcm(nifti_file=str, new_img_type=str, new_dir=str) -> None:
     """
     Convert nifti to non-dicom format (e.g, analyze, metaimage)
     :param nifti_file: path of the NIFTI file to convert
@@ -189,7 +189,7 @@ def nii2nondcm(nifti_file=str, new_img_type=str, new_dir=str):
     logging.info("Done")
 
 
-def nii2dcm(nifti_file=str):
+def nii2dcm(nifti_file=str) -> None:
     """
     Convert nifti to dicom format
     :param nifti_file: path of the NIFTI file to convert
