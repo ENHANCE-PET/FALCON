@@ -19,7 +19,10 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"  
         sudo apt-get install cmake pkg-config
         sudo apt install git
+        sudo apt update
+        sudo apt install python3-pip
         sudo apt install python2
+        
 elif [[ "$OSTYPE" == "darwin"* ]]; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         brew install wget
