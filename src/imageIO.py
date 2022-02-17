@@ -198,8 +198,10 @@ def nii2dcm(nifti_file=str) -> None:
     logging.info(f"Converting {nifti_file} to dicom format")
     cmd_to_run = f"nii2dcm {nifti_file}"
     logging.info(f"Running command: {cmd_to_run}")
+    print("Dicom conversion may take a while. Please wait...")
     os.system(cmd_to_run)
-    logging.info("Done")
+    print("Done, Dicom files (dir name = dcm_files) are saved in the same directory as the NIFTI file")
+    logging.info("Done, Dicom files (dir name = dcm_files) are saved in the same directory as the NIFTI file")
 
 
 def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str, new_dir=str) -> None:
