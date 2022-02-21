@@ -157,10 +157,16 @@ if __name__ == "__main__":
             moving_img_filename = pathlib.Path(non_moco_files[y]).name
             greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[y], resampled_moving_img=os.path.join(
                 moco_dir, 'moco-' + moving_img_filename), registration_type=registration)
-        for x in range(0, start_frame):
-            fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
-            os.chdir(moco_dir)
-            os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
+        if start_frame != 0:
+            for x in range(0, start_frame):
+                fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
+                logging.info(f"Copying files {non_moco_files[x].name} to {moco_dir}")
+                print(f"Copying files {non_moco_files[x].name} to {moco_dir}")
+                os.chdir(moco_dir)
+                os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
+        else:
+            logging.info('No files to copy! Motion correction is being performed from first frame.')
+            print('Motion correction is being performed from first frame...')
     elif alignment_strategy == 'rolling':
         logging.info(f"Alignment strategy: {alignment_strategy}")
         for x in range(len(non_moco_files) - 2, start_frame, -1):
