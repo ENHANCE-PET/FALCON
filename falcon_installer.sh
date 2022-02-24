@@ -94,7 +94,7 @@ git clone https://github.com/InsightSoftwareConsortium/ITK.git
 # shellcheck disable=SC2164
 mkdir ITK-build && cd ITK-build
 ccmake ../ITK
-sudo make 
+sudo make -j4
 sudo make install
 
 echo '[10] Building nii2dcm from source...'
