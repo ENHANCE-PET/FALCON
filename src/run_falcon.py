@@ -185,6 +185,8 @@ if __name__ == "__main__":
     # Merge the split 3d motion corrected file into a single 4d file using fsl.
 
     imageIO.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
+    logging.info(f"Merged 3d motion corrected files into a single 4d file: {moco_dir}/4d-moco.nii.gz")
+    print(f"Merged 3d motion corrected files into a single 4d file: {moco_dir}/4d-moco.nii.gz")
     stop = timeit.default_timer()
     logging.info(' ')
     logging.info('MOTION CORRECTION DONE!')
