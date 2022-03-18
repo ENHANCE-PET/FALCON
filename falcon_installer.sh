@@ -43,8 +43,13 @@ elif [[ "$OSTYPE" == "freebsd"* ]]; then
         echo 'FreeBSD is not supported'
         exit 1
 else
-        echo 'Unknown OS'
-        exit 1
+        wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"  
+        sudo apt-get install cmake pkg-config
+        sudo apt install git
+        sudo apt update
+        sudo apt install python3-pip
+        sudo apt install python2
+        sudo apt install cmake-curses-gui
 fi
 
 echo '[2] Installing python packages for running FALCON...'
