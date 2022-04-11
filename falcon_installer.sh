@@ -90,13 +90,13 @@ echo '[8] Setting up fsl environment variables in the .bashrc'
   echo "export FSLDIR PATH"
 }   >> ~/.bashrc
 
-echo '[9] Building ITK from source...'
-git clone https://github.com/InsightSoftwareConsortium/ITK.git
+#echo '[9] Building ITK from source...'
+#git clone https://github.com/InsightSoftwareConsortium/ITK.git
 # shellcheck disable=SC2164
-mkdir ITK-build && cd ITK-build
-ccmake ../ITK
-sudo make -j20
-sudo make install
+#mkdir ITK-build && cd ITK-build
+#ccmake ../ITK
+#sudo make -j20
+#sudo make install
 
 #echo '[10] Building nii2dcm from source...'
 #git clone https://github.com/Keyn34/nii2dcm.git
@@ -106,5 +106,5 @@ sudo make install
 #cmake .
 #sudo make
 #sudo ln -s "$falcon_bin"/'nii2dcm'/'nii2dcm' $root_path/'nii2dcm'
-echo '[10] Finished installing FALCON!'
+echo '[9] Finished installing FALCON!'
 
