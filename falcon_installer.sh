@@ -77,18 +77,10 @@ mkdir build && cd build
 cmake -DZLIB_IMPLEMENTATION=Cloudflare -DUSE_JPEGLS=ON -DUSE_OPENJPEG=ON ..
 sudo make install 
 
-echo '[7] Installing fsl, please answer the required questions via the terminal...'
-sudo python2 "$falcon_bin"/fslinstaller.py
+echo '[7] Adding falcon to path...'
 sudo chmod +x "$falcon_src"
 sudo ln -s "$falcon_src" $root_path/'falcon'
 
-echo '[8] Setting up fsl environment variables in the .bashrc'
-{
-  echo "FSLDIR=/usr/local/fsl"
-  echo ". ${FSLDIR}/etc/fslconf/fsl.sh"
-  echo "PATH=${FSLDIR}/bin:${PATH}"
-  echo "export FSLDIR PATH"
-}   >> ~/.bashrc
 
 #echo '[9] Building ITK from source...'
 #git clone https://github.com/InsightSoftwareConsortium/ITK.git
@@ -106,5 +98,5 @@ echo '[8] Setting up fsl environment variables in the .bashrc'
 #cmake .
 #sudo make
 #sudo ln -s "$falcon_bin"/'nii2dcm'/'nii2dcm' $root_path/'nii2dcm'
-echo '[9] Finished installing FALCON!'
+echo '[8] Finished installing FALCON!'
 
