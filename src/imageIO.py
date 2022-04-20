@@ -107,7 +107,7 @@ def split4d(nifti_file: str, out_dir: str) -> None:
     :param out_dir: Directory to save the split NIFTI files
     """
     logging.info(f"Splitting {nifti_file} into 3D nifti files")
-    split_nifti_files = nib.funcs.four_to_three(nifti_file)
+    split_nifti_files = nib.funcs.four_to_three(nib.load(nifti_file))
     i = 0
     for file in split_nifti_files:
         nib.save(file, os.path.join(out_dir, 'vol' + str(i).zfill(4) + '.nii.gz'))
