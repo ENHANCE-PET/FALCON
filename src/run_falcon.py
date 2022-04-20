@@ -160,8 +160,8 @@ if __name__ == "__main__":
         if start_frame != 0:
             for x in range(0, start_frame):
                 fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
-                logging.info(f"Copying files {non_moco_files[x].name} to {moco_dir}")
-                print(f"Copying files {non_moco_files[x].name} to {moco_dir}")
+                logging.info(f"Copying files {pathlib.Path(non_moco_files[x]).name} to {moco_dir}")
+                print(f"Copying files {pathlib.Path(non_moco_files[x]).name} to {moco_dir}")
                 os.chdir(moco_dir)
                 os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
         else:
