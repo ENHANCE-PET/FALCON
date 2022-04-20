@@ -126,7 +126,7 @@ if __name__ == "__main__":
             logging.error('Single 3d nifti file found: Cannot perform motion correction!')
         elif img_dimensions == 4:
             logging.info('Type of nifti file : 4d')
-            imageIO.split4d(nifti_files[0])
+            imageIO.split4d(nifti_files[0], nifti_dir)
             split3d_folder = (fop.make_dir(nifti_dir, 'split3d'))
             fop.move_files(nifti_dir, split3d_folder, 'vol*.nii*')
             logging.info(f"PET files to motion correct are stored here: {split3d_folder}")

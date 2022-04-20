@@ -101,19 +101,18 @@ def dcm2nii(dicom_dir: str) -> None:
     logging.info("Done")
 
 
-def split4d(nifti_file: str) -> None:
+def split4d(nifti_file: str, out_dir: str) -> None:
     """Split a 4D NIFTI file into 3D NIFTI files using fslsplit
     :param nifti_file: 4D NIFTI file to split
+    :param out_dir: Directory to save the split NIFTI files
     """
-    nifti_file_escaped = re.escape(nifti_file)
-    cmd_to_run = f"fslsplit {nifti_file_escaped}"
     logging.info(f"Splitting {nifti_file} into 3D nifti files")
-    spinner = Halo(text=f"Running command: {cmd_to_run}", spinner='dots')
-    spinner.start()
-    os.chdir(pathlib.Path(nifti_file).parent)
-    os.system(cmd_to_run)
-    spinner.succeed()
-    logging.info("Done")
+    split_nifti_files = nib.funcs.four_to_three(nifti_file)
+    i = 0
+    for file in split_nifti_files:
+        nib.save(file, os.path.join(out_dir, 'vol' + str(i).zfill(4) + '.nii.gz'))
+        i += 1
+    logging.info(f"Splitting done and split files are saved in {out_dir}")
 
 
 def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
