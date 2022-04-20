@@ -21,7 +21,6 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         sudo apt install git
         sudo apt update
         sudo apt install python3-pip
-        sudo apt install python2
         sudo apt install cmake-curses-gui
         
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -30,9 +29,6 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
         wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"  
         brew install pkg-config
         brew install git
-        wget https://raw.githubusercontent.com/Homebrew/homebrew-core/86a44a0a552c673a05f11018459c9f5faae3becc/Formula/python@2.rb
-        brew install python@2.rb
-        rm python@2.rb
 elif [[ "$OSTYPE" == "msys" ]]; then
         echo 'MSYS is not supported'
         exit 1
