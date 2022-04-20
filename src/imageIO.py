@@ -22,6 +22,7 @@ import pathlib
 import re
 import sys
 
+import nibabel as nib
 from halo import Halo
 
 import fileOp as fop
@@ -122,12 +123,10 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     :param wild_card: Wildcard to use to find the 3D NIFTI files
     :param nifti_outfile: User-defined output file name for the 4D NIFTI file
     """
-    os.chdir(nifti_dir)
-    cmd_to_run = f"fslmerge -t {nifti_outfile} {wild_card}"
     logging.info(f"Merging 3D nifti files in {nifti_dir} with wildcard {wild_card}")
-    logging.info(f"Running command: {cmd_to_run}")
+    files_to_merge = fop.get_files(nifti_dir, wild_card)
+    nib.save(nib.funcs.concat_images(files_to_merge, False), nifti_outfile)
     os.chdir(nifti_dir)
-    os.system(cmd_to_run)
     logging.info("Done")
 
 
