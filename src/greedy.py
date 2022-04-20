@@ -143,27 +143,27 @@ def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registr
     """
     if registration_type == 'rigid':
         if segmentation and resampled_seg:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
                          f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r rigid.mat"
         else:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -r rigid.mat "
     elif registration_type == 'affine':
         if segmentation and resampled_seg:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
                          f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r affine.mat"
         else:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -r affine.mat"
     elif registration_type == 'deformable':
         if segmentation and resampled_seg:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
                          f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r warp.nii.gz affine.mat"
         else:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -r warp.nii.gz " \
                          f"affine.mat"
     os.system(cmd_to_run)
