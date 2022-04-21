@@ -173,5 +173,5 @@ def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registr
     logging.info(f"- Resampled moving image: {resampled_moving_img}")
     logging.info(f"- Segmentation: {segmentation}")
     logging.info(f"- Resampled segmentation: {resampled_seg}")
-    logging.info(f"- Interpolation scheme for resampling: Nearest neighbor for images and segmentations")
+    logging.info(f"- Interpolation scheme for resampling: Linear interpolation for images and nearest neighbor for segmentations")
     logging.info(' ')
