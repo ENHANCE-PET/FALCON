@@ -52,6 +52,6 @@ def get_intensity_statistics(nifti_file: str, multi_label_file: str) -> object:
                    intensity_statistics.GetMedian(i), intensity_statistics.GetMaximum(i),
                    intensity_statistics.GetMinimum(i)) for i in intensity_statistics.GetLabels()]
     columns = ['Mean', 'Standard Deviation', 'Median', 'Maximum', 'Minimum']
-    stats_df = pd.DataFrame(data=stats_list, index=intensity_statistics.Getlabels(), columns=columns)
+    stats_df = pd.DataFrame(data=stats_list, index=intensity_statistics.GetLabels(), columns=columns)
     return stats_df
 

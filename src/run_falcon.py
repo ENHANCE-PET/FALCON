@@ -23,10 +23,12 @@ import pathlib
 import timeit
 
 import checkArgs
+import constants as cnst
 import fileOp as fop
 import greedy
 import imageIO
 import imageOp
+import sysUtil as su
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename='falcon.log',
@@ -94,8 +96,23 @@ if __name__ == "__main__":
         print("Multi-resolution iterations must be a string of integers separated by 'x'")
         exit(1)
 
+    # Figure out the number of jobs that can be run in parallel
+    njobs = 1
+    if registration.__eq__('rigid'):
+        njobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_RIGID,
+                                               process_threads=cnst.MINIMUM_THREADS_REQUIRED_RIGID)
+    elif registration.__eq__('affine'):
+        njobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_AFFINE,
+                                               process_threads=cnst.MINIMUM_THREADS_REQUIRED_AFFINE)
+    elif registration.__eq__('deformable'):
+        njobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_DEFORMABLE,
+                                               process_threads=cnst.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
+    else:
+        logging.error("Registration type not recognized")
+        exit(1)
+
     logging.info('****************************************************************************************************')
-    logging.info('                                       STARTING FALCON                                              ')
+    logging.info('                                       STARTING FALCON V.01                                             ')
     logging.info('****************************************************************************************************')
     start = timeit.default_timer()
     fop.display_logo()
@@ -110,6 +127,15 @@ if __name__ == "__main__":
     logging.info(' ')
     logging.info('SANITY CHECKS AND DATA PREPARATION')
     logging.info('-----------------------------------')
+    logging.info(' ')
+    if njobs > 1:
+        logging.info(f"Based on the available RAM and available threads, FALCON will run in parallel with {njobs} jobs "
+                     f"at a time")
+        print(f"Based on the available RAM and available threads, FALCON will run in parallel with {njobs} jobs at a "
+              f"time")
+    else:
+        logging.info("Due to the available RAM and available threads, FALCON will run in serial")
+        print("Due to the available RAM and available threads, FALCON will run in serial")
 
     # -----------------------------------SANITY CHECKS AND DATA-PREPARATION---------------------------------------------
 
@@ -118,7 +144,7 @@ if __name__ == "__main__":
     # Check if the nifti files are 3d or 4d
 
     nifti_files = fop.get_files(nifti_dir, '*nii*')
-
+    split3d_folder = []
     if len(nifti_files) == 1:
         logging.info(f"Number of nifti files: {len(nifti_files)}")
         img_dimensions = imageOp.get_dimensions(nifti_files[0])
@@ -134,12 +160,20 @@ if __name__ == "__main__":
         logging.info('Multiple nifti files found, assuming we have 3d nifti files!')
         split3d_folder = nifti_dir
         logging.info(f"PET files to motion correct are stored here: {split3d_folder}")
+    else:
+        split3d_folder = []
+        logging.error('No nifti files found: Cannot perform motion correction!')
+        exit(1)
+
     logging.info(' ')
 
     # Motion correction starts here
-
     logging.info('MOTION CORRECTION')
+    print('')
+    print("Motion correction starts here")
+    print()
     logging.info('--------------------')
+    logging.info('Resampling parameters - Images: Linear interpolation  | Segmentations: Nearest neighbor ')
     non_moco_files = fop.get_files(split3d_folder, '*nii*')
     logging.info(f"Number of files to motion correct: {len(non_moco_files) - 1}")
     moco_dir = fop.make_dir(split3d_folder, 'moco')
@@ -151,12 +185,11 @@ if __name__ == "__main__":
     if alignment_strategy == 'fixed':
         logging.info(f"Alignment strategy: {alignment_strategy}")
         logging.info(f"Reference image (is fixed): {reference_img}")
+        moving_imgs = []
         for y in range(start_frame, len(non_moco_files) - 1):
-            greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[y],
-                                registration_type=registration, multi_resolution_iterations=multi_resolution_iterations)
-            moving_img_filename = pathlib.Path(non_moco_files[y]).name
-            greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[y], resampled_moving_img=os.path.join(
-                moco_dir, 'moco-' + moving_img_filename), registration_type=registration)
+            moving_imgs.append(non_moco_files[y])
+        greedy.align(fixed_img=reference_img, moving_imgs=moving_imgs, registration_type=registration,
+                     multi_resolution_iterations=multi_resolution_iterations, njobs=njobs, moco_dir=moco_dir)
         if start_frame != 0:
             for x in range(0, start_frame):
                 fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
@@ -190,5 +223,7 @@ if __name__ == "__main__":
     stop = timeit.default_timer()
     logging.info(' ')
     logging.info('MOTION CORRECTION DONE!')
+    print('MOTION CORRECTION DONE!')
     logging.info(f"Total time taken for motion correction: {(stop - start) / 60:.2f} minutes")
+    print(f"Total time taken for motion correction: {(stop - start) / 60:.2f} minutes")
     logging.info(' ')

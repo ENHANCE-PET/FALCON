@@ -2,3 +2,9 @@ halo==0.0.31
 SimpleITK==2.1.1
 pandas~=1.4.0
 nibabel~=3.2.2
+tqdm~=4.63.1
+argparse~=1.4.0
+imageio~=2.16.1
+psutil~=5.9.0
+mpire~=2.3.3
+pyfiglet~=0.8.post1

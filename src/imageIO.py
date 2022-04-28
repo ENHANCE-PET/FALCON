@@ -20,6 +20,7 @@ import logging
 import os
 import pathlib
 import re
+import subprocess
 import sys
 
 import nibabel as nib
@@ -94,9 +95,9 @@ def dcm2nii(dicom_dir: str) -> None:
     """
     cmd_to_run = f"dcm2niix {re.escape(dicom_dir)}"
     logging.info(f"Converting DICOM images in {dicom_dir} to NIFTI")
-    spinner = Halo(text=f"Running command: {cmd_to_run}", spinner='dots')
+    spinner = Halo(text=f"Converting DICOM images in {dicom_dir} to NIFTI", spinner='dots')
     spinner.start()
-    os.system(cmd_to_run)
+    subprocess.run(cmd_to_run, shell=True, capture_output=True)
     spinner.succeed()
     logging.info("Done")
 
@@ -107,12 +108,15 @@ def split4d(nifti_file: str, out_dir: str) -> None:
     :param out_dir: Directory to save the split NIFTI files
     """
     logging.info(f"Splitting {nifti_file} into 3D nifti files")
+    spinner = Halo(text=f"Splitting {nifti_file} into 3D nifti files", spinner='dots')
+    spinner.start()
     split_nifti_files = nib.funcs.four_to_three(nib.funcs.squeeze_image(nib.load(nifti_file)))
     i = 0
     for file in split_nifti_files:
         nib.save(file, os.path.join(out_dir, 'vol' + str(i).zfill(4) + '.nii.gz'))
         i += 1
     logging.info(f"Splitting done and split files are saved in {out_dir}")
+    spinner.succeed()
 
 
 def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
