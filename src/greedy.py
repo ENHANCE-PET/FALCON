@@ -40,7 +40,8 @@ def rigid(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_
     moving_img_filename = pathlib.Path(moving_img).name
     rigid_transform_file = os.path.join(out_dir, f"{moving_img_filename}_rigid.mat")
     cmd_to_run = f"greedy -d 3 -a -i " \
-                 f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o {rigid_transform_file} -n " \
+                 f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o " \
+                 f"{re.escape(rigid_transform_file)} -n " \
                  f"{multi_resolution_iterations} " \
                  f"-m {cost_function}"
     subprocess.run(cmd_to_run, shell=True, capture_output=True)
@@ -65,7 +66,7 @@ def affine(fixed_img: str, moving_img: str, cost_function: str, multi_resolution
     moving_img_filename = pathlib.Path(moving_img).name
     affine_transform_file = os.path.join(out_dir, f"{moving_img_filename}_affine.mat")
     cmd_to_run = f"greedy -d 3 -a -i {re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 12 -o " \
-                 f"{affine_transform_file} -n " \
+                 f"{re.escape(affine_transform_file)} -n " \
                  f"{multi_resolution_iterations} " \
                  f"-m {cost_function} "
     subprocess.run(cmd_to_run, shell=True, capture_output=True)
@@ -93,9 +94,9 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str, multi_resolu
     inverse_warp_file = os.path.join(out_dir, f"{moving_img_filename}_inverse_warp.nii.gz")
     affine_transform_file = affine(fixed_img, moving_img, cost_function, multi_resolution_iterations)
     cmd_to_run = f"greedy -d 3 -m {cost_function} -i {re.escape(fixed_img)} {re.escape(moving_img)} -it " \
-                 f"{affine_transform_file} -o " \
-                 f"{warp_file} -oinv " \
-                 f"{inverse_warp_file} -n {multi_resolution_iterations}"
+                 f"{re.escape(affine_transform_file)} -o " \
+                 f"{re.escape(warp_file)} -oinv " \
+                 f"{re.escape(inverse_warp_file)} -n {multi_resolution_iterations}"
     subprocess.run(cmd_to_run, shell=True, capture_output=True)
     logging.info(f"Deformable alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned "
                  f"image: moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial "
