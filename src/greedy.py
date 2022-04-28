@@ -22,61 +22,63 @@ import logging
 import os
 import pathlib
 import re
+import subprocess
 import sys
 
+from mpire import WorkerPool
 
-def rigid(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> None:
+
+def rigid(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> str:
     """ Performs rigid registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
     :param moving_img: Moving image
     :param cost_function: Cost function
     :param multi_resolution_iterations: Amount of iterations for each resolution level
-    :return none
+    :return str
     """
-    logging.info(" ")
+    out_dir = pathlib.Path(moving_img).parent
+    moving_img_filename = pathlib.Path(moving_img).name
+    rigid_transform_file = os.path.join(out_dir, f"{moving_img_filename}_rigid.mat")
     cmd_to_run = f"greedy -d 3 -a -i " \
-                 f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o rigid.mat -n " \
+                 f"{re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 6 -o {rigid_transform_file} -n " \
                  f"{multi_resolution_iterations} " \
                  f"-m {cost_function}"
-    logging.info(f"Registration type: Rigid")
-    logging.info(f"Reference image: {re.escape(fixed_img)}")
-    logging.info(f"Moving image: {re.escape(moving_img)}")
-    logging.info(f"Cost function: {cost_function}")
-    logging.info(f"Initial alignment: Image centers")
-    logging.info(f"Multi-resolution level iterations: {multi_resolution_iterations}")
-    logging.info(f"Transform file generated: rigid.mat")
-    logging.info(" ")
-    os.system(cmd_to_run)
-    print("Rigid registration complete")
+    subprocess.run(cmd_to_run, shell=True, capture_output=True)
+    logging.info(f"Aligning: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned image: "
+                 f"moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial alignment: Image "
+                 f"centers | Transform file: {pathlib.Path(rigid_transform_file).name}")
+    print(f"Rigid alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned image: moco-"
+          f"{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial alignment: Image centers | "
+          f"Transform file: {pathlib.Path(rigid_transform_file).name}")
+    return rigid_transform_file
 
 
-def affine(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> None:
+def affine(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> str:
     """ Performs affine registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
     :param moving_img: Moving image
     :param cost_function: Cost function
     :param multi_resolution_iterations: Amount of iterations for each resolution level
-
-    :return none
+    :return str : Path of the Affine transform file generated
     """
-    logging.info(" ")
+    out_dir = pathlib.Path(moving_img).parent
+    moving_img_filename = pathlib.Path(moving_img).name
+    affine_transform_file = os.path.join(out_dir, f"{moving_img_filename}_affine.mat")
     cmd_to_run = f"greedy -d 3 -a -i {re.escape(fixed_img)} {re.escape(moving_img)} -ia-image-centers -dof 12 -o " \
-                 f"affine.mat -n " \
+                 f"{affine_transform_file} -n " \
                  f"{multi_resolution_iterations} " \
                  f"-m {cost_function} "
-    logging.info(f"- Registration type: Affine")
-    logging.info(f"- Reference image: {re.escape(fixed_img)}")
-    logging.info(f"- Moving image: {re.escape(moving_img)}")
-    logging.info(f"- Cost function: {cost_function}")
-    logging.info(f"- Initial alignment: Image centers")
-    logging.info(f"- Multi-resolution level iterations: {multi_resolution_iterations}")
-    logging.info(f"- Transform file generated: affine.mat")
-    logging.info(" ")
-    os.system(cmd_to_run)
-    print("Affine registration complete")
+    subprocess.run(cmd_to_run, shell=True, capture_output=True)
+    logging.info(f"Affine alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned "
+                 f"image: moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial alignment: "
+                 f"Image centers | Transform file: {pathlib.Path(affine_transform_file).name}")
+    print(f"Affine alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned image: moco-"
+          f"{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial alignment: Image centers | "
+          f"Transform file: {pathlib.Path(affine_transform_file).name}")
+    return affine_transform_file
 
 
-def deformable(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> None:
+def deformable(fixed_img: str, moving_img: str, cost_function: str, multi_resolution_iterations: str) -> tuple:
     """
     Performs deformable registration between a fixed and moving image using the greedy registration toolkit.
     :param fixed_img: Reference image
@@ -85,23 +87,23 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str, multi_resolu
     :param multi_resolution_iterations: Amount of iterations for each resolution level
     :return:
     """
-    logging.info(" ")
-    logging.info("Performing affine registration for initial global alignment")
-    affine(fixed_img, moving_img, cost_function, multi_resolution_iterations)
-    cmd_to_run = f"greedy -d 3 -m {cost_function} -i {re.escape(fixed_img)} {re.escape(moving_img)} -it affine.mat -o " \
-                 f"warp.nii.gz -oinv " \
-                 f"inverse_warp.nii.gz -n {multi_resolution_iterations}"
-    logging.info("Performing deformable registration for local alignment")
-    logging.info(f"- Registration type: deformable")
-    logging.info(f"- Reference image: {re.escape(fixed_img)}")
-    logging.info(f"- Moving image: {re.escape(moving_img)}")
-    logging.info(f"- Cost function: {cost_function}")
-    logging.info(f"- Initial alignment: based on affine.mat")
-    logging.info(f"- Multiresolution level iterations: {multi_resolution_iterations}")
-    logging.info(f"- Deformation field generated: warp.nii.gz + inverse_warp.nii.gz")
-    logging.info(' ')
-    os.system(cmd_to_run)
-    print("Deformable registration complete")
+    out_dir = pathlib.Path(moving_img).parent
+    moving_img_filename = pathlib.Path(moving_img).name
+    warp_file = os.path.join(out_dir, f"{moving_img_filename}_warp.nii.gz")
+    inverse_warp_file = os.path.join(out_dir, f"{moving_img_filename}_inverse_warp.nii.gz")
+    affine_transform_file = affine(fixed_img, moving_img, cost_function, multi_resolution_iterations)
+    cmd_to_run = f"greedy -d 3 -m {cost_function} -i {re.escape(fixed_img)} {re.escape(moving_img)} -it " \
+                 f"{affine_transform_file} -o " \
+                 f"{warp_file} -oinv " \
+                 f"{inverse_warp_file} -n {multi_resolution_iterations}"
+    subprocess.run(cmd_to_run, shell=True, capture_output=True)
+    logging.info(f"Deformable alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned "
+                 f"image: moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial "
+                 f"alignment:Image centers | warp file: {pathlib.Path(warp_file)}")
+    print(f"Deformable alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned image: "
+          f"moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial alignment:Image centers | "
+          f"warp file: {pathlib.Path(warp_file).name}")
+    return affine_transform_file, warp_file, inverse_warp_file
 
 
 def registration(fixed_img: str, moving_img: str, registration_type: str, multi_resolution_iterations: str) -> None:
@@ -113,11 +115,6 @@ def registration(fixed_img: str, moving_img: str, registration_type: str, multi_
     :param multi_resolution_iterations: Amount of iterations for each resolution level
     :return: None
     """
-    logging.info(" ")
-    logging.info("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
-    logging.info(f"Aligning: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name}")
-    logging.info(f"Registration mode: {registration_type}")
-    logging.info("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
     if registration_type == 'rigid':
         rigid(fixed_img, moving_img, cost_function='NMI', multi_resolution_iterations=multi_resolution_iterations)
     elif registration_type == 'affine':
@@ -141,40 +138,72 @@ def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registr
     :param resampled_seg: Resampled mask image
     :return: None
     """
+    moving_img_file = pathlib.Path(moving_img).name
+    out_dir = pathlib.Path(moving_img).parent
     if registration_type == 'rigid':
+        rigid_transform_file = os.path.join(out_dir, f"{moving_img_file}_rigid.mat")
         if segmentation and resampled_seg:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
-                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r rigid.mat"
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r {rigid_transform_file}"
         else:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
-                         f"{re.escape(resampled_moving_img)} -r rigid.mat "
+                         f"{re.escape(resampled_moving_img)} -r {rigid_transform_file} "
     elif registration_type == 'affine':
+        affine_transform_file = os.path.join(out_dir, f"{moving_img_file}_affine.mat")
         if segmentation and resampled_seg:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
-                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r affine.mat"
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r {affine_transform_file}"
         else:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
-                         f"{re.escape(resampled_moving_img)} -r affine.mat"
+                         f"{re.escape(resampled_moving_img)} -r {affine_transform_file}"
     elif registration_type == 'deformable':
+        warp_file = os.path.join(out_dir, f"{moving_img_file}_warp.nii.gz")
+        affine_transform_file = os.path.join(out_dir, f"{moving_img_file}_affine.mat")
         if segmentation and resampled_seg:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
-                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r warp.nii.gz affine.mat"
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r {warp_file} " \
+                         f"{affine_transform_file}"
         else:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
-                         f"{re.escape(resampled_moving_img)} -r warp.nii.gz " \
-                         f"affine.mat"
+                         f"{re.escape(resampled_moving_img)} -r {warp_file} " \
+                         f"{affine_transform_file}"
     else:
         sys.exit("Registration type not supported!")
-    os.system(cmd_to_run)
-    logging.info(f"Resampling parameters:")
-    logging.info(f"- Reference image: {re.escape(fixed_img)}")
-    logging.info(f"- Moving image: {re.escape(moving_img)}")
-    logging.info(f"- Resampled moving image: {resampled_moving_img}")
-    logging.info(f"- Segmentation: {segmentation}")
-    logging.info(f"- Resampled segmentation: {resampled_seg}")
-    logging.info(f"- Interpolation scheme for resampling: Linear interpolation for images and nearest neighbor for "
-                 f"segmentations")
-    logging.info(' ')
+    subprocess.run(cmd_to_run, shell=True, capture_output=True)
+
+
+def align(fixed_img: str, moving_imgs: list, registration_type: str, multi_resolution_iterations: str, njobs: int,
+          moco_dir: str) -> None:
+    """
+    Aligns the images in the moving_imgs list to a fixed image.
+    :param moco_dir: Directory where the output files will be saved
+    :param fixed_img: Path to the fixed image
+    :param moving_imgs: List of paths to the moving images
+    :param registration_type: Type of registration to be performed
+    :param multi_resolution_iterations: Number of iterations for multi-resolution
+    :param njobs: Number of jobs to run in parallel
+    :return:
+    """
+    logging.info(f"Aligning images...")
+    with WorkerPool(n_jobs=njobs, shared_objects=(fixed_img, registration_type, multi_resolution_iterations, moco_dir),
+                    start_method='fork', ) as pool:
+        pool.map(align_mp, moving_imgs, progress_bar=False)
+
+
+def align_mp(align_param: tuple, moving_img: str) -> None:
+    """
+    Aligns a single image to a fixed image.
+    :param align_param: Tuple containing the fixed image, the registration type, the number of iterations and the
+    output directory
+    :param moving_img: Path to the moving image
+    :return:
+    """
+    reference_img, registration_type, multi_resolution_iterations, moco_dir = align_param
+    registration(fixed_img=reference_img, moving_img=moving_img,
+                 registration_type=registration_type, multi_resolution_iterations=multi_resolution_iterations)
+    moving_img_filename = pathlib.Path(moving_img).name
+    resample(fixed_img=reference_img, moving_img=moving_img, resampled_moving_img=os.path.join(
+        moco_dir, 'moco-' + moving_img_filename), registration_type=registration_type)
