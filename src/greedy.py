@@ -100,9 +100,9 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str, multi_resolu
     subprocess.run(cmd_to_run, shell=True, capture_output=True)
     logging.info(f"Deformable alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned "
                  f"image: moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial "
-                 f"alignment:Image centers | warp file: {pathlib.Path(warp_file)}")
+                 f"alignment:{pathlib.Path(affine_transform_file).name} | warp file: {pathlib.Path(warp_file).name}")
     print(f"Deformable alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned image: "
-          f"moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial alignment:Image centers | "
+          f"moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial alignment:{pathlib.Path(affine_transform_file).name} | "
           f"warp file: {pathlib.Path(warp_file).name}")
     return affine_transform_file, warp_file, inverse_warp_file
 
@@ -146,31 +146,33 @@ def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registr
         if segmentation and resampled_seg:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
-                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r {rigid_transform_file}"
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r " \
+                         f"{re.escape(rigid_transform_file)}"
         else:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
-                         f"{re.escape(resampled_moving_img)} -r {rigid_transform_file} "
+                         f"{re.escape(resampled_moving_img)} -r {re.escape(rigid_transform_file)} "
     elif registration_type == 'affine':
         affine_transform_file = os.path.join(out_dir, f"{moving_img_file}_affine.mat")
         if segmentation and resampled_seg:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
-                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r {affine_transform_file}"
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r " \
+                         f"{re.escape(affine_transform_file)}"
         else:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
-                         f"{re.escape(resampled_moving_img)} -r {affine_transform_file}"
+                         f"{re.escape(resampled_moving_img)} -r {re.escape(affine_transform_file)}"
     elif registration_type == 'deformable':
         warp_file = os.path.join(out_dir, f"{moving_img_file}_warp.nii.gz")
         affine_transform_file = os.path.join(out_dir, f"{moving_img_file}_affine.mat")
         if segmentation and resampled_seg:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -ri LABEL " \
-                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r {warp_file} " \
-                         f"{affine_transform_file}"
+                         f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r {re.escape(warp_file)} " \
+                         f"{re.escape(affine_transform_file)}"
         else:
             cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
-                         f"{re.escape(resampled_moving_img)} -r {warp_file} " \
-                         f"{affine_transform_file}"
+                         f"{re.escape(resampled_moving_img)} -r {re.escape(warp_file)} " \
+                         f"{re.escape(affine_transform_file)}"
     else:
         sys.exit("Registration type not supported!")
     subprocess.run(cmd_to_run, shell=True, capture_output=True)
