@@ -15,6 +15,7 @@
 # License: Apache 2.0
 # **********************************************************************************************************************
 
+# Imported Libraries
 
 import argparse
 import logging
@@ -22,6 +23,7 @@ import os
 import pathlib
 import timeit
 from datetime import datetime
+
 import checkArgs
 import constants as cnst
 import fileOp as fop
@@ -30,9 +32,13 @@ import imageIO
 import imageOp
 import sysUtil as su
 
+# Initialize Logger
+
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
-                    filename= datetime.now().strftime('falcon-%H-%M-%d-%m-%Y.log'),
+                    filename=datetime.now().strftime('falcon-%H-%M-%d-%m-%Y.log'),
                     filemode='w')
+
+# Main Function for FALCON Registration script
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -59,14 +65,6 @@ if __name__ == "__main__":
         help="Type of registration: rigid | affine | deformable"
     )
     parser.add_argument(
-        "-a",
-        "--alignment_strategy",
-        type=str,
-        choices=['fixed', 'rolling'],
-        default='fixed',
-        help="Type of alignment: fixed | rolling"
-    )
-    parser.add_argument(
         "-i",
         "--multi_resolution_iterations",
         type=str,
@@ -74,6 +72,8 @@ if __name__ == "__main__":
         help="Number of iterations for each resolution level"
     )
     args = parser.parse_args()
+
+    # Capture inputs and check if the input arguments are valid
 
     working_dir = args.main_folder
     if not checkArgs.dir_exists(working_dir):
@@ -88,7 +88,6 @@ if __name__ == "__main__":
         exit(1)
 
     registration = args.registration
-    alignment_strategy = args.alignment_strategy
 
     multi_resolution_iterations = args.multi_resolution_iterations
     if checkArgs.is_string_alpha(checkArgs.remove_char(multi_resolution_iterations, 'x')):
@@ -97,22 +96,26 @@ if __name__ == "__main__":
         exit(1)
 
     # Figure out the number of jobs that can be run in parallel
-    njobs = 1
+
+    num_jobs = 1
     if registration.__eq__('rigid'):
-        njobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_RIGID,
-                                               process_threads=cnst.MINIMUM_THREADS_REQUIRED_RIGID)
+        num_jobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_RIGID,
+                                                  process_threads=cnst.MINIMUM_THREADS_REQUIRED_RIGID)
     elif registration.__eq__('affine'):
-        njobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_AFFINE,
-                                               process_threads=cnst.MINIMUM_THREADS_REQUIRED_AFFINE)
+        num_jobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_AFFINE,
+                                                  process_threads=cnst.MINIMUM_THREADS_REQUIRED_AFFINE)
     elif registration.__eq__('deformable'):
-        njobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_DEFORMABLE,
-                                               process_threads=cnst.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
+        num_jobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_DEFORMABLE,
+                                                  process_threads=cnst.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
     else:
         logging.error("Registration type not recognized")
         exit(1)
 
+    # Start the registration process by performing data checks and then calling the registration function
+
     logging.info('****************************************************************************************************')
-    logging.info('                                       STARTING FALCON V.01                                             ')
+    logging.info(
+        '                                       STARTING FALCON V.01                                             ')
     logging.info('****************************************************************************************************')
     start = timeit.default_timer()
     fop.display_logo()
@@ -122,22 +125,21 @@ if __name__ == "__main__":
     logging.info(' - Working directory: ' + working_dir)
     logging.info(' - Starting frame: ' + str(start_frame))
     logging.info(' - Registration type: ' + registration)
-    logging.info(' - Alignment strategy: ' + alignment_strategy)
     logging.info(' - Multi-resolution iterations: ' + multi_resolution_iterations)
     logging.info(' ')
     logging.info('SANITY CHECKS AND DATA PREPARATION')
     logging.info('-----------------------------------')
     logging.info(' ')
-    if njobs > 1:
-        logging.info(f"Based on the available RAM and available threads, FALCON will run in parallel with {njobs} jobs "
-                     f"at a time")
-        print(f"Based on the available RAM and available threads, FALCON will run in parallel with {njobs} jobs at a "
-              f"time")
+    if num_jobs > 1:
+        logging.info(
+            f"Based on the available RAM and available threads, FALCON will run in parallel with {num_jobs} jobs "
+            f"at a time")
+        print(
+            f"Based on the available RAM and available threads, FALCON will run in parallel with {num_jobs} jobs at a "
+            f"time")
     else:
         logging.info("Due to the available RAM and available threads, FALCON will run in serial")
         print("Due to the available RAM and available threads, FALCON will run in serial")
-
-    # -----------------------------------SANITY CHECKS AND DATA-PREPARATION---------------------------------------------
 
     nifti_dir, input_image_type = imageIO.convert_all_non_nifti(working_dir)
 
@@ -168,9 +170,10 @@ if __name__ == "__main__":
     logging.info(' ')
 
     # Motion correction starts here
+
     logging.info('MOTION CORRECTION')
     print('')
-    print("Motion correction starts here")
+    print("Initiating motion correction...")
     print()
     logging.info('--------------------')
     logging.info('Resampling parameters - Images: Linear interpolation  | Segmentations: Nearest neighbor ')
@@ -182,44 +185,31 @@ if __name__ == "__main__":
     fixed_img_filename = pathlib.Path(non_moco_files[-1]).name
     os.rename(fixed_img_filename, 'moco-' + fixed_img_filename)
     reference_img = fop.get_files(moco_dir, '*nii*')[0]
-    if alignment_strategy == 'fixed':
-        logging.info(f"Alignment strategy: {alignment_strategy}")
-        logging.info(f"Reference image (is fixed): {reference_img}")
-        moving_imgs = []
-        for y in range(start_frame, len(non_moco_files) - 1):
-            moving_imgs.append(non_moco_files[y])
-        greedy.align(fixed_img=reference_img, moving_imgs=moving_imgs, registration_type=registration,
-                     multi_resolution_iterations=multi_resolution_iterations, njobs=njobs, moco_dir=moco_dir)
-        if start_frame != 0:
-            for x in range(0, start_frame):
-                fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
-                logging.info(f"Copying files {pathlib.Path(non_moco_files[x]).name} to {moco_dir}")
-                print(f"Copying files {pathlib.Path(non_moco_files[x]).name} to {moco_dir}")
-                os.chdir(moco_dir)
-                os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
-        else:
-            logging.info('No files to copy! Motion correction is being performed from first frame.')
-            print('Motion correction is being performed from first frame...')
-    elif alignment_strategy == 'rolling':
-        logging.info(f"Alignment strategy: {alignment_strategy}")
-        for x in range(len(non_moco_files) - 2, start_frame, -1):
-            logging.info(f"Reference image (is rolling): {reference_img}")
-            greedy.registration(fixed_img=reference_img, moving_img=non_moco_files[x],
-                                registration_type=registration, multi_resolution_iterations=multi_resolution_iterations)
-            moving_img_filename = pathlib.Path(non_moco_files[x]).name
-            greedy.resample(fixed_img=reference_img, moving_img=non_moco_files[x], resampled_moving_img=os.path.join(
-                moco_dir, 'moco-' + moving_img_filename), registration_type=registration)
-            reference_img = os.path.join(moco_dir, 'moco-' + moving_img_filename)
-        for x in range(0, start_frame + 1):
+
+    # Parallelized alignment based on the resources available: Reference image is always the last file in the list
+
+    logging.info(f"Reference image (is fixed): {reference_img}")
+    moving_imgs = []
+    for y in range(start_frame, len(non_moco_files) - 1):
+        moving_imgs.append(non_moco_files[y])
+    greedy.align(fixed_img=reference_img, moving_imgs=moving_imgs, registration_type=registration,
+                 multi_resolution_iterations=multi_resolution_iterations, njobs=num_jobs, moco_dir=moco_dir)
+    if start_frame != 0:
+        for x in range(0, start_frame):
             fop.copy_files(split3d_folder, moco_dir, pathlib.Path(non_moco_files[x]).name)
+            logging.info(f"Copying files {pathlib.Path(non_moco_files[x]).name} to {moco_dir}")
+            print(f"Copying files {pathlib.Path(non_moco_files[x]).name} to {moco_dir}")
             os.chdir(moco_dir)
             os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
+    else:
+        logging.info('No files to copy! Motion correction is being performed from first frame.')
+        print('Motion correction is being performed from first frame...')
 
     # Merge the split 3d motion corrected file into a single 4d file using fsl.
 
     imageIO.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
-    logging.info(f"Merged 3d motion corrected files into a single 4d file: {moco_dir}/4d-moco.nii.gz")
-    print(f"Merged 3d motion corrected files into a single 4d file: {moco_dir}/4d-moco.nii.gz")
+    logging.info(f"Merged 3d motion corrected files into a single 4d file: {os.path.join(moco_dir,'4d-moco.nii.gz')}")
+    print(f"Merged 3d motion corrected files into a single 4d file: {os.path.join(moco_dir,'4d-moco.nii.gz')}")
     stop = timeit.default_timer()
     logging.info(' ')
     logging.info('MOTION CORRECTION DONE!')
