@@ -208,8 +208,29 @@ if __name__ == "__main__":
     # Merge the split 3d motion corrected file into a single 4d file using fsl.
 
     imageIO.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
-    logging.info(f"Merged 3d motion corrected files into a single 4d file: {os.path.join(moco_dir,'4d-moco.nii.gz')}")
-    print(f"Merged 3d motion corrected files into a single 4d file: {os.path.join(moco_dir,'4d-moco.nii.gz')}")
+    logging.info(f"Merged 3d motion corrected files into a single 4d file: {os.path.join(moco_dir, '4d-moco.nii.gz')}")
+    print(f"Merged 3d motion corrected files into a single 4d file: {os.path.join(moco_dir, '4d-moco.nii.gz')}")
+
+    # Clean up measures: Moving the generated transform files to the 'transform' folder for subsequent use.
+
+    transform_dir = fop.make_dir(moco_dir, 'transform')
+    if registration == 'rigid':
+        fop.move_files(src_dir=split3d_folder, dest_dir=transform_dir, wildcard='*rigid*.mat')
+        logging.info(f"Moved rigid transform files to {transform_dir}")
+        print(f"Moved rigid transform files to {transform_dir}")
+    elif registration == 'affine':
+        fop.move_files(src_dir=split3d_folder, dest_dir=transform_dir, wildcard='*affine*.mat')
+        logging.info(f"Moved affine transform files to {transform_dir}")
+        print(f"Moved affine transform files to {transform_dir}")
+    elif registration == 'deformable':
+        fop.move_files(src_dir=split3d_folder, dest_dir=transform_dir, wildcard='*affine*.mat')
+        fop.move_files(src_dir=split3d_folder, dest_dir=transform_dir, wildcard='*warp*.nii.gz')
+        logging.info(f"Moved deformable warp files to {transform_dir}")
+        print(f"Moved deformable warp files to {transform_dir}")
+    else:
+        logging.info('No transform files to move!')
+        print('No transform files to move!')
+
     stop = timeit.default_timer()
     logging.info(' ')
     logging.info('MOTION CORRECTION DONE!')
