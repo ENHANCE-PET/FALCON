@@ -140,7 +140,9 @@ if __name__ == "__main__":
     else:
         logging.info("Due to the available RAM and available threads, FALCON will run in serial")
         print("Due to the available RAM and available threads, FALCON will run in serial")
-
+    logging.info(' ')
+    
+    
     nifti_dir, input_image_type = imageIO.convert_all_non_nifti(working_dir)
 
     # Check if the nifti files are 3d or 4d
@@ -203,6 +205,7 @@ if __name__ == "__main__":
             os.rename(pathlib.Path(non_moco_files[x]).name, 'moco-' + pathlib.Path(non_moco_files[x]).name)
     else:
         logging.info('No files to copy! Motion correction is being performed from first frame.')
+        print(' ')
         print('Motion correction is being performed from first frame...')
 
     # Merge the split 3d motion corrected file into a single 4d file using fsl.
