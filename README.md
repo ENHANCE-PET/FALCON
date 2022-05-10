@@ -5,17 +5,25 @@ FALCON (Fast algorithms for motion correction) is a python wrapper program for p
 
 ## 🗂 Required folder structure 
 
-```falcon``` just requires only the dynamic PET images of a subject, once the path is set (along with the minimalistic arguments), it takes care of the rest. The output folders that will be created by the script itself are highlighted using CAPS. 
+```falcon``` just requires only the dynamic PET images of a subject, once the path is set (along with the minimalistic arguments), it takes care of the rest. 
+
+**Expected folder structure:**
 
 ```bash
-├── dynamic_pet_data                                               # The mother folder that contain the dynamic pet image to motion correct 
-    ├── XXX.dcm or XXX.ima or XXX.mha or XXX.nii.gz or XXX.img/hdr # The input images can be DICOM/Nifti/Analyze/Metaimage (can be single 4d or multiple 3d files) 
-    ├── NIFTI                                                      # Auto-generated   
-        ├── SPLIT3D                                                # Auto-generated     
-            ├── MOCO                                               # Auto-generated     
-                ├── 4d-moco.nii.gz                                 # Auto-generated     
+
+└── PET_WB_DYNAMIC_(QC)_0005  # Main folder containing the dynamic PET images to motion correct
+    └── XXX.dcm or XXX.ima or XXX.mha or XXX.nii.gz or XXX.img/hdr # The input images can be DICOM/Nifti/Analyze/Metaimage (can be single 4d or multiple 3d files) 
         
-        
+```
+**Folder structure after running FALCON:**
+
+```bash
+└── PET_WB_DYNAMIC_(QC)_0005 # Main folder containing the dynamic PET images to motion correct
+    └── XX.dcm or XXX.ima or XXX.mha # Input images to motion correct
+    └── nifti # If the input images are non-nifti, they will be converted to nifti and will be stored here
+        └── split3d # The 4d-nifti file will be split into 3d nifti files and stored here for easy processing
+            └── moco # All the motion corrected images will be stored here. 
+                └── transform # All the rigid/affine (*.mat) files and (*warp.nii.gz) files will be stored here.
 ```
 
 ## ⛔️ Hard requirements 
