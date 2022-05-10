@@ -1,3 +1,10 @@
 /falcon.log
 /src/falcon.log
 !/FALCON-files/
+!/FALCON-files/
+!/FALCON-files/bin/c3d
+
+!/FALCON-files/bin/fslinstaller.py
+
+!/FALCON-files/bin/greedy
+!/FALCON-files/bin/
