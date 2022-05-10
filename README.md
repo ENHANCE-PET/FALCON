@@ -7,15 +7,16 @@ FALCON (Fast algorithms for motion correction) is a python wrapper program for p
 
 ```falcon``` just requires only the dynamic PET images of a subject, once the path is set (along with the minimalistic arguments), it takes care of the rest. 
 
-**Expected folder structure:**
-
 ```bash
 
 └── PET_WB_DYNAMIC_(QC)_0005  # Main folder containing the dynamic PET images to motion correct
     └── XXX.dcm or XXX.ima or XXX.mha or XXX.nii.gz or XXX.img/hdr # The input images can be DICOM/Nifti/Analyze/Metaimage (can be single 4d or multiple 3d files) 
         
 ```
-**Folder structure after running FALCON:**
+## 📈 Results
+
+As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.gz). Currently work is being done to convert the motion corrected images to their respective formats. The motion corrected images will be stored in dynamic_pet_folder/nifti/split3d/moco. 
+
 
 ```bash
 └── PET_WB_DYNAMIC_(QC)_0005 # Main folder containing the dynamic PET images to motion correct
@@ -23,7 +24,31 @@ FALCON (Fast algorithms for motion correction) is a python wrapper program for p
     └── nifti # If the input images are non-nifti, they will be converted to nifti and will be stored here
         └── split3d # The 4d-nifti file will be split into 3d nifti files and stored here for easy processing
             └── moco # All the motion corrected images will be stored here. 
+                ├── 4d-moco.nii.gz # Motion corrected images combined to a single 4d-image.
+                ├── moco-vol0000.nii.gz # Individual motion corrected images are found here.
+                ├── moco-vol0001.nii.gz
+                ├── moco-vol0002.nii.gz
+                ├── .
+                ├── .
+                ├── .
+                ├── moco-vol000x.nii.gz
                 └── transform # All the rigid/affine (*.mat) files and (*warp.nii.gz) files will be stored here.
+                    ├── vol0000.nii.gz_affine.mat
+                    ├── vol0000.nii.gz_inverse_warp.nii.gz
+                    ├── vol0000.nii.gz_warp.nii.gz
+                    ├── vol0001.nii.gz_affine.mat
+                    ├── vol0001.nii.gz_inverse_warp.nii.gz
+                    ├── vol0001.nii.gz_warp.nii.gz
+                    ├── vol0002.nii.gz_affine.mat
+                    ├── vol0002.nii.gz_inverse_warp.nii.gz
+                    ├── vol0002.nii.gz_warp.nii.gz
+                    ├── .
+                    ├── .
+                    ├── .
+                    ├── vol000x.nii.gz_affine.mat
+                    ├── vol000x.nii.gz_inverse_warp.nii.gz
+                    └── vol000x.nii.gz_warp.nii.gz
+
 ```
 
 ## ⛔️ Hard requirements 
@@ -46,14 +71,11 @@ Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a
 ```bash
 
 #syntax:
-falcon -m path_to_4d_images -s frame_from_which_moco_needs_to_start -r rigid_affine_or_deformable -a fixed_or_rolling -i multilevel_iterations
+falcon -m path_to_4d_images -r rigid_affine_or_deformable -i multilevel_iterations -s frame_from_which_moco_needs_to_start
 
 #example: 
-falcon -m /Documents/Sub001 -s 3 -r deformable -a fixed -i 100x25x10
+falcon -m /Documents/Sub001 -r deformable -a fixed -i 100x25x10 -s 3
 
 #help: 
 falcon --help
 ```
-## 📈 Results
-
-As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.gz). Currently work is being done to convert the motion corrected images to their respective formats. The motion corrected images will be stored in dynamic_pet_folder/nifti/split3d/moco.
