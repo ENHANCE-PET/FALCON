@@ -3,6 +3,8 @@
 ## 🦅 About FALCON
 FALCON (Fast algorithms for motion correction) is a python wrapper program for performing PET motion correction (both head and total-body). We have used the fast 'greedy' registration toolkit as the registration engine and built our program around it.
 
+![](https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_Story_Gif.GIF)
+
 ## 🗂 Required folder structure 
 
 ```falcon``` just requires only the dynamic PET images of a subject, once the path is set (along with the minimalistic arguments), it takes care of the rest. 
