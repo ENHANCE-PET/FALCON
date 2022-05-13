@@ -1,4 +1,4 @@
-<img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_Story_Gif.GIF" width="100" height="100">
+<img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_Story_Gif.GIF" width="400" height="400">
 
 
 ## 🦅 About FALCON
