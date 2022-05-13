@@ -1,4 +1,4 @@
-![](https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_Story_Gif.GIF)
+<img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_Story_Gif.GIF" width="100" height="100">
 
 
 ## 🦅 About FALCON
