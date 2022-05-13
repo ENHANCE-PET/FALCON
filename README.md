@@ -5,7 +5,7 @@
 <p align="center">
 <img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_Story_Gif.GIF" width="400" height="400">
 </p>
-Storyboard made by Vivian Tseng: https://www.instagram.com/tsengiiii/ 
+
 FALCON (Fast algorithms for motion correction) is a python wrapper program for performing PET motion correction (both head and total-body). We have used the fast 'greedy' registration toolkit as the registration engine and built our program around it.
 
 
@@ -86,3 +86,7 @@ falcon -m /Documents/Sub001 -r deformable -a fixed -i 100x25x10 -s 3
 #help: 
 falcon --help
 ```
+## Acknowledgement
+The storyboard for FALCON was made by Vivian Tseng from the University of Applied Arts Vienna. You can follow her work at https://www.instagram.com/tsengiiii/ 
+
+
