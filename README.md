@@ -86,7 +86,7 @@ falcon -m /Documents/Sub001 -r deformable -a fixed -i 100x25x10 -s 3
 #help: 
 falcon --help
 ```
-## Acknowledgement
-The storyboard for FALCON was made by Vivian Tseng from the University of Applied Arts Vienna. You can follow her work at https://www.instagram.com/tsengiiii/ 
+## 🙏🏽 Acknowledgements
+This research is supported through an IBM University Cloud Award (https://www.research.ibm.com/university/). The storyboard for FALCON was made by Vivian Tseng from the University of Applied Arts Vienna. You can follow her work at https://www.instagram.com/tsengiiii/ 
 
 
