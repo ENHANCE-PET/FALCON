@@ -6,7 +6,7 @@
 <img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_Story_Gif.GIF" width="400" height="400">
 </p>
 
-FALCON (Fast algorithms for motion correction) is a python wrapper program for performing image-based PET motion correction (both head and total-body). It uses diffemorphisms (almost inverse consistent) to align dynamic PET images. 
+FALCON (Fast algorithms for motion correction) is a python wrapper program for the greedy binaries to perform image-based PET motion correction (both head and total-body). It uses diffemorphisms that are almost inverse consistent to rapidly align dynamic PET images. 
 
 
 ## 🗂 Required folder structure 
