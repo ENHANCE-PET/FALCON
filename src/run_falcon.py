@@ -216,7 +216,7 @@ if __name__ == "__main__":
 
     # Clean up measures: Moving the generated transform files to the 'transform' folder for subsequent use.
 
-    transform_dir = fop.make_dir(moco_dir, 'transform')
+    transform_dir = fop.make_dir(moco_dir, 'transforms')
     if registration == 'rigid':
         fop.move_files(src_dir=split3d_folder, dest_dir=transform_dir, wildcard='*rigid*.mat')
         logging.info(f"Moved rigid transform files to {transform_dir}")
