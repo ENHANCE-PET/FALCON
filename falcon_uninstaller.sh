@@ -13,7 +13,7 @@
 # **********************************************************************************************************************
 
 
-echo "[1] Initiating falcon removal protocols..."
+echo "[1] Uninstalling Falcon v0.1.0"
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     echo "[2] Linux detected..."
@@ -22,6 +22,8 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     echo "[4] Removing supporting binaries..."
     sudo rm /usr/local/bin/c3d
     sudo rm /usr/local/bin/greedy
+    echo "[5] Removing python dependencies"
+    pip uninstall -r requirements.txt
     # shellcheck disable=SC2006
     falcon_dir=`pwd`
     echo "[5] Removing falcon folder from $falcon_dir..."

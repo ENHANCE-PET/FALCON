@@ -1,5 +1,5 @@
 halo==0.0.31
-SimpleITK==2.1.1
+SimpleITK~=2.1.1
 pandas~=1.4.0
 nibabel~=3.2.2
 tqdm~=4.63.1
