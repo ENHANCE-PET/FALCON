@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon-logo.png" width="300">
+<img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon-logo.png">
 </p>
 
 ## 🦅 About FALCON
