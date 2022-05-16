@@ -1,4 +1,6 @@
-![falcon-01](Images/falcon-01.png)
+<p align="center">
+<img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon-logo.png">
+</p>
 
 ## 🦅 About FALCON
 
