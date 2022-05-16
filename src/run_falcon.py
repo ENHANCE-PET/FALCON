@@ -154,6 +154,8 @@ if __name__ == "__main__":
         img_dimensions = imageOp.get_dimensions(nifti_files[0])
         if img_dimensions == 3:
             logging.error('Single 3d nifti file found: Cannot perform motion correction!')
+            print('Single 3d nifti file found: Cannot perform motion correction!')
+            exit(1)
         elif img_dimensions == 4:
             logging.info('Type of nifti file : 4d')
             imageIO.split4d(nifti_files[0], nifti_dir)
