@@ -12,6 +12,9 @@
 # License: Apache 2.0
 # **********************************************************************************************************************
 
+echo '******************************************************************************************************************'
+echo '                                           Initiating FALCON v0.1.0 installation                                         '
+echo '******************************************************************************************************************'
 
 echo '[1] Downloading required files IBM cloud storage...'
 # Check if the OS is Mac or Linux and change subsequent commands accordingly
@@ -21,25 +24,9 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         sudo apt install git
         sudo apt update
         sudo apt install python3-pip
-        sudo apt install cmake-curses-gui
-        
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        brew install wget
-        wget "https://falcon.s3.eu-de.cloud-object-storage.appdomain.cloud/FALCON-files.zip"  
-        brew install pkg-config
-        brew install git
-elif [[ "$OSTYPE" == "msys" ]]; then
-        echo 'MSYS is not supported'
-        exit 1
-elif [[ "$OSTYPE" == "win32" ]]; then
-        echo 'Windows is not supported'
-        exit 1
-elif [[ "$OSTYPE" == "freebsd"* ]]; then
-        echo 'FreeBSD is not supported'
-        exit 1
+        sudo apt install cmake-curses-gui        
 else
-        echo 'Unknown OS'
+        echo 'Unsupported OS'
         exit 1
 fi
 
@@ -77,22 +64,5 @@ echo '[7] Adding falcon to path...'
 sudo chmod +x "$falcon_src"
 sudo ln -s "$falcon_src" $root_path/'falcon'
 
-
-#echo '[9] Building ITK from source...'
-#git clone https://github.com/InsightSoftwareConsortium/ITK.git
-# shellcheck disable=SC2164
-#mkdir ITK-build && cd ITK-build
-#ccmake ../ITK
-#sudo make -j20
-#sudo make install
-
-#echo '[10] Building nii2dcm from source...'
-#git clone https://github.com/Keyn34/nii2dcm.git
-# shellcheck disable=SC2164
-#cd nii2dcm
-# shellcheck disable=SC2164
-#cmake .
-#sudo make
-#sudo ln -s "$falcon_bin"/'nii2dcm'/'nii2dcm' $root_path/'nii2dcm'
 echo '[8] Finished installing FALCON!'
 
