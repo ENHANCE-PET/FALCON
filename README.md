@@ -59,7 +59,10 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 
 ## ⛔️ Hard requirements 
 
-The entire program has been *ONLY* tested on **Ubuntu linux OS and Mac OS** and with **Python version >= 3.8**
+The software has only been tested on Ubuntu 20.04.4 LTS.
+
+- Python version >= 3.8
+
 There are no special hardware requirements for running falcon. Just remember that the speed of ```falcon``` increases with the number of CPU cores, as greedy registration library effectively uses all the available cores.
 
 ## ⚙️ Installation
