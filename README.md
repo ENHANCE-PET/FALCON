@@ -5,7 +5,7 @@
 ## 🦅 About FALCON
 <p align="center">
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_story_darkmode.GIF" width="500" height="500">
-  <img alt="Shows an illustrated storyboard in light color mode and an inverted storyboard in dark color mode." src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_Story_Gif.GIF" width="500" height="500">
+  <img alt="Shows an illustrated storyboard in light color mode and an inverted storyboard in dark color mode." src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_story_darkmode.GIF" width="500" height="500">
 </p>
 
 
