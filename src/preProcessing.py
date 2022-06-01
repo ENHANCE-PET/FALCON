@@ -18,6 +18,7 @@ import subprocess
 import os
 import SimpleITK as sitk
 import fileOp as fop
+import constants as c
 import mpire
 
 
@@ -104,7 +105,7 @@ def find_start_frame(folder: str) -> int:
     # blur and resample the reference frame
     file_index_reference = len(files) - 1
     reference_image = os.path.join(folder, files[file_index_reference])
-    reference_image_resampled = downsample_image(reference_image, pyramid_path, 4)
+    reference_image_resampled = downsample_image(reference_image, pyramid_path, c.SHRINK_LEVEL_4x)
 
     # get threshold from MIs of original files
     sample_stop = len(files)
@@ -126,7 +127,7 @@ def find_start_frame(folder: str) -> int:
     for file_index in range(len(files)):
         current_image = os.path.join(folder, files[file_index])
         # Blur and resample the frame to investigate
-        current_image_resampled = downsample_image(current_image, pyramid_path, 4)
+        current_image_resampled = downsample_image(current_image, pyramid_path, c.SHRINK_LEVEL_4x)
 
         # Compute MI
         current_MI = compute_MI(reference_image_resampled, current_image_resampled)
