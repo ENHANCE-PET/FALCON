@@ -18,3 +18,10 @@ MINIMUM_RAM_REQUIRED_DEFORMABLE = 32  # in GB
 MINIMUM_THREADS_REQUIRED_RIGID = 4  # in number of threads
 MINIMUM_THREADS_REQUIRED_AFFINE = 8  # in number of threads
 MINIMUM_THREADS_REQUIRED_DEFORMABLE = 16  # in number of threads
+
+# Shrink levels supported:
+SHRINK_LEVEL_2x = 2
+SHRINK_LEVEL_4x = 4
+SHRINK_LEVEL_8x = 8
+
+MI_REFERENCE_PERCENTAGE = 0.8 # in percent, only 20% of the original pet files will be used for reference MI calculation

@@ -6,8 +6,8 @@
 # File: preProcessing.py
 # Project: FALCON
 # Created: 30.05.2022
-# Author: Lalith Kumar Shiyam Sundar
-# Email: lalith.shiyamsundar@meduniwien.ac.at
+# Author: Sebastian Gutschmayer, M.Sc. | Lalith Kumar Shiyam Sundar Ph.D.
+# Email: Sebastian.Gutschmayer@meduniwien.ac.at | lalith.shiyamsundar@meduniwien.ac.at
 # Institute: Quantitative Imaging and Medical Physics, Medical University of Vienna
 # Description: Library for preprocessing operations such as determining starting frame in a 4D series based on MI.
 # License: Apache 2.0
@@ -18,39 +18,37 @@ import subprocess
 import os
 import SimpleITK as sitk
 import fileOp as fop
+from mpire import WorkerPool
+import constants as c
+from statistics import mean
 
 
-def blur_image_c3d(input_image: str, output_image: str, shrink_factor: int) -> None:
+def downscale_image(downscale_param: tuple, input_image: str) -> str:
     """
-    Blurs an image with a shrink factor parameter based kernel
-    :param input_image: path to input image
-    :param output_image: path to output image
-    :param shrink_factor: kernel modifier
+    Downscales an image based on the shrink factor and writes it to the output directory
+    :param downscale_param: output_dir (str), shrink_factor (int) packed in a tuple
+    :param input_image: input image to downscale
+    :return: path to downscaled image
     """
+    output_dir, shrink_factor = downscale_param
+    input_image_name = os.path.basename(input_image)
+    # Blur the input image first
+    input_image_blurred = os.path.join(output_dir, f"{shrink_factor}x_blurred_{input_image_name}")
     gauss_variance = (shrink_factor / 2) ** 2
     gauss_variance = int(gauss_variance)
-    cmd_to_smooth = f"c3d {input_image} " \
-                    f"-smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox " \
-                    f"-o {output_image}"
+    cmd_to_smooth = f"c3d {input_image} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
+                    f" {input_image_blurred} "
     subprocess.run(cmd_to_smooth, shell=True, capture_output=True)
-
-
-def resample_image_c3d(input_image: str, output_image: str, shrink_factor: int) -> None:
-    """
-    Resamples an image based on a shrink factor
-    :param input_image: path to input image
-    :param output_image: path to output image
-    :param shrink_factor: kernel modifier
-    """
+    # Resample the smoothed input image later
+    input_image_downscaled = os.path.join(output_dir, f"{shrink_factor}x_downscaled_{input_image_name}")
     shrink_percentage = str(int(100 / shrink_factor))
-    cmd_to_run = f"c3d {input_image} " \
-                 f"-resample {shrink_percentage}x{shrink_percentage}x{shrink_percentage}% " \
-                 f"-o {output_image}"
+    cmd_to_downscale = f"c3d {input_image_blurred} -resample {shrink_percentage}x{shrink_percentage}x" \
+                       f"{shrink_percentage}% -o {input_image_downscaled}"
+    subprocess.run(cmd_to_downscale, shell=True, capture_output=True)
+    return input_image_downscaled
 
-    subprocess.run(cmd_to_run, shell=True, capture_output=True)
 
-
-def computeMI(image1: str, image2: str) -> float:
+def compute_mi(image1: str, image2: str) -> float:
     """
     Compares two images and computes their mutual information
     :param image1: first image of image pair to compare
@@ -58,70 +56,46 @@ def computeMI(image1: str, image2: str) -> float:
     :return: Computed mutual information as float
     :rtype: float
     """
-    # SimpleITK
-    img1 = sitk.ReadImage(image1)
-    img2 = sitk.ReadImage(image2)
+    sitk_img1 = sitk.ReadImage(image1)
+    sitk_img2 = sitk.ReadImage(image2)
     registration_method = sitk.ImageRegistrationMethod()
     registration_method.SetMetricAsMattesMutualInformation()
-    MI = registration_method.MetricEvaluate(img1, img2)
-    return MI
+    mi = abs(registration_method.MetricEvaluate(sitk_img1, sitk_img2))
+    return mi
 
 
-def determine_starting_frame_by_threshold(folder: str) -> int:
+def determine_starting_frame(pet_files: list, njobs) -> int:
     """
-    Determines the starting frame of a 4D series by a thresholding approach.
-    :param folder: Folder where multiple 3D volumes of a 4D series are located.
-    :return: Index of starting frame
+    Determines the starting frame of a 4D PET series from which motion correction can be performed by using mutual
+    information.
+    :param pet_files: list of 3D PET files
+    :param njobs: number of jobs to run in parallel
+    :return:  Index of the starting frame from which motion correction can be performed
     :rtype: int
     """
 
-    # get files
-    files = fop.get_files(folder, "*.nii*")
+    pet_folder = os.path.dirname(pet_files[0])
 
-    # create pyramid folder to dump images to
-    pyramid_path = os.path.join(folder, "pyramid")
-    if not os.path.exists(pyramid_path):
-        os.mkdir(pyramid_path)
+    # Create the folder to dump the gaussian pyramid images
+    pyramid_dir = fop.make_dir(pet_folder, "pyramid")
 
-    # blur and resample the reference frame
-    file_index_reference = len(files) - 1
-    reference_image = os.path.join(folder, files[file_index_reference])
-    reference_image_blurred = os.path.join(pyramid_path, f"blurred_{files[file_index_reference]}")
-    blur_image_c3d(reference_image, reference_image_blurred, 4)
-    reference_image_resampled = os.path.join(pyramid_path, f"resampled_{files[file_index_reference]}")
-    resample_image_c3d(reference_image_blurred, reference_image_resampled, 4)
+    # Downscale the 3d pet files to a lower resolution (1/4x)
 
-    # get threshold from MIs of original files
-    sample_size = 4
-    sample_stop = len(files)
-    sample_start = sample_stop - sample_size
-    print(f"Computing threshold between file {files[sample_start]} and {files[sample_stop - 1]}")
+    with WorkerPool(n_jobs=njobs, shared_objects=(pyramid_dir, c.SHRINK_LEVEL_4x),
+                    start_method='fork', ) as pool:
+        pool.map(downscale_image, pet_files, progress_bar=False)
 
-    # calculate the reference MI
-    reference_MI_sum = 0
-    for sample_index in range(sample_start, sample_stop):
-        current_image = os.path.join(folder, files[sample_index])
-        current_MI = computeMI(reference_image, current_image)
-        reference_MI_sum = reference_MI_sum + current_MI
-    MI_threshold = reference_MI_sum / sample_size
-    print(f"MI threshold: {MI_threshold}")
+    # Compute mutual information between the last 20% of the original PET images and the last frame.
 
-    # search for starting frame
-    starting_frame = 0
-    for file_index in range(len(files)):
-        current_image = os.path.join(folder, files[file_index])
-        # Blur and resample the frame to investigate
-        current_image_blurred = os.path.join(pyramid_path, f"blurred_{files[file_index]}")
-        blur_image_c3d(current_image, current_image_blurred, 4)
-        current_image_resampled = os.path.join(pyramid_path, f"resampled_{files[file_index]}")
-        resample_image_c3d(current_image_blurred, current_image_resampled, 4)
+    mi_list = []
+    for i in range(int(len(pet_files) * c.MI_REFERENCE_PERCENTAGE), len(pet_files) - 1):
+        mi_list.append(compute_mi(pet_files[i], pet_files[-1]))
+    mi_threshold = mean(mi_list)
 
-        # Compute MI
-        current_MI = computeMI(reference_image_resampled, current_image_resampled)
+    # Find the starting frame from which motion correction can be performed
 
-        if current_MI < MI_threshold:
-            starting_frame = file_index
-            print(f"Threshold: Starting frame found at index {starting_frame}, file {files[starting_frame]}")
-            break
+    downscaled_pet_files = fop.get_files(pyramid_dir, "*downscaled*nii*")
 
-    return starting_frame
+    for i in range(len(downscaled_pet_files) - 1):
+        if compute_mi(downscaled_pet_files[i], downscaled_pet_files[-1]) > mi_threshold:
+            return i
