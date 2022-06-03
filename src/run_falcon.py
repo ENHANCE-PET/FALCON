@@ -25,12 +25,13 @@ import timeit
 from datetime import datetime
 
 import checkArgs
-import constants as cnst
+import constants as c
 import fileOp as fop
 import greedy
 import imageIO
 import imageOp
 import sysUtil as su
+import preProcessing as pp
 
 # Initialize Logger
 
@@ -99,14 +100,14 @@ if __name__ == "__main__":
 
     num_jobs = 1
     if registration.__eq__('rigid'):
-        num_jobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_RIGID,
-                                                  process_threads=cnst.MINIMUM_THREADS_REQUIRED_RIGID)
+        num_jobs = su.get_number_of_possible_jobs(process_memory=c.MINIMUM_RAM_REQUIRED_RIGID,
+                                                  process_threads=c.MINIMUM_THREADS_REQUIRED_RIGID)
     elif registration.__eq__('affine'):
-        num_jobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_AFFINE,
-                                                  process_threads=cnst.MINIMUM_THREADS_REQUIRED_AFFINE)
+        num_jobs = su.get_number_of_possible_jobs(process_memory=c.MINIMUM_RAM_REQUIRED_AFFINE,
+                                                  process_threads=c.MINIMUM_THREADS_REQUIRED_AFFINE)
     elif registration.__eq__('deformable'):
-        num_jobs = su.get_number_of_possible_jobs(process_memory=cnst.MINIMUM_RAM_REQUIRED_DEFORMABLE,
-                                                  process_threads=cnst.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
+        num_jobs = su.get_number_of_possible_jobs(process_memory=c.MINIMUM_RAM_REQUIRED_DEFORMABLE,
+                                                  process_threads=c.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
     else:
         logging.error("Registration type not recognized")
         exit(1)
@@ -123,13 +124,13 @@ if __name__ == "__main__":
     logging.info('INPUT ARGUMENTS')
     logging.info('-----------------')
     logging.info(' - Working directory: ' + working_dir)
-    logging.info(' - Starting frame: ' + str(start_frame))
     logging.info(' - Registration type: ' + registration)
     logging.info(' - Multi-resolution iterations: ' + multi_resolution_iterations)
     logging.info(' ')
     logging.info('SANITY CHECKS AND DATA PREPARATION')
     logging.info('-----------------------------------')
     logging.info(' ')
+    print(' ')
     if num_jobs > 1:
         logging.info(
             f"Based on the available RAM and available threads, FALCON will run in parallel with {num_jobs} jobs "
@@ -141,8 +142,7 @@ if __name__ == "__main__":
         logging.info("Due to the available RAM and available threads, FALCON will run in serial")
         print("Due to the available RAM and available threads, FALCON will run in serial")
     logging.info(' ')
-    
-    
+    print(' ')
     nifti_dir, input_image_type = imageIO.convert_all_non_nifti(working_dir)
 
     # Check if the nifti files are 3d or 4d
@@ -182,7 +182,19 @@ if __name__ == "__main__":
     logging.info('--------------------')
     logging.info('Resampling parameters - Images: Linear interpolation  | Segmentations: Nearest neighbor ')
     non_moco_files = fop.get_files(split3d_folder, '*nii*')
-    logging.info(f"Number of files to motion correct: {len(non_moco_files) - 1}")
+
+    # Determine the start frame from which motion correction needs to be performed.
+    if start_frame == 0:
+        logging.info('Starting frame not provided by user! Calculating the starting frame from which motion correction'
+                     ' can be performed')
+        print('Starting frame not provided by user! Calculating the starting frame from which motion correction can be '
+              'performed')
+        start_frame = pp.determine_starting_frame(pet_files=non_moco_files, njobs=num_jobs)
+        logging.info(f'Starting frame index: {start_frame}')
+        print(f'Starting frame index: {start_frame}')
+    else:
+        logging.info(f'Starting frame index: {start_frame}')
+    print(' ')
     moco_dir = fop.make_dir(split3d_folder, 'moco')
     fop.copy_files(split3d_folder, moco_dir, non_moco_files[-1])
     os.chdir(moco_dir)
