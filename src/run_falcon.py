@@ -30,8 +30,8 @@ import fileOp as fop
 import greedy
 import imageIO
 import imageOp
-import sysUtil as su
 import preProcessing as pp
+import sysUtil as su
 
 # Initialize Logger
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         "-s",
         "--start_frame",
         type=int,
-        default=0,
+        default=99,
         help="frame from which the motion correction will be performed"
     )
     parser.add_argument(
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     non_moco_files = fop.get_files(split3d_folder, '*nii*')
 
     # Determine the start frame from which motion correction needs to be performed.
-    if start_frame == 0:
+    if start_frame == 99:
         logging.info('Starting frame not provided by user! Calculating the starting frame from which motion correction'
                      ' can be performed')
         print('Starting frame not provided by user! Calculating the starting frame from which motion correction can be '
