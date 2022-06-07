@@ -12,8 +12,7 @@
 # Description: Library for preprocessing operations such as determining starting frame in a 4D series based on MI.
 # License: Apache 2.0
 # **********************************************************************************************************************
-
-
+import logging
 import os
 import re
 import subprocess
@@ -84,7 +83,7 @@ def determine_starting_frame(pet_files: list, njobs) -> int:
     pyramid_dir = fop.make_dir(pet_folder, "pyramid")
 
     # Downscale the 3d pet files to a lower resolution (1/4x)
-
+    logging.info(f"Constructing pyramid in {pyramid_dir}!")
     spinner = Halo(text=f"Constructing pyramid in {pyramid_dir}", spinner='dots')
     spinner.start()
     with WorkerPool(n_jobs=njobs, shared_objects=(pyramid_dir, c.SHRINK_LEVEL_4x),
