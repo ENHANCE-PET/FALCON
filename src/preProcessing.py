@@ -14,13 +14,17 @@
 # **********************************************************************************************************************
 
 
-import subprocess
 import os
-import SimpleITK as sitk
-import fileOp as fop
-from mpire import WorkerPool
-import constants as c
+import re
+import subprocess
 from statistics import mean
+
+import SimpleITK as sitk
+from halo import Halo
+from mpire import WorkerPool
+
+import constants as c
+import fileOp as fop
 
 
 def downscale_image(downscale_param: tuple, input_image: str) -> str:
@@ -36,14 +40,14 @@ def downscale_image(downscale_param: tuple, input_image: str) -> str:
     input_image_blurred = os.path.join(output_dir, f"{shrink_factor}x_blurred_{input_image_name}")
     gauss_variance = (shrink_factor / 2) ** 2
     gauss_variance = int(gauss_variance)
-    cmd_to_smooth = f"c3d {input_image} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
-                    f" {input_image_blurred} "
+    cmd_to_smooth = f"c3d {re.escape(input_image)} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
+                    f" {re.escape(input_image_blurred)} "
     subprocess.run(cmd_to_smooth, shell=True, capture_output=True)
     # Resample the smoothed input image later
     input_image_downscaled = os.path.join(output_dir, f"{shrink_factor}x_downscaled_{input_image_name}")
     shrink_percentage = str(int(100 / shrink_factor))
-    cmd_to_downscale = f"c3d {input_image_blurred} -resample {shrink_percentage}x{shrink_percentage}x" \
-                       f"{shrink_percentage}% -o {input_image_downscaled}"
+    cmd_to_downscale = f"c3d {re.escape(input_image_blurred)} -resample {shrink_percentage}x{shrink_percentage}x" \
+                       f"{shrink_percentage}% -o {re.escape(input_image_downscaled)}"
     subprocess.run(cmd_to_downscale, shell=True, capture_output=True)
     return input_image_downscaled
 
@@ -81,9 +85,12 @@ def determine_starting_frame(pet_files: list, njobs) -> int:
 
     # Downscale the 3d pet files to a lower resolution (1/4x)
 
+    spinner = Halo(text=f"Constructing pyramid in {pyramid_dir}", spinner='dots')
+    spinner.start()
     with WorkerPool(n_jobs=njobs, shared_objects=(pyramid_dir, c.SHRINK_LEVEL_4x),
                     start_method='fork', ) as pool:
         pool.map(downscale_image, pet_files, progress_bar=False)
+    spinner.succeed()
 
     # Compute mutual information between the last 20% of the original PET images and the last frame.
 
