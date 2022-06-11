@@ -32,6 +32,7 @@ import imageIO
 import imageOp
 import preProcessing as pp
 import sysUtil as su
+from halo import Halo
 
 # Initialize Logger
 
@@ -244,6 +245,16 @@ if __name__ == "__main__":
         fop.move_files(src_dir=split3d_folder, dest_dir=transform_dir, wildcard='*warp*.nii.gz')
         logging.info(f"Moved deformable warp files to {transform_dir}")
         print(f"Moved deformable warp files to {transform_dir}")
+        logging.info(f"Removing deformations outside the body of the image")
+        print(f"Removing deformations outside the body of the image")
+        warp_files = fop.get_files(transform_dir, '*warp*.nii.gz')
+        moco_file_4d = fop.get_files(moco_dir, '4d-moco.nii.gz')[0]
+        imageOp.get_body_mask(moco_file_4d, os.path.join(transform_dir, 'body_mask.nii.gz'))
+        spinner = Halo(text=f"Cleaning warp files in {transform_dir}", spinner='dots')
+        spinner.start()
+        for warp_file in warp_files:
+            imageOp.mask_img(warp_file, os.path.join(transform_dir, 'body_mask.nii.gz'), warp_file)
+        spinner.succeed(text=f"Finished cleaning warp files in {transform_dir}")
     else:
         logging.info('No transform files to move!')
         print('No transform files to move!')
