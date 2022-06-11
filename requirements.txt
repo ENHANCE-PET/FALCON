@@ -9,3 +9,5 @@ psutil~=5.9.0
 mpire~=2.3.3
 pyfiglet~=0.8.post1
 natsort~=8.1.0
+
+nilearn~=0.9.1

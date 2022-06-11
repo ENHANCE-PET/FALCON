@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import SimpleITK
+
 # ***********************************************************************************************************************
 # File: imageOP.py
 # Project: falcon
@@ -14,7 +14,12 @@ import SimpleITK
 # registration.
 # License: Apache 2.0
 # **********************************************************************************************************************
+import subprocess
+
+import nibabel
 import pandas as pd
+import SimpleITK
+from nilearn.input_data import NiftiMasker
 
 
 def get_dimensions(nifti_file: str) -> int:
@@ -55,3 +60,28 @@ def get_intensity_statistics(nifti_file: str, multi_label_file: str) -> object:
     stats_df = pd.DataFrame(data=stats_list, index=intensity_statistics.GetLabels(), columns=columns)
     return stats_df
 
+
+def get_body_mask(nifti_file: str, mask_file: str) -> str:
+    """
+    Get time activity curves from a 4d nifti file
+    :param nifti_file: 4d nifti file to get the time activity curves from
+    :param mask_file: Name of the mask file that is derived from the 4d nifti file.
+    :return: path of the mask file
+    """
+    nifti_masker = NiftiMasker(mask_strategy='epi', memory="nilearn_cache", memory_level=2, smoothing_fwhm=8)
+    nifti_masker.fit(nifti_file)
+    nibabel.save(nifti_masker.mask_img_, mask_file)
+    return mask_file
+
+
+def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
+    """
+    Mask a NIFTI image file with a mask file
+    :param nifti_file: NIFTI file to mask
+    :param mask_file: Mask file to mask the nifti_file with
+    :param masked_file: Name of the masked file
+    :return: path of the masked nifti file
+    """
+    cmd_to_run = f"c3d {nifti_file} {mask_file} -multiply -o {masked_file}"
+    subprocess.run(cmd_to_run, shell=True, capture_output=True)
+    return masked_file
