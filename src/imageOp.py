@@ -16,9 +16,9 @@
 # **********************************************************************************************************************
 import subprocess
 
+import SimpleITK
 import nibabel
 import pandas as pd
-import SimpleITK
 from nilearn.input_data import NiftiMasker
 
 
