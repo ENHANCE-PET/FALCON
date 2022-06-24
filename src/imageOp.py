@@ -82,6 +82,10 @@ def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
     :param masked_file: Name of the masked file
     :return: path of the masked nifti file
     """
-    cmd_to_run = f"c3d {nifti_file} {mask_file} -multiply -o {masked_file}"
-    subprocess.run(cmd_to_run, shell=True, capture_output=True)
+    img = SimpleITK.ReadImage(nifti_file)
+    mask = SimpleITK.ReadImage(mask_file, SimpleITK.sitkFloat32)
+    masked_img = SimpleITK.Compose(
+        [SimpleITK.Multiply(SimpleITK.VectorIndexSelectionCast(img, i), mask) for i in
+         range(img.GetNumberOfComponentsPerPixel())])
+    SimpleITK.WriteImage(masked_img, masked_file)
     return masked_file
