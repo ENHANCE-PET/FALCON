@@ -103,7 +103,7 @@ def dcm2nii(dicom_dir: str) -> None:
 
 
 def split4d(nifti_file: str, out_dir: str) -> None:
-    """Split a 4D NIFTI file into 3D NIFTI files using fslsplit
+    """Split a 4D NIFTI file into 3D NIFTI files using nibabel
     :param nifti_file: 4D NIFTI file to split
     :param out_dir: Directory to save the split NIFTI files
     """
@@ -121,7 +121,7 @@ def split4d(nifti_file: str, out_dir: str) -> None:
 
 def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     """
-    Merge 3D NIFTI files into a 4D NIFTI file using fslmerge
+    Merge 3D NIFTI files into a 4D NIFTI file using nibabel
     :param nifti_dir: Directory containing the 3D NIFTI files
     :param wild_card: Wildcard to use to find the 3D NIFTI files
     :param nifti_outfile: User-defined output file name for the 4D NIFTI file
