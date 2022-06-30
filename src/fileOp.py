@@ -33,6 +33,14 @@ def display_logo():
     result = pyfiglet.figlet_format("Falcon v0.1", font="speed")
     print(result)
 
+def display_citation():
+    """
+    Display manuscript citation
+    :return:
+    """
+    print(" L. K. Shiyam Sundar et al. “Fully-automated motion correction of dynamic total-body [18F]FDG PET/CT images using greedy diffeomorphisms, To be submitted: JNM 2022")
+    print(" Copyright 2022, Quantitative Imaging and Medical Physics Team, Medical University of Vienna")
+
 
 def get_folders(dir_path: str) -> list:
     """
