@@ -87,5 +87,5 @@ def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
     masked_img = SimpleITK.Compose(
         [SimpleITK.Multiply(SimpleITK.VectorIndexSelectionCast(img, i), mask) for i in
          range(img.GetNumberOfComponentsPerPixel())])
-    SimpleITK.WriteImage(masked_img, masked_file)
+    SimpleITK.WriteImage(SimpleITK.Cast(masked_img, SimpleITK.sitkVectorFloat32), masked_file)
     return masked_file
