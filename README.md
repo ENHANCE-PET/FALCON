@@ -11,6 +11,38 @@
 
 FALCON (Fast algorithms for motion correction) is a python wrapper program for the ITK based 'greedy' diffeomorphism registration binaries (LDDMM and Sym Diff Demons) to perform image-based PET motion correction (both head and total-body). It uses diffemorphisms that are almost inverse consistent to rapidly align dynamic PET images. 
 
+## ⛔️ Hard requirements 
+
+The software has only been tested on Ubuntu 20.04.4 LTS.
+
+- Python version >= 3.8
+
+There are no special hardware requirements for running falcon. Just remember that the speed of ```falcon``` increases with the number of CPU cores, as greedy registration library effectively uses all the available cores.
+
+## ⚙️ Installation
+
+As of now ```falcon``` only works on mac and linux. The entire installation should take ~5-10 min. 
+```bash
+sudo git config --global url."https://".insteadOf git://
+git clone https://github.com/LalithShiyam/FALCON.git
+cd FALCON
+sudo bash falcon_installer.sh
+```
+## 🖥 Usage
+
+Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a single 4D image or multiple 3D images. Just point to the directory where the files resides and FALCON should ideally take care of the rest.
+
+```bash
+
+#syntax:
+falcon -m path_to_4d_images -r rigid_affine_or_deformable -i multilevel_iterations -s frame_from_which_moco_needs_to_start
+
+#example: 
+falcon -m /Documents/Sub001 -r deformable -a fixed -i 100x25x10 -s 3
+
+#help: 
+falcon --help
+```
 
 ## 🗂 Required folder structure 
 
@@ -60,38 +92,7 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 
 ```
 
-## ⛔️ Hard requirements 
 
-The software has only been tested on Ubuntu 20.04.4 LTS.
-
-- Python version >= 3.8
-
-There are no special hardware requirements for running falcon. Just remember that the speed of ```falcon``` increases with the number of CPU cores, as greedy registration library effectively uses all the available cores.
-
-## ⚙️ Installation
-
-As of now ```falcon``` only works on mac and linux. The entire installation should take ~5-10 min. 
-```bash
-sudo git config --global url."https://".insteadOf git://
-git clone https://github.com/LalithShiyam/FALCON.git
-cd FALCON
-sudo bash falcon_installer.sh
-```
-## 🖥 Usage
-
-Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a single 4D image or multiple 3D images. Just point to the directory where the files resides and FALCON should ideally take care of the rest.
-
-```bash
-
-#syntax:
-falcon -m path_to_4d_images -r rigid_affine_or_deformable -i multilevel_iterations -s frame_from_which_moco_needs_to_start
-
-#example: 
-falcon -m /Documents/Sub001 -r deformable -a fixed -i 100x25x10 -s 3
-
-#help: 
-falcon --help
-```
 ## 🙏🏽 Acknowledgements
 - This research is supported through an IBM University Cloud Award (https://www.research.ibm.com/university/). 
 - The storyboard for FALCON was made by Vivian Tseng from the University of Applied Arts Vienna. You can follow her work at https://www.instagram.com/tsengiiii/ 
