@@ -24,6 +24,7 @@ from mpire import WorkerPool
 
 import constants as c
 import fileOp as fop
+from skimage.metrics import structural_similarity as ssim
 
 
 def downscale_image(downscale_param: tuple, input_image: str) -> str:
@@ -50,6 +51,18 @@ def downscale_image(downscale_param: tuple, input_image: str) -> str:
     subprocess.run(cmd_to_downscale, shell=True, capture_output=True)
     return input_image_downscaled
 
+def compute_ssim(image1: str, image2: str) -> float:
+    """
+    Computes structural image similarity metric between two images
+    :param image1: Path of the first image
+    :param image2: Path of the second image
+    :return: SSIM metric as float
+    :rtype: float
+    """
+    image1_arr = sitk.GetArrayFromImage(sitk.ReadImage(image1))
+    image2_arr = sitk.GetArrayFromImage(sitk.ReadImage(image2))
+
+    return ssim(image1_arr, image2_arr)
 
 def compute_mi(image1: str, image2: str) -> float:
     """
