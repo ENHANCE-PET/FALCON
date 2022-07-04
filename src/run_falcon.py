@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # Capture inputs and check if the input arguments are valid
 
-    working_dir = args.main_folder
+    working_dir = os.path.abspath(args.main_folder)
     if not checkArgs.dir_exists(working_dir):
         logging.error("Main folder does not exist")
         print("Main folder does not exist")
