@@ -95,4 +95,4 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 
 ## 🙏🏽 Acknowledgements
 - This research is supported through an [IBM University Cloud Award](https://www.research.ibm.com/university/). 
-- The storyboard for FALCON was made by [Vivian Tseng](https://www.instagram.com/tsengiiii/) from the University of Applied Arts Vienna. 
+- The storyboard for `FALCON` was made by [Vivian Tseng](https://www.instagram.com/tsengiiii/) from the University of Applied Arts Vienna. 
