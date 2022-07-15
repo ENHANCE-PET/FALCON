@@ -9,7 +9,7 @@
 </p>
 
 
-FALCON (Fast algorithms for motion correction) is a python wrapper program for the ITK based 'greedy' diffeomorphism registration binaries (LDDMM and Sym Diff Demons) to perform image-based PET motion correction (both head and total-body). It uses diffemorphisms that are almost inverse consistent to rapidly align dynamic PET images. 
+`FALCON` (Fast algorithms for motion correction) is a python wrapper program for the ITK based 'greedy' diffeomorphism registration binaries (LDDMM and Sym Diff Demons) to perform image-based PET motion correction (both head and total-body). It uses diffemorphisms that are 'almost' inverse consistent to rapidly align dynamic PET images. 
 
 ## ⛔️ Hard requirements 
 
