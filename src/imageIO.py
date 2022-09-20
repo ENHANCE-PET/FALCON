@@ -22,9 +22,12 @@ import pathlib
 import re
 import subprocess
 import sys
-
+import SimpleITK as sitk
+import numpy as np 
 import nibabel as nib
 from halo import Halo
+from tqdm import tqdm
+import pydicom as dicom
 
 import fileOp as fop
 
@@ -221,3 +224,44 @@ def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str, new_dir=str)
     else:
         logging.info(f"Converting {nifti_file} to {org_image_fmt} format")
         nii2nondcm(nifti_file=nifti_file, new_img_type=org_image_fmt, new_dir=new_dir)
+        
+        
+ def push_nii_pixel_data_to_dcm(nifti_file: str, dicom_dir: str, out_dir: str) -> str:
+    """
+    Pushes the pixel data from a nifti file to the DICOM files in a directory. The DICOM tags are preserved while the
+    pixel data is replaced.
+    :param nifti_file: Path to the nifti file
+    :param dicom_dir: Path to the directory containing DICOM files
+    :param out_dir: Path to the output directory
+    :return out_dir: Path to the output directory
+    """
+    print("Reading nifti file as int16...")
+    nii_img = sitk.ReadImage(nifti_file, sitk.sitkInt16)
+    print("Flipping the nifti image to match the dicom orientation...")
+    nii_img = sitk.Flip(nii_img, [True, True, True])
+    nii_array = sitk.GetArrayFromImage(nii_img)
+    dicom_files = fOp.get_files(dicom_dir, "*.dcm")
+    # if dicom_files empty use different wildcard
+    if not dicom_files:
+        dicom_files = fOp.get_files(dicom_dir, "*.IMA")
+    if np.shape(nii_array)[0] != len(dicom_files):
+        raise Exception("Number of slices in nifti file and dicom directory do not match")
+
+    counter = 0
+    for dicom_file in tqdm(dicom_files):
+        dcm = dicom.read_file(dicom_file)
+        dicom_file_name = pathlib.Path(dicom_file).name
+        # inverse rescale slope and intercept
+        nii_array[counter, :, :] = np.subtract(nii_array[counter, :, :], int(dcm.RescaleIntercept))
+        nii_array[counter, :, :] = np.divide(nii_array[counter, :, :], int(dcm.RescaleSlope))
+        # push pixel data to dicom file as int16 stream
+        dcm['PixelData'].VR = 'OW'
+        dcm.PixelData = nii_array[counter, :, :].astype('uint16').tobytes()
+        dcm.save_as(os.path.join(out_dir, dicom_file_name))
+        counter += 1
+
+    print("Pushing pixel data to dicom files complete!")
+    print("Output DICOM directory: " + out_dir)
+
+    return out_dir
+
