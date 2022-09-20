@@ -240,10 +240,10 @@ def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str, new_dir=str)
     print("Flipping the nifti image to match the dicom orientation...")
     nii_img = sitk.Flip(nii_img, [True, True, True])
     nii_array = sitk.GetArrayFromImage(nii_img)
-    dicom_files = fOp.get_files(dicom_dir, "*.dcm")
+    dicom_files = fop.get_files(dicom_dir, "*.dcm")
     # if dicom_files empty use different wildcard
     if not dicom_files:
-        dicom_files = fOp.get_files(dicom_dir, "*.IMA")
+        dicom_files = fop.get_files(dicom_dir, "*.IMA")
     if np.shape(nii_array)[0] != len(dicom_files):
         raise Exception("Number of slices in nifti file and dicom directory do not match")
 
