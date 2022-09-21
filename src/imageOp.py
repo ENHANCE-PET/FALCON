@@ -89,3 +89,16 @@ def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
          range(img.GetNumberOfComponentsPerPixel())])
     SimpleITK.WriteImage(SimpleITK.Cast(masked_img, SimpleITK.sitkVectorFloat32), masked_file)
     return masked_file
+
+
+def reslice_identity(reference_image: str, image_to_reslice: str, out_resliced_image: str, interpolation: str) -> None:
+    """
+    Reslice an image to the same space as another image
+    :param reference_image: Path to the reference image to reslice to
+    :param image_to_reslice: Path to the image to reslice
+    :param out_resliced_image: Path to the resliced image
+    :param interpolation: Interpolation method to use (NearestNeighbor, Linear, Cubic)
+    """
+    cmd_to_run = f"c3d {reference_image} {image_to_reslice} -interpolation {interpolation} -reslice-identity -o" \
+                 f" {out_resliced_image}"
+    subprocess.run(cmd_to_run, shell=True, capture_output=True)
