@@ -38,12 +38,11 @@ Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a
 falcon -m path_to_4d_images -r <rigid | affine | deformable> -i <100x50x25> -s <0 | 1 | 2>
 
 #example: 
-
 falcon -m /Documents/Sub001 -r deformable -a fixed -i 100x25x10 -s 3
 
 #help: 
-
 falcon --help
+
 ```
 
 ## 🗂 Required folder structure 
