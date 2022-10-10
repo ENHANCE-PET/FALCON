@@ -21,7 +21,7 @@ There are no special hardware requirements for running falcon. Just remember tha
 
 ## ⚙️ Installation
 
-As of now ```falcon``` only works on mac and linux. The entire installation should take ~5-10 min. 
+As of now ```falcon``` only works on linux (Ubuntu). The entire installation should take ~5-10 min. 
 ```bash
 sudo git config --global url."https://".insteadOf git://
 git clone https://github.com/LalithShiyam/FALCON.git
