@@ -22,12 +22,13 @@ import pathlib
 import re
 import subprocess
 import sys
+
 import SimpleITK as sitk
-import numpy as np 
 import nibabel as nib
+import numpy as np
+import pydicom as dicom
 from halo import Halo
 from tqdm import tqdm
-import pydicom as dicom
 
 import fileOp as fop
 
@@ -224,9 +225,9 @@ def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str, new_dir=str)
     else:
         logging.info(f"Converting {nifti_file} to {org_image_fmt} format")
         nii2nondcm(nifti_file=nifti_file, new_img_type=org_image_fmt, new_dir=new_dir)
-        
-        
- def push_nii_pixel_data_to_dcm(nifti_file: str, dicom_dir: str, out_dir: str) -> str:
+
+
+def push_nii_pixel_data_to_dcm(nifti_file: str, dicom_dir: str, out_dir: str) -> str:
     """
     Pushes the pixel data from a nifti file to the DICOM files in a directory. The DICOM tags are preserved while the
     pixel data is replaced.
@@ -264,4 +265,3 @@ def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str, new_dir=str)
     print("Output DICOM directory: " + out_dir)
 
     return out_dir
-
