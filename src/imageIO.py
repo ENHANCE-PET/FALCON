@@ -23,7 +23,7 @@ import re
 import subprocess
 import sys
 import SimpleITK as sitk
-import numpy as np 
+import numpy as np
 import nibabel as nib
 from halo import Halo
 from tqdm import tqdm
@@ -92,9 +92,10 @@ def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str) -> None:
         logging.info("Done")
 
 
-def dcm2nii(dicom_dir: str) -> None:
+def dcm2nii(dicom_dir: str) -> str:
     """Convert DICOM images to NIFTI using dcm2niix
     :param dicom_dir: Directory containing the DICOM images
+    :return: Path to the converted NIFTI file
     """
     cmd_to_run = f"dcm2niix {re.escape(dicom_dir)}"
     logging.info(f"Converting DICOM images in {dicom_dir} to NIFTI")
@@ -103,6 +104,8 @@ def dcm2nii(dicom_dir: str) -> None:
     subprocess.run(cmd_to_run, shell=True, capture_output=True)
     spinner.succeed()
     logging.info("Done")
+    nifti_file = fop.get_files(dicom_dir, wildcard='*.nii.gz')[0]
+    return nifti_file
 
 
 def split4d(nifti_file: str, out_dir: str) -> None:
@@ -224,9 +227,9 @@ def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str, new_dir=str)
     else:
         logging.info(f"Converting {nifti_file} to {org_image_fmt} format")
         nii2nondcm(nifti_file=nifti_file, new_img_type=org_image_fmt, new_dir=new_dir)
-        
-        
- def push_nii_pixel_data_to_dcm(nifti_file: str, dicom_dir: str, out_dir: str) -> str:
+
+
+def push_nii_pixel_data_to_dcm(nifti_file: str, dicom_dir: str, out_dir: str) -> str:
     """
     Pushes the pixel data from a nifti file to the DICOM files in a directory. The DICOM tags are preserved while the
     pixel data is replaced.
@@ -264,4 +267,3 @@ def revert_nifti_to_original_fmt(nifti_file=str, org_image_fmt=str, new_dir=str)
     print("Output DICOM directory: " + out_dir)
 
     return out_dir
-
