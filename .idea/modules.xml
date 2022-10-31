@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/FALCON.iml" filepath="$PROJECT_DIR$/.idea/FALCON.iml" />
+      <module fileurl="file://$USER_HOME$/PycharmProjects/nii2dcm/.idea/nii2dcm.iml" filepath="$USER_HOME$/PycharmProjects/nii2dcm/.idea/nii2dcm.iml" />
     </modules>
   </component>
 </project>

@@ -3,10 +3,10 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
-      <excludeFolder url="file://$MODULE_DIR$/venv_kylo" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.8 (MOOSE)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (pythonProject)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="nii2dcm" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="removeUnused" value="true" />
