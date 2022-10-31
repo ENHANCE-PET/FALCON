@@ -12,9 +12,9 @@ from pydicom.uid import generate_uid
 
 # Inputs
 
-dicom_dir = '/Users/lalithsimac/Downloads/pib/pet'
-nifti_dir = '/Users/lalithsimac/Downloads/pib/nifti'
-out_dir = '/Users/lalithsimac/Downloads/pib/dcm_pt_nii'
+dicom_dir = '/Users/lalithsimac/Downloads/Fluciclovine_11Subs_Batch1/147006_Sub0203_DD/pet'
+nifti_dir = '/Users/lalithsimac/Downloads/Fluciclovine_11Subs_Batch1/147006_Sub0203_DD/nifti'
+out_dir = '/Users/lalithsimac/Downloads/Fluciclovine_11Subs_Batch1/147006_Sub0203_DD/dcm_pt_nii'
 
 
 # Local functions
@@ -70,6 +70,8 @@ def push_nii_pixel_data_to_dcm(nifti_file_3d: str, dicom_files: list, out_dir: s
 
 
 dicom_files = fop.get_files(dicom_dir, wildcard='*.IMA')
+if len(dicom_files) == 0:
+    dicom_files = fop.get_files(dicom_dir, wildcard='*.dcm')
 
 # get the number of slices in each 3d frame
 z_dim = int(dicom.dcmread(dicom_files[0]).get('NumberOfSlices'))
