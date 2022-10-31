@@ -12,9 +12,9 @@ from pydicom.uid import generate_uid
 
 # Inputs
 
-dicom_dir = '/Users/lalith/Downloads/nii2dcm/pib/PET'
-nifti_dir = '/Users/lalith/Downloads/nii2dcm/pib/nifti'
-out_dir = '/Users/lalith/Downloads/nii2dcm/pib/dcm_pt_nii'
+dicom_dir = '/Users/lalithsimac/Downloads/pib/pet'
+nifti_dir = '/Users/lalithsimac/Downloads/pib/nifti'
+out_dir = '/Users/lalithsimac/Downloads/pib/dcm_pt_nii'
 
 
 # Local functions
@@ -43,14 +43,19 @@ def push_nii_pixel_data_to_dcm(nifti_file_3d: str, dicom_files: list, out_dir: s
         dcm = dicom.read_file(dicom_file)
         dicom_file_name = pathlib.Path(dicom_file).name
         # calculate new rescale slope and intercept to match the nifti pixel data slice 
-        temp = nii_array[counter, :, :]
-        i_max = np.max(temp)
-        i_min = np.min(temp)
-        dcm.RescaleIntercept = int(i_min)
-        dcm.RescaleSlope = float((i_max - i_min) / 65535)
+        # temp = nii_array[counter, :, :]
+        # i_max = np.max(temp)
+        # i_min = np.min(temp)
+        # dcm.RescaleIntercept = int(i_min)
+        # dcm.RescaleSlope = float((i_max - i_min) / 65535)
         # inverse rescale slope and intercept
         nii_array[counter, :, :] = np.subtract(nii_array[counter, :, :], int(dcm.RescaleIntercept))
         nii_array[counter, :, :] = np.divide(nii_array[counter, :, :], float(dcm.RescaleSlope))
+        # rescale the array to a new range to avoid overflow
+        nii_array[counter, :, :] = np.subtract(nii_array[counter, :, :], np.min(nii_array[counter, :, :]))
+        nii_array[counter, :, :] = np.divide(nii_array[counter, :, :], np.max(nii_array[counter, :, :]))
+        nii_array[counter, :, :] = np.multiply(nii_array[counter, :, :], 65535)
+
         # set the rescale slope and intercept
         dcm.PixelData = nii_array[counter, :, :].astype(np.uint16).tobytes()
         dcm.SeriesDescription = "PET dynamic image motion corrected by FALCON v0.1 [QIMP]"
