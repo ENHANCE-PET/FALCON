@@ -21,7 +21,7 @@ There are no special hardware requirements for running falcon. Just remember tha
 
 ## ⚙️ Installation
 
-As of now ```falcon``` only works on mac and linux. The entire installation should take ~5-10 min. 
+As of now ```falcon``` only works on linux (Ubuntu). The entire installation should take ~5-10 min. 
 ```bash
 sudo git config --global url."https://".insteadOf git://
 git clone https://github.com/LalithShiyam/FALCON.git
@@ -35,13 +35,14 @@ Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a
 ```bash
 
 #syntax:
-falcon -m path_to_4d_images -r rigid_affine_or_deformable -i multilevel_iterations -s frame_from_which_moco_needs_to_start
+falcon -m path_to_4d_images -r <rigid | affine | deformable> -i <100x50x25> -s <0 | 1 | 2>
 
 #example: 
-falcon -m /Documents/Sub001 -r deformable -a fixed -i 100x25x10 -s 3
+falcon -m /Documents/Sub001 -r deformable -i 100x25x10 -s 3
 
 #help: 
 falcon --help
+
 ```
 
 ## 🗂 Required folder structure 

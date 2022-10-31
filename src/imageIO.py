@@ -22,12 +22,13 @@ import pathlib
 import re
 import subprocess
 import sys
+
 import SimpleITK as sitk
-import numpy as np
 import nibabel as nib
+import numpy as np
+import pydicom as dicom
 from halo import Halo
 from tqdm import tqdm
-import pydicom as dicom
 
 import fileOp as fop
 
@@ -92,10 +93,9 @@ def nondcm2nii(medimg_dir: str, file_extension: str, new_dir: str) -> None:
         logging.info("Done")
 
 
-def dcm2nii(dicom_dir: str) -> str:
+def dcm2nii(dicom_dir: str) -> None:
     """Convert DICOM images to NIFTI using dcm2niix
     :param dicom_dir: Directory containing the DICOM images
-    :return: Path to the converted NIFTI file
     """
     cmd_to_run = f"dcm2niix {re.escape(dicom_dir)}"
     logging.info(f"Converting DICOM images in {dicom_dir} to NIFTI")
@@ -104,8 +104,6 @@ def dcm2nii(dicom_dir: str) -> str:
     subprocess.run(cmd_to_run, shell=True, capture_output=True)
     spinner.succeed()
     logging.info("Done")
-    nifti_file = fop.get_files(dicom_dir, wildcard='*.nii.gz')[0]
-    return nifti_file
 
 
 def split4d(nifti_file: str, out_dir: str) -> None:

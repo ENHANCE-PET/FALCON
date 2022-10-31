@@ -2,12 +2,14 @@ halo==0.0.31
 SimpleITK~=2.1.1
 pandas~=1.4.0
 nibabel~=3.2.2
-tqdm~=4.63.1
+tqdm~=4.63.0
 argparse~=1.4.0
 imageio~=2.16.1
-psutil~=5.9.0
 mpire~=2.3.3
 pyfiglet~=0.8.post1
 natsort~=8.1.0
-
+psutil
 nilearn~=0.9.1
+pydicom~=2.2.2
+numpy~=1.22.3
+scikit-image~=0.19.2
