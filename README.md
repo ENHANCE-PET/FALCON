@@ -100,4 +100,6 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 
 ## 🦅 FALCON: An ENHANCE-PET project.
 
-[]https://github.com/LalithShiyam/FALCON/blob/main/Images/DALL·E%202022-11-01%2018.21.39%20-%20a%20moose%20with%20majestic%20horns.png
+<p align="center">
+<img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/DALL·E%202022-11-01%2018.21.39%20-%20a%20moose%20with%20majestic%20horns.png">
+</p>
