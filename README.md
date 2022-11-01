@@ -97,3 +97,7 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 ## 🙏🏽 Acknowledgements
 - This research is supported through an [IBM University Cloud Award](https://www.research.ibm.com/university/). 
 - The storyboard for `FALCON` was made by [Vivian Tseng](https://www.instagram.com/tsengiiii/) from the University of Applied Arts Vienna. 
+
+## 🦅 FALCON: An ENHANCE-PET project.
+
+[]https://github.com/LalithShiyam/FALCON/blob/main/Images/DALL·E%202022-11-01%2018.21.39%20-%20a%20moose%20with%20majestic%20horns.png
