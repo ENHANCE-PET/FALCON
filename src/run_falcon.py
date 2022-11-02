@@ -223,6 +223,7 @@ if __name__ == "__main__":
     # Parallelized alignment based on the resources available: Reference image is always the last file in the list
 
     logging.info(f"Reference image (is fixed): {reference_img}")
+    print(f"Reference image (is fixed): {reference_img}")
     moving_imgs = []
     for y in range(start_frame, len(non_moco_files)):
         moving_imgs.append(non_moco_files[y])
