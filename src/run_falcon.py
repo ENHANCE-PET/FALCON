@@ -53,7 +53,14 @@ if __name__ == "__main__":
         required=True,
     )
     parser.add_argument(
-        "-s",
+        "-rf",
+        "--reference_frame_index",
+        type=int,
+        help="index of the reference frame [index starts from 0]",
+        required=True,
+    )
+    parser.add_argument(
+        "-sf",
         "--start_frame",
         type=int,
         default=99,
@@ -112,6 +119,11 @@ if __name__ == "__main__":
                                                   process_threads=c.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
     else:
         logging.error("Registration type not recognized")
+        exit(1)
+    reference_frame_index = args.reference_frame_index
+    if not checkArgs.is_non_negative(reference_frame_index):
+        logging.error("Reference frame index must be non-negative")
+        print("Reference frame index must be non-negative")
         exit(1)
 
     # Start the registration process by performing data checks and then calling the registration function
@@ -198,10 +210,13 @@ if __name__ == "__main__":
     else:
         logging.info(f'Starting frame index: {start_frame}')
     print(' ')
+
+    # Allocating the fixed and moving frames for motion correction
+
     moco_dir = fop.make_dir(split3d_folder, 'moco')
-    fop.copy_files(split3d_folder, moco_dir, non_moco_files[-1])
+    fixed_img_filename = pathlib.Path(non_moco_files[reference_frame_index]).name
+    fop.copy_files(split3d_folder, moco_dir, non_moco_files[reference_frame_index])
     os.chdir(moco_dir)
-    fixed_img_filename = pathlib.Path(non_moco_files[-1]).name
     os.rename(fixed_img_filename, 'moco-' + fixed_img_filename)
     reference_img = fop.get_files(moco_dir, '*nii*')[0]
 
@@ -209,8 +224,11 @@ if __name__ == "__main__":
 
     logging.info(f"Reference image (is fixed): {reference_img}")
     moving_imgs = []
-    for y in range(start_frame, len(non_moco_files) - 1):
+    for y in range(start_frame, len(non_moco_files)):
         moving_imgs.append(non_moco_files[y])
+    # remove the reference image from the moving images list
+    moving_imgs.remove(non_moco_files[reference_frame_index])
+
     greedy.align(fixed_img=reference_img, moving_imgs=moving_imgs, registration_type=registration,
                  multi_resolution_iterations=multi_resolution_iterations, njobs=num_jobs, moco_dir=moco_dir)
     if start_frame != 0:
