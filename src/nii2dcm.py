@@ -1,23 +1,34 @@
-import pydicom as dicom
 import os
+import pathlib
 
-from numpy import double
-
-import fileOp as fop
 import SimpleITK as sitk
 import numpy as np
-from tqdm import tqdm
-import pathlib
+import pydicom as dicom
 from pydicom.uid import generate_uid
+from tqdm import tqdm
+
+import fileOp as fop
 
 # Inputs
 
 dicom_dir = '/Users/lalithsimac/Downloads/Fluciclovine_11Subs_Batch1/147006_Sub0203_DD/pet'
-nifti_dir = '/Users/lalithsimac/Downloads/Fluciclovine_11Subs_Batch1/147006_Sub0203_DD/nifti'
+nifti_dir = '/Users/lalithsimac/Downloads/Fluciclovine_11Subs_Batch1/147006_Sub0203_DD/moco_nifti'
 out_dir = '/Users/lalithsimac/Downloads/Fluciclovine_11Subs_Batch1/147006_Sub0203_DD/dcm_pt_nii'
 
 
 # Local functions
+
+# function to display the maximum and minimum intensity of the nifti file
+def display_nii_min_max(nifti_file_3d: str):
+    """
+    Displays the maximum and minimum intensity of the nifti file
+    :param nifti_file_3d: Path to the 3d nifti file
+    """
+    nii_img = sitk.ReadImage(nifti_file_3d, sitk.sitkFloat32)
+    nii_array = sitk.GetArrayFromImage(nii_img)
+    print(f"Minimum intensity of nifti file: {np.min(nii_array)}")
+    print(f"Maximum intensity of nifti file: {np.max(nii_array)}")
+
 
 # Function push 3d nifti pixel data to dicom files
 
@@ -42,23 +53,23 @@ def push_nii_pixel_data_to_dcm(nifti_file_3d: str, dicom_files: list, out_dir: s
     for dicom_file in tqdm(dicom_files):
         dcm = dicom.read_file(dicom_file)
         dicom_file_name = pathlib.Path(dicom_file).name
-        # calculate new rescale slope and intercept to match the nifti pixel data slice 
-        # temp = nii_array[counter, :, :]
-        # i_max = np.max(temp)
-        # i_min = np.min(temp)
-        # dcm.RescaleIntercept = int(i_min)
-        # dcm.RescaleSlope = float((i_max - i_min) / 65535)
+        # create new rescale slope and intercept based on 2d slices
+        #new_rescale_slope = (np.max(nii_array[counter, :, :]) - np.min(nii_array[counter, :, :])) / \
+        #                    (np.iinfo(dcm.pixel_array.dtype).max - np.iinfo(dcm.pixel_array.dtype).min)
+        #new_rescale_slope = round(new_rescale_slope, 6)
+        new_rescale_slope = float(1)
+        new_rescale_intercept = np.min(nii_array[counter, :, :]) - new_rescale_slope * np.iinfo(
+            dcm.pixel_array.dtype).min
+        # update the dicom tags
+        dcm.RescaleSlope = new_rescale_slope
+        dcm.RescaleIntercept = new_rescale_intercept
         # inverse rescale slope and intercept
         nii_array[counter, :, :] = np.subtract(nii_array[counter, :, :], int(dcm.RescaleIntercept))
-        nii_array[counter, :, :] = np.divide(nii_array[counter, :, :], float(dcm.RescaleSlope))
-        # rescale the array to a new range to avoid overflow
-        nii_array[counter, :, :] = np.subtract(nii_array[counter, :, :], np.min(nii_array[counter, :, :]))
-        nii_array[counter, :, :] = np.divide(nii_array[counter, :, :], np.max(nii_array[counter, :, :]))
-        nii_array[counter, :, :] = np.multiply(nii_array[counter, :, :], 65535)
-
-        # set the rescale slope and intercept
-        dcm.PixelData = nii_array[counter, :, :].astype(np.uint16).tobytes()
-        dcm.SeriesDescription = "PET dynamic image motion corrected by FALCON v0.1 [QIMP]"
+        nii_array[counter, :, :] = np.divide(nii_array[counter, :, :], dcm.RescaleSlope,
+                                             out=np.zeros_like(nii_array[counter, :, :]),
+                                             where=dcm.RescaleSlope != 0)
+        dcm.PixelData = nii_array[counter, :, :].astype(dcm.pixel_array.dtype).tobytes()
+        dcm.SeriesDescription = "Motion corrected by FALCON v0.1 [QIMP]"
         # set the new series UID
         dcm.SeriesInstanceUID = series_uid
         dcm.save_as(os.path.join(out_dir, dicom_file_name))
@@ -85,7 +96,7 @@ dicom_files_3d = [dicom_files[i:i + z_dim] for i in range(0, len(dicom_files), z
 
 # Read the 3d nifti files
 nifti_files = fop.get_files(nifti_dir, wildcard='*.nii*')
-#nifti_files.reverse()
+# nifti_files.reverse()
 
 # push 3d nifti pixel data to dicom files
 series_uid = generate_uid()
