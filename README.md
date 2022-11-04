@@ -99,7 +99,8 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 - The storyboard for `FALCON` was made by [Vivian Tseng](https://www.instagram.com/tsengiiii/) from the University of Applied Arts Vienna. 
 
 ## 🛠  To do
-- [x] Brain MoCo evaluation [@Keyn34](https://github.com/Keyn34)
+
+- [x] Brain MoCo evaluation [@Keyn34](https://github.com/Keyn34) 
 - [ ] Respiratory MoCo evaluation [@DariaFerrara](https://github.com/DariaFerrara)
 - [ ] Cardiac MoCo evaluation [@DrLyngby](https://github.com/DrLyngby)
 
