@@ -101,8 +101,8 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 ## 🛠  To do
 
 - [x] Brain MoCo evaluation [@Keyn34](https://github.com/Keyn34) 
-- [ ] Respiratory MoCo evaluation [@DariaFerrara](https://github.com/DariaFerrara)
-- [ ] Cardiac MoCo evaluation [@DrLyngby](https://github.com/DrLyngby)
+- [x] Respiratory MoCo evaluation [@DariaFerrara](https://github.com/DariaFerrara)
+- [x] Cardiac MoCo evaluation [@DrLyngby](https://github.com/DrLyngby)
 
 ## 🦅 FALCON: An ENHANCE-PET project
 
