@@ -83,44 +83,33 @@ def calc_voxelwise_ncc_images(image1: str, image2: str, output_dir: str) -> str:
     return output_image
 
 
-def determine_candidate_frames(pet_files: list, ref_frame_index: int, njobs: int) -> int:
+def determine_candidate_frames(candidate_files: list, reference_file: str, njobs: int) -> int:
     """
     Determines the candidate frames of a 4D PET series on which motion correction can be performed effectively
-    :param pet_files: list of 3D PET files
-    :param ref_frame_index: index of the reference frame
+    :param candidate_files: list of 3D candidate moving PET files
+    :param reference_file: path to the reference PET file
     :param njobs: number of jobs to run in parallel
     :return:  Index of the starting frame from which motion correction can be performed
     :rtype: int
     """
     # Get the parent directory for pet_files
-    pet_folder = os.path.dirname(pet_files[0])
+    pet_folder = os.path.dirname(candidate_files[0])
 
     # Create the folder to dump the ncc images
     ncc_dir = fop.make_dir(pet_folder, "ncc-images")
 
-    # isolate the reference frame from the list of PET files
-    ref_frame = pet_files[ref_frame_index]
-
-    # store the remaining pet_files without the ref_frame_index as the moving frames
-    mov_frames = pet_files[:ref_frame_index] + pet_files[ref_frame_index + 1:]
-
     # using mpire to run the ncc calculation in parallel
     with WorkerPool(njobs) as pool:
-        ncc_images = pool.map(calc_voxelwise_ncc_images, [(ref_frame, file, ncc_dir) for file in mov_frames])
+        ncc_images = pool.map(calc_voxelwise_ncc_images, [(reference_file, file, ncc_dir) for file in candidate_files])
 
     ncc_images = fop.get_files(ncc_dir, "ncc_*.nii.gz")
 
     # calculate the mean intensity of files in the ncc folder and store it as mean_intensities
     mean_intensities = [calc_mean_intensity(ncc_image) for ncc_image in ncc_images]
-    print(f"Mean intensities of the ncc images: {mean_intensities}")
-
     # calculate the average value of the top 3 mean intensities
     max_observed_ncc = sum(sorted(mean_intensities, reverse=True)[:3]) / 3
-    print(f"Max observed ncc: {max_observed_ncc}")
     # Identify the indices of the frames with mean intensity greater than c.NCC_THRESHOLD * max_observed_ncc
     candidate_frames = [i for i, mean_intensity in enumerate(mean_intensities) if
                         mean_intensity > c.NCC_THRESHOLD * max_observed_ncc]
-    print(f"Candidate frames: {candidate_frames}")
-    print(f"Candidate frames selected : {candidate_frames[0]}")
     # return the index of the first frame from the candidate frames
     return candidate_frames[0]

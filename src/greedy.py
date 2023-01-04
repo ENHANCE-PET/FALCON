@@ -96,9 +96,10 @@ def deformable(fixed_img: str, moving_img: str, cost_function: str, multi_resolu
     cmd_to_run = f"greedy -d 3 -m {cost_function} -i {re.escape(fixed_img)} {re.escape(moving_img)} -it " \
                  f"{re.escape(affine_transform_file)} -o " \
                  f"{re.escape(warp_file)} -oinv " \
-                 f"{re.escape(inverse_warp_file)} -n {multi_resolution_iterations}"
+                 f"{re.escape(inverse_warp_file)} " \
+                 f"-sv -n {multi_resolution_iterations}"
     subprocess.run(cmd_to_run, shell=True, capture_output=True)
-    logging.info(f"Deformable alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned "
+    logging.info(f"Deformable alignment (log-diff): {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned "
                  f"image: moco-{pathlib.Path(moving_img).name} | Cost function: {cost_function} | Initial "
                  f"alignment:{pathlib.Path(affine_transform_file).name} | warp file: {pathlib.Path(warp_file).name}")
     print(f"Deformable alignment: {pathlib.Path(moving_img).name} -> {pathlib.Path(fixed_img).name} | Aligned image: "
@@ -159,7 +160,7 @@ def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registr
                          f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r " \
                          f"{re.escape(affine_transform_file)}"
         else:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -r {re.escape(affine_transform_file)}"
     elif registration_type == 'deformable':
         warp_file = os.path.join(out_dir, f"{moving_img_file}_warp.nii.gz")
@@ -170,7 +171,7 @@ def resample(fixed_img: str, moving_img: str, resampled_moving_img: str, registr
                          f"0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)} -r {re.escape(warp_file)} " \
                          f"{re.escape(affine_transform_file)}"
         else:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri LINEAR -rm {re.escape(moving_img)} " \
+            cmd_to_run = f"greedy -d 3 -rf {re.escape(fixed_img)} -ri NN -rm {re.escape(moving_img)} " \
                          f"{re.escape(resampled_moving_img)} -r {re.escape(warp_file)} " \
                          f"{re.escape(affine_transform_file)}"
     else:

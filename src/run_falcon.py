@@ -120,8 +120,8 @@ if __name__ == "__main__":
     else:
         logging.error("Registration type not recognized")
         exit(1)
+
     reference_frame_index = args.reference_frame_index
-    
 
     # Start the registration process by performing data checks and then calling the registration function
 
@@ -153,8 +153,6 @@ if __name__ == "__main__":
     else:
         logging.info("Due to the available RAM and available threads, FALCON will run in serial")
         print("Due to the available RAM and available threads, FALCON will run in serial")
-    logging.info(' ')
-    print(' ')
     nifti_dir, input_image_type = imageIO.convert_all_non_nifti(working_dir)
 
     # Check if the nifti files are 3d or 4d
@@ -199,12 +197,18 @@ if __name__ == "__main__":
     if start_frame == 99:
         logging.info('Starting frame not provided by user! Calculating the starting frame from which motion correction'
                      ' can be performed')
-        print('Starting frame not provided by user! Calculating the starting frame from which motion correction can be '
-              'performed')
-        start_frame = pp.determine_candidate_frames(pet_files=non_moco_files, ref_frame_index=reference_frame_index,
+        print('Starting frame not provided by user...')
+        reference_frame_for_ncc_calc = non_moco_files[reference_frame_index]
+        candidate_files_for_ncc_calc = non_moco_files[:]
+        candidate_files_for_ncc_calc.remove(reference_frame_for_ncc_calc)
+        spinner = Halo(text='Calculating the starting frame from which motion correction can be performed',
+                       spinner='dots')
+        spinner.start()
+        start_frame = pp.determine_candidate_frames(candidate_files=candidate_files_for_ncc_calc,
+                                                    reference_file=reference_frame_for_ncc_calc,
                                                     njobs=num_jobs)
+        spinner.succeed(f"Starting frame for motion correction is {start_frame}")
         logging.info(f'Starting frame index: {start_frame}')
-        print(f'Starting frame index: {start_frame}')
     else:
         logging.info(f'Starting frame index: {start_frame}')
     print(' ')

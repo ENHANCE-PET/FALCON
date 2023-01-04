@@ -1,3 +1,4 @@
+import argparse
 import os
 import pathlib
 
@@ -53,21 +54,17 @@ def push_nii_pixel_data_to_dcm(nifti_file_3d: str, dicom_files: list, out_dir: s
     for dicom_file in tqdm(dicom_files):
         dcm = dicom.read_file(dicom_file)
         dicom_file_name = pathlib.Path(dicom_file).name
-        # create new rescale slope and intercept based on 2d slices
-        #new_rescale_slope = (np.max(nii_array[counter, :, :]) - np.min(nii_array[counter, :, :])) / \
-        #                    (np.iinfo(dcm.pixel_array.dtype).max - np.iinfo(dcm.pixel_array.dtype).min)
-        #new_rescale_slope = round(new_rescale_slope, 6)
-        new_rescale_slope = float(1)
-        new_rescale_intercept = np.min(nii_array[counter, :, :]) - new_rescale_slope * np.iinfo(
-            dcm.pixel_array.dtype).min
-        # update the dicom tags
-        dcm.RescaleSlope = new_rescale_slope
-        dcm.RescaleIntercept = new_rescale_intercept
         # inverse rescale slope and intercept
         nii_array[counter, :, :] = np.subtract(nii_array[counter, :, :], int(dcm.RescaleIntercept))
         nii_array[counter, :, :] = np.divide(nii_array[counter, :, :], dcm.RescaleSlope,
                                              out=np.zeros_like(nii_array[counter, :, :]),
                                              where=dcm.RescaleSlope != 0)
+        
+        # map the intensity to the range between 0 and 65535
+        # nii_array[counter, :, :] = np.subtract(nii_array[counter, :, :], np.min(nii_array[counter, :, :]))
+        # nii_array[counter, :, :] = np.divide(nii_array[counter, :, :], np.max(nii_array[counter, :, :]))
+        # nii_array[counter, :, :] = np.multiply(nii_array[counter, :, :], 65535)
+        # nii_array[counter, :, :] = np.round(nii_array[counter, :, :])
         dcm.PixelData = nii_array[counter, :, :].astype(dcm.pixel_array.dtype).tobytes()
         dcm.SeriesDescription = "Motion corrected by FALCON v0.1 [QIMP]"
         # set the new series UID
@@ -102,3 +99,5 @@ nifti_files = fop.get_files(nifti_dir, wildcard='*.nii*')
 series_uid = generate_uid()
 for i in range(len(nifti_files)):
     push_nii_pixel_data_to_dcm(nifti_files[i], dicom_files_3d[i], os.path.join(out_dir), series_uid)
+
+
