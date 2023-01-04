@@ -35,10 +35,10 @@ Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a
 ```bash
 
 #syntax:
-falcon -m path_to_4d_images -r <rigid | affine | deformable> -i <100x50x25> -s <0 | 1 | 2>
+falcon -m path_to_4d_images -r <rigid | affine | deformable> -i <100x50x25> -sf <starting_frame_from_which_moco_should_be_performed> -rf <reference_frame>
 
 #example: 
-falcon -m /Documents/Sub001 -r deformable -i 100x25x10 -s 3
+falcon -m /Documents/Sub001 -r deformable -i 100x25x10 -sf 3 -rf -1 # -1 indicates last frame of the series
 
 #help: 
 falcon --help
@@ -103,7 +103,7 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 - [x] Brain MoCo evaluation [@Keyn34](https://github.com/Keyn34) 
 - [x] Respiratory MoCo evaluation [@DariaFerrara](https://github.com/DariaFerrara)
 - [x] Cardiac MoCo evaluation [@DrLyngby](https://github.com/DrLyngby)
-- [ ] Selection of the 'candidate frames' for motion correction using voxelwise NCC criteria [@LalithShiyam](https://github.com/LalithShiyam)
+- [x] Selection of the 'candidate frames' for motion correction using voxelwise NCC criteria [@LalithShiyam](https://github.com/LalithShiyam)
 
 ## 🦅 FALCON: An ENHANCE-PET project
 
