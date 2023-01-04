@@ -103,6 +103,7 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 - [x] Brain MoCo evaluation [@Keyn34](https://github.com/Keyn34) 
 - [x] Respiratory MoCo evaluation [@DariaFerrara](https://github.com/DariaFerrara)
 - [x] Cardiac MoCo evaluation [@DrLyngby](https://github.com/DrLyngby)
+- [ ] Selection of the 'candidate frames' for motion correction using voxelwise NCC criteria [@LalithShiyam](https://github.com/LalithShiyam)
 
 ## 🦅 FALCON: An ENHANCE-PET project
 
