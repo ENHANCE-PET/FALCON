@@ -56,8 +56,8 @@ if __name__ == "__main__":
         "-rf",
         "--reference_frame_index",
         type=int,
+        default=-1,
         help="index of the reference frame [index starts from 0]",
-        required=True,
     )
     parser.add_argument(
         "-sf",
@@ -121,10 +121,7 @@ if __name__ == "__main__":
         logging.error("Registration type not recognized")
         exit(1)
     reference_frame_index = args.reference_frame_index
-    if not checkArgs.is_non_negative(reference_frame_index):
-        logging.error("Reference frame index must be non-negative")
-        print("Reference frame index must be non-negative")
-        exit(1)
+    
 
     # Start the registration process by performing data checks and then calling the registration function
 
@@ -204,7 +201,8 @@ if __name__ == "__main__":
                      ' can be performed')
         print('Starting frame not provided by user! Calculating the starting frame from which motion correction can be '
               'performed')
-        start_frame = pp.determine_starting_frame(pet_files=non_moco_files, njobs=num_jobs)
+        start_frame = pp.determine_candidate_frames(pet_files=non_moco_files, ref_frame_index=reference_frame_index,
+                                                    njobs=num_jobs)
         logging.info(f'Starting frame index: {start_frame}')
         print(f'Starting frame index: {start_frame}')
     else:
@@ -244,7 +242,7 @@ if __name__ == "__main__":
         print(' ')
         print('Motion correction is being performed from first frame...')
 
-    # Merge the split 3d motion corrected file into a single 4d file using fsl.
+    # Merge the split 3d motion corrected file into a single 4d file
 
     imageIO.merge3d(nifti_dir=moco_dir, wild_card='moco-*nii*', nifti_outfile='4d-moco.nii.gz')
     logging.info(f"Merged 3d motion corrected files into a single 4d file: {os.path.join(moco_dir, '4d-moco.nii.gz')}")

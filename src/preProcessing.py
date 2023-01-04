@@ -17,11 +17,10 @@ import os
 import re
 import subprocess
 from statistics import mean
-
+import pathlib
 import SimpleITK as sitk
 from halo import Halo
 from mpire import WorkerPool
-
 import constants as c
 import fileOp as fop
 from skimage.metrics import structural_similarity as ssim
@@ -51,70 +50,77 @@ def downscale_image(downscale_param: tuple, input_image: str) -> str:
     subprocess.run(cmd_to_downscale, shell=True, capture_output=True)
     return input_image_downscaled
 
-def compute_ssim(image1: str, image2: str) -> float:
+
+# Calculate the mean intensity of an image using SimpleITK
+def calc_mean_intensity(image: str) -> float:
     """
-    Computes structural image similarity metric between two images
-    :param image1: Path of the first image
-    :param image2: Path of the second image
-    :return: SSIM metric as float
+    Calculates the mean intensity of an image using SimpleITK
+    :param image: path to the image
+    :return: mean intensity of the image
     :rtype: float
     """
-    image1_arr = sitk.GetArrayFromImage(sitk.ReadImage(image1))
-    image2_arr = sitk.GetArrayFromImage(sitk.ReadImage(image2))
+    image = sitk.ReadImage(image, sitk.sitkFloat32)
+    return sitk.GetArrayFromImage(image).mean()
 
-    return ssim(image1_arr, image2_arr)
 
-def compute_mi(image1: str, image2: str) -> float:
+def calc_voxelwise_ncc_images(image1: str, image2: str, output_dir: str) -> str:
     """
-    Compares two images and computes their mutual information
-    :param image1: first image of image pair to compare
-    :param image2: second image of image pair to compare
-    :return: Computed mutual information as float
-    :rtype: float
+    Calculates voxelwise normalized cross correlation between two images and writes it to the output directory
+    :param image1: path to the first image
+    :param image2: path to the second image
+    :param output_dir: path to the output directory
+    :return: path to the voxelwise ncc image
     """
-    sitk_img1 = sitk.ReadImage(image1)
-    sitk_img2 = sitk.ReadImage(image2)
-    registration_method = sitk.ImageRegistrationMethod()
-    registration_method.SetMetricAsMattesMutualInformation()
-    mi = abs(registration_method.MetricEvaluate(sitk_img1, sitk_img2))
-    return mi
+    # get the image names without the extension '.nii.gz'
+    image1_name = os.path.basename(image1).split(".")[0]
+    image2_name = os.path.basename(image2).split(".")[0]
+    output_image = os.path.join(output_dir, f"ncc_{image2_name}.nii.gz")
+    c3d_cmd = f"c3d {re.escape(image1)} {re.escape(image2)} -ncc {c.NCC_RADIUS} -o {re.escape(output_image)}"
+    subprocess.run(c3d_cmd, shell=True, capture_output=True)
+    # clip the negative correlations to zero
+    c3d_cmd = f"c3d {re.escape(output_image)} -clip 0 inf -o {re.escape(output_image)}"
+    subprocess.run(c3d_cmd, shell=True, capture_output=True)
+    return output_image
 
 
-def determine_starting_frame(pet_files: list, njobs) -> int:
+def determine_candidate_frames(pet_files: list, ref_frame_index: int, njobs: int) -> int:
     """
-    Determines the starting frame of a 4D PET series from which motion correction can be performed by using mutual
-    information.
+    Determines the candidate frames of a 4D PET series on which motion correction can be performed effectively
     :param pet_files: list of 3D PET files
+    :param ref_frame_index: index of the reference frame
     :param njobs: number of jobs to run in parallel
     :return:  Index of the starting frame from which motion correction can be performed
     :rtype: int
     """
-
+    # Get the parent directory for pet_files
     pet_folder = os.path.dirname(pet_files[0])
 
-    # Create the folder to dump the gaussian pyramid images
-    pyramid_dir = fop.make_dir(pet_folder, "pyramid")
+    # Create the folder to dump the ncc images
+    ncc_dir = fop.make_dir(pet_folder, "ncc-images")
 
-    # Downscale the 3d pet files to a lower resolution (1/4x)
-    logging.info(f"Constructing pyramid in {pyramid_dir}!")
-    spinner = Halo(text=f"Constructing pyramid in {pyramid_dir}", spinner='dots')
-    spinner.start()
-    with WorkerPool(n_jobs=njobs, shared_objects=(pyramid_dir, c.SHRINK_LEVEL_4x),
-                    start_method='fork', ) as pool:
-        pool.map(downscale_image, pet_files, progress_bar=False)
-    spinner.succeed()
+    # isolate the reference frame from the list of PET files
+    ref_frame = pet_files[ref_frame_index]
 
-    # Compute mutual information between the last 20% of the original PET images and the last frame.
+    # store the remaining pet_files without the ref_frame_index as the moving frames
+    mov_frames = pet_files[:ref_frame_index] + pet_files[ref_frame_index + 1:]
 
-    mi_list = []
-    for i in range(int(len(pet_files) * c.MI_REFERENCE_PERCENTAGE), len(pet_files) - 1):
-        mi_list.append(compute_mi(pet_files[i], pet_files[-1]))
-    mi_threshold = mean(mi_list)
+    # using mpire to run the ncc calculation in parallel
+    with WorkerPool(njobs) as pool:
+        ncc_images = pool.map(calc_voxelwise_ncc_images, [(ref_frame, file, ncc_dir) for file in mov_frames])
 
-    # Find the starting frame from which motion correction can be performed
+    ncc_images = fop.get_files(ncc_dir, "ncc_*.nii.gz")
 
-    downscaled_pet_files = fop.get_files(pyramid_dir, "*downscaled*nii*")
+    # calculate the mean intensity of files in the ncc folder and store it as mean_intensities
+    mean_intensities = [calc_mean_intensity(ncc_image) for ncc_image in ncc_images]
+    print(f"Mean intensities of the ncc images: {mean_intensities}")
 
-    for i in range(len(downscaled_pet_files) - 1):
-        if compute_mi(downscaled_pet_files[i], downscaled_pet_files[-1]) > mi_threshold:
-            return i
+    # calculate the average value of the top 3 mean intensities
+    max_observed_ncc = sum(sorted(mean_intensities, reverse=True)[:3]) / 3
+    print(f"Max observed ncc: {max_observed_ncc}")
+    # Identify the indices of the frames with mean intensity greater than c.NCC_THRESHOLD * max_observed_ncc
+    candidate_frames = [i for i, mean_intensity in enumerate(mean_intensities) if
+                        mean_intensity > c.NCC_THRESHOLD * max_observed_ncc]
+    print(f"Candidate frames: {candidate_frames}")
+    print(f"Candidate frames selected : {candidate_frames[0]}")
+    # return the index of the first frame from the candidate frames
+    return candidate_frames[0]
