@@ -9,7 +9,7 @@
 </p>
 
 
-`FALCON` (Fast algorithms for motion correction) is a python wrapper program for the ITK based 'greedy' diffeomorphism registration binaries (LDDMM and Sym Diff Demons) to perform image-based PET motion correction (both head and total-body). It uses diffemorphisms that are 'almost' inverse consistent to rapidly align dynamic PET images. 
+`FALCON` (Fast algorithms for motion correction) is a tailor-made tool for performing total-body or whole-body PET motion correction. The proposed tool is vendor, tracer and organ indepedent. The tool is built on top of the fast greedy registration toolkit.
 
 ## ⛔️ Hard requirements 
 
@@ -107,6 +107,7 @@ As of now ```falcon``` splits the motion-corrected images as nifti files (.nii.g
 - [x] Respiratory MoCo evaluation [@DariaFerrara](https://github.com/DariaFerrara)
 - [x] Cardiac MoCo evaluation [@DrLyngby](https://github.com/DrLyngby)
 - [x] Selection of the 'candidate frames' for motion correction using voxelwise NCC criteria [@LalithShiyam](https://github.com/LalithShiyam)
+- [ ] FALCON for Intel Macs and Apple Silicon Macs [@LalithShiyam](https://github.com/LalithShiyam)
 
 ## 🦅 FALCON: An ENHANCE-PET project
 
