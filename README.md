@@ -30,15 +30,18 @@ sudo bash falcon_installer.sh
 ```
 ## 🖥 Usage
 
-Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a single 4D image or multiple 3D images. Just point to the directory where the files resides and FALCON should ideally take care of the rest.
+Inputs can be either DICOM/Nifti/Analyze/Metaimage. The provided images can be a single 4D image or multiple 3D images. Just point to the directory where the files resides and mention the type of registration. FALCON should ideally take care of the rest.
 
 ```bash
 
 #syntax:
 falcon -m path_to_4d_images -r <rigid | affine | deformable> -i <100x50x25> -sf <starting_frame_from_which_moco_should_be_performed> -rf <reference_frame>
 
-#example: 
+#example [Pro mode] 
 falcon -m /Documents/Sub001 -r deformable -i 100x25x10 -sf 3 -rf -1 # -1 indicates last frame of the series
+
+#example [lazy mode]
+falcon -m /Documents/Sub001 -r deformable
 
 #help: 
 falcon --help
