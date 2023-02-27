@@ -3,10 +3,14 @@
 </p>
 
 ## 🦅 About FALCON
-<p align="center">
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_story_darkmode.gif" width="500" height="500">
-  <img alt="Shows an illustrated storyboard in light color mode and an inverted storyboard in dark color mode." src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_story_darkmode.gif" width="500" height="500">
-</p>
+
+<div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/QIMP-Team/FALCON/blob/main/Images/Falcon_story_darkmode.gif" width="500" height="500">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/QIMP-Team/FALCON/blob/main/Images/Falcon_story_GIF.gif" width="500" height="500">
+  <img alt="Shows an illustrated MOOSE story board adopted to different themes" src="https://github.com/QIMP-Team/FALCON/blob/main/Images/white_moco.gif">
+</picture>
+</div>
 
 
 FALCON (Fast Algorithms for motion correction) is a fully-automatic and powerful tool for performing accurate motion correction in dynamic total-body or whole-body PET imaging. Unlike many existing solutions, FALCON is designed to be vendor, tracer, and organ independent, making it a flexible and reliable choice for a wide range of applications.
