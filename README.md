@@ -159,7 +159,7 @@ Here's an example of the resulting folder structure:
 ```
 In the example above, the resulting folder structure shows the main folder containing the dynamic PET images that have been motion corrected. The input images can be DICOM, Nifti, Analyze, or Metaimage files. If the input images are not Nifti, they will be converted to Nifti and stored in the "nifti" folder. The 4D Nifti file will be split into 3D Nifti files and stored in the "split3d" folder, with the motion-corrected images being stored in the "moco" folder. The individual motion-corrected images are stored in Nifti format, and the rigid/affine (*.mat) and (*warp.nii.gz) files will be stored in the "transform" folder.
 
-❤️ Citations
+## ❤️ Citations
 
 In submission.
 
