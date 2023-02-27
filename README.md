@@ -33,7 +33,7 @@ Whether you're working in research, clinical care, or industry, FALCON is the id
 
 ## ⛔️ Hard requirements 
 
-To run FALCON, you'll need a system running Linux system (e.g.Ubuntu 20.04.4 LTS), with Python version 3.8 or higher installed. There are no special hardware requirements for running FALCON, but we recommend using a system with at least 16 GB of RAM and a modern CPU to achieve optimal performance. The speed of FALCON increases with the number of CPU cores, as the greedy registration library effectively uses all the available cores.
+To run FALCON, you'll need a system running Linux OS (e.g.Ubuntu 20.04.4 LTS), with Python version 3.8 or higher installed. There are no special hardware requirements for running FALCON, but we recommend using a system with at least 16 GB of RAM and a modern CPU to achieve optimal performance. The speed of FALCON increases with the number of CPU cores, as the greedy registration library effectively uses all the available cores.
 
 We're also working on adding support for macOS (both Arm and Intel) and Windows. Stay tuned for updates on these platforms.
 
