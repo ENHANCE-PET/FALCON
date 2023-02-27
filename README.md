@@ -31,6 +31,8 @@ Whether you're working in research, clinical care, or industry, FALCON is the id
 </picture>
 </div>
 
+In this analysis, we are examining a mean image of 20 dynamic frames of a 68Ga-PSMA study both before and after motion correction. By comparing the two images, we can clearly see the significant improvement that results from motion correction. The mean image after motion correction appears noticeably sharper and more defined than the one before correction.
+
 ## ⛔️ Hard requirements 
 
 To run FALCON, you'll need a system running Linux OS (e.g.Ubuntu 20.04.4 LTS), with Python version 3.8 or higher installed. There are no special hardware requirements for running FALCON, but we recommend using a system with at least 16 GB of RAM and a modern CPU to achieve optimal performance. The speed of FALCON increases with the number of CPU cores, as the greedy registration library effectively uses all the available cores.
