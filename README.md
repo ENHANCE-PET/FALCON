@@ -31,7 +31,7 @@ Whether you're working in research, clinical care, or industry, FALCON is the id
 </picture>
 </div>
 
-In this analysis, we are examining a mean image of 20 dynamic frames of a 68Ga-PSMA study both before and after motion correction. By comparing the two images, we can clearly see the significant improvement that results from motion correction. The mean image after motion correction appears noticeably sharper and more defined than the one before correction.
+In this analysis, we are examining a mean image of 20 dynamic frames of a 68Ga-PSMA study both before and after motion correction. By comparing the two mean images, we can clearly see the significant improvement that results from motion correction. The mean image after motion correction appears noticeably sharper and more defined than the one before correction.
 
 ## ⛔️ Hard requirements 
 
