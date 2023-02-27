@@ -93,7 +93,7 @@ falcon -m path_to_4d_images -r <rigid | affine | deformable> -i <number_of_itera
 
 ```bash
 
-falcon -m /Documents/Sub001 -r deformable -i 100,50,25 -sf 3 -rf -1 # -1 indicates the last frame of the series
+falcon -m /Documents/Sub001 -r deformable -i 100x50x25 -sf 3 -rf -1 # -1 indicates the last frame of the series
 ```
 In the example above, FALCON is performing deformable registration with 100, 50, and 25 iterations at each level of the multi-scale registration. The registration will start from the 3rd frame and use the last frame as the reference.
 
