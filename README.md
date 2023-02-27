@@ -56,6 +56,8 @@ cd FALCON
 sudo bash falcon_installer.sh
 ```
 
+Note: If you already have read/write access, you don't need to use ```sudo```.
+
 The entire installation process should take approximately 5-10 minutes. Once the installation is complete, you can start using FALCON to perform motion correction in your dynamic total-body or whole-body PET images.
 
 If you encounter any issues during the installation process, please don't hesitate to contact us for assistance. We're here to help ensure that you can use FALCON effectively and efficiently.
