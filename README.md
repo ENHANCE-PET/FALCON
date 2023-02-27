@@ -31,20 +31,19 @@ Whether you're working in research, clinical care, or industry, FALCON is the id
 </picture>
 </div>
 
-In this analysis, we are examining a mean image of 20 dynamic frames of a 68Ga-PSMA study both before and after motion correction. By comparing the two mean images, we can clearly see the significant improvement that results from motion correction. The mean image after motion correction appears noticeably sharper and more defined than the one before correction.
+In this analysis, we are examining the mean image of 20 dynamic frames of a 68Ga-PSMA study both before and after motion correction. By comparing the two mean images, we can clearly see the significant improvement that results from motion correction. The mean image after motion correction appears noticeably sharper and more defined than the one before correction.
 
 ## ⛔️ Hard requirements 
 
 To run FALCON, you'll need a system running Linux OS (e.g.Ubuntu 20.04.4 LTS), with Python version 3.8 or higher installed. There are no special hardware requirements for running FALCON, but we recommend using a system with at least 16 GB of RAM and a modern CPU to achieve optimal performance. The speed of FALCON increases with the number of CPU cores, as the greedy registration library effectively uses all the available cores.
 
-We're also working on adding support for macOS (both Arm and Intel) and Windows. Stay tuned for updates on these platforms.
+We're also working on a ```pip``` package and also adding support for macOS (both Arm and Intel) and Windows. Stay tuned for updates on these platforms.
 
 If you have any questions or concerns about hardware or software compatibility, please don't hesitate to contact us. We're here to help ensure that you get the most out of FALCON, no matter what platform you're using.
 
 ## ⚙️ Installation
 
-To install FALCON on Ubuntu, ensure that your system meets the software and hardware requirements (see the "Hardware Requirements" section above).
-and follow these simple steps:
+To install FALCON on Ubuntu, ensure that your system meets the software and hardware requirements (see the "Hardware Requirements" section above) and follow these simple steps:
 
 1.) Open a terminal and run the following command to ensure that Git is configured correctly:
 
@@ -100,7 +99,8 @@ In the example above, FALCON is performing deformable registration with 100, 50,
 - If you're in Lazy mode and don't need to specify any additional parameters, you can simply use the following command:
 
 ```bash
-falcon -m /Documents/Sub001 -r deformable
+falcon -m /Documents/Sub001 -r deformable # for whole-body registration
+falcon -m /Doccuments/Sub001 -r rigid # for brain only studies (much faster processing)
 ```
 - If you need help with FALCON or want to review the command line options, you can use the following command:
 
@@ -177,6 +177,7 @@ In submission.
 - [x] Selection of the 'candidate frames' for motion correction using voxelwise NCC criteria [@LalithShiyam](https://github.com/LalithShiyam)
 - [ ] FALCON for Intel Macs and Apple Silicon Macs [@LalithShiyam](https://github.com/LalithShiyam)
 - [ ] Making FALCON as a python package that can be installed via pip. [@LalithShiyam](https://github.com/LalithShiyam)
+- [ ] Webservice (www.enhance.pet) for online motion correction of your datasets using FALCON [@Keyn34](https://github.com/Keyn34) 
 
 ## 🦅 FALCON: An ENHANCE-PET project
 
