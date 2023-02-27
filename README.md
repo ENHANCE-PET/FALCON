@@ -96,12 +96,14 @@ falcon -m /Documents/Sub001 -r deformable -i 100x50x25 -sf 3 -rf -1 # -1 indicat
 ```
 In the example above, FALCON is performing deformable registration with 100, 50, and 25 iterations at each level of the multi-scale registration. The registration will start from the 3rd frame and use the last frame as the reference.
 
-- If you're in Lazy mode and don't need to specify any additional parameters, you can simply use the following command:
+- Here's an example of using FALCON in lazy mode: 
 
 ```bash
 falcon -m /Documents/Sub001 -r deformable # for whole-body registration
-falcon -m /Doccuments/Sub001 -r rigid # for brain only studies (much faster processing)
+falcon -m /Documents/Sub001 -r rigid # for brain only studies (much faster processing)
 ```
+As you can see from above, you don't need to specify a lot of additional parameters. The rest of the paramters are either inferred or set automatically based on common standards. Refer manuscript for more information.
+
 - If you need help with FALCON or want to review the command line options, you can use the following command:
 
 ```bash
