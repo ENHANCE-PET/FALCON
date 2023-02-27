@@ -8,15 +8,6 @@
   <img alt="Shows an illustrated storyboard in light color mode and an inverted storyboard in dark color mode." src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon_story_darkmode.gif" width="500" height="500">
 </p>
 
-## 🚀 FALCON in action
-
-<div align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/QIMP-Team/FALCON/blob/main/Images/black_moco.gif">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/QIMP-Team/FALCON/blob/main/Images/white_moco.gif">
-  <img alt="Shows an illustrated MOOSE story board adopted to different themes" src="https://github.com/QIMP-Team/FALCON/blob/main/Images/white_moco.gif">
-</picture>
-</div>
 
 FALCON (Fast Algorithms for motion correction) is a fully-automatic and powerful tool for performing accurate motion correction in dynamic total-body or whole-body PET imaging. Unlike many existing solutions, FALCON is designed to be vendor, tracer, and organ independent, making it a flexible and reliable choice for a wide range of applications.
 
@@ -25,6 +16,16 @@ Built on top of the fast and efficient greedy registration toolkit, FALCON lever
 FALCON is fully-automatic, which means it requires minimal user input and can be easily integrated into existing workflows. We believe FALCON is an essential tool for anyone working with dynamic brain, total-body or whole-body PET imaging, and we hope you'll find it as useful as we do. If you appreciate the work we've put into FALCON, please consider leaving a star on our GitHub repository. Your feedback and support are greatly appreciated.
 
 Whether you're working in research, clinical care, or industry, FALCON is the ideal choice for dynamic total-body or whole-body PET imaging motion correction. Try it today and experience the benefits of state-of-the-art image processing technology.
+
+### 🚀 FALCON's motion correction in action
+
+<div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/QIMP-Team/FALCON/blob/main/Images/black_moco.gif">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/QIMP-Team/FALCON/blob/main/Images/white_moco.gif">
+  <img alt="Shows an illustrated MOOSE story board adopted to different themes" src="https://github.com/QIMP-Team/FALCON/blob/main/Images/white_moco.gif">
+</picture>
+</div>
 
 ## ⛔️ Hard requirements 
 
