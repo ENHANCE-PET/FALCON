@@ -167,6 +167,11 @@ In the example above, the resulting folder structure shows the main folder conta
 
 In submission.
 
+## 🎦 Videos
+
+- [FALCON motion correction use-cases](https://youtube.com/playlist?list=PLZQERorVWrbeNKLOdJMDi4lARvaK3ceeO)
+- [FALCON installation in your local workstation](https://youtu.be/xkJS2er712Y)
+
 ## 🙏🏽 Acknowledgements
 - This research is supported through an [IBM University Cloud Award](https://www.research.ibm.com/university/). 
 - The storyboard for `FALCON` was made by [Vivian Tseng](https://www.instagram.com/tsengiiii/) from the University of Applied Arts Vienna. 
