@@ -183,6 +183,7 @@ In submission.
 - [x] Cardiac MoCo evaluation [@DrLyngby](https://github.com/DrLyngby)
 - [x] Selection of the 'candidate frames' for motion correction using voxelwise NCC criteria [@LalithShiyam](https://github.com/LalithShiyam)
 - [ ] FALCON for Intel Macs and Apple Silicon Macs [@LalithShiyam](https://github.com/LalithShiyam)
+- [ ] Hold-your-breath: FALCON for Windows [@LalithShiyam](https://github.com/LalithShiyam)
 - [ ] Making FALCON as a python package that can be installed via pip. [@LalithShiyam](https://github.com/LalithShiyam)
 - [ ] Webservice (www.enhance.pet) for online motion correction of your datasets using FALCON [@Keyn34](https://github.com/Keyn34) 
 
