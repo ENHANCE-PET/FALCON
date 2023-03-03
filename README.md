@@ -37,7 +37,7 @@ In this analysis, we are examining the mean image of 20 dynamic frames of a 68Ga
 
 To run FALCON, you'll need a system running Linux OS (e.g.Ubuntu 20.04.4 LTS), with Python version 3.8 or higher installed. There are no special hardware requirements for running FALCON, but we recommend using a system with at least 16 GB of RAM and a modern CPU to achieve optimal performance. The speed of FALCON increases with the number of CPU cores, as the greedy registration library effectively uses all the available cores.
 
-We're also working on a ```pip``` package and also adding support for macOS (both Arm and Intel) and Windows. Stay tuned for updates on these platforms.
+We're also working on a ```pip``` package and also adding support for macOS (both ARM and Intel) and Windows. Stay tuned for updates on these platforms.
 
 If you have any questions or concerns about hardware or software compatibility, please don't hesitate to contact us. We're here to help ensure that you get the most out of FALCON, no matter what platform you're using.
 
@@ -73,7 +73,7 @@ sudo bash falcon_installer.sh
 
 Note: If you already have read/write access, you don't need to use ```sudo```.
 
-The entire installation process should take approximately 5-10 minutes. Once the installation is complete, you can start using FALCON to perform motion correction in your dynamic total-body or whole-body PET images.
+The entire installation process should take approximately 3-5 minutes. Once the installation is complete, you can start using FALCON to perform motion correction in your dynamic total-body or whole-body PET images.
 
 If you encounter any issues during the installation process, please don't hesitate to contact us for assistance. We're here to help ensure that you can use FALCON effectively and efficiently.
 
