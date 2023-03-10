@@ -167,12 +167,12 @@ In the example above, the resulting folder structure shows the main folder conta
 
 If you find our work useful, kindly cite the following articles!
 
-#### Total-body studies validation
+#### Total-body studies (FALCON)
 ```
 Lalith Kumar Shiyam Sundar, Martin Lyngby Lassen, Sebastain Gutschmayer, Daria Ferrara, anna calabro, Josef Yu, Killian Kluge, Yiran Wang, lorenzo Nardo, Phillip Hasbak, Andreas Kjaer, Yasser Abdelhafez, Guobao Wang, Simon R. Cherry, Benjamin A. Spencer, Ramsey Derek Badawi, Thomas Beyer, and Otto Muzik 
 “ Fully-automated, fast motion correction of dynamic whole and total-body PET/CT imaging studies, Accepted JNM 2023"
 ```
-#### Brain studies validation
+#### Brain studies (FALCON)
 ```
 Gutschmayer S, Muzik O, Chalampalakis Z, et al. A scale space theory based motion correction approach for dynamic PET brain imaging studies. Frontiers in Physics. 2022;10:1034783.
 ```
