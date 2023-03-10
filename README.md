@@ -165,10 +165,22 @@ In the example above, the resulting folder structure shows the main folder conta
 
 ## ❤️ Citations
 
+If you find our work useful, kindly cite the following articles!
+
+#### Total-body studies validation
 ```
 Lalith Kumar Shiyam Sundar, Martin Lyngby Lassen, Sebastain Gutschmayer, Daria Ferrara, anna calabro, Josef Yu, Killian Kluge, Yiran Wang, lorenzo Nardo, Phillip Hasbak, Andreas Kjaer, Yasser Abdelhafez, Guobao Wang, Simon R. Cherry, Benjamin A. Spencer, Ramsey Derek Badawi, Thomas Beyer, and Otto Muzik 
 “ Fully-automated, fast motion correction of dynamic whole and total-body PET/CT imaging studies, Accepted JNM 2023"
 ```
+#### Brain studies validation
+```
+Gutschmayer S, Muzik O, Chalampalakis Z, et al. A scale space theory based motion correction approach for dynamic PET brain imaging studies. Frontiers in Physics. 2022;10:1034783.
+```
+#### Greedy registration 
+```
+Venet L, Pati S, Feldman MD, Nasrallah MP, Yushkevich P, Bakas S. Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration. Appl Sci. 2021;11.
+```
+
 ## 🎦 Videos
 
 - [FALCON motion correction use-cases](https://youtube.com/playlist?list=PLZQERorVWrbeNKLOdJMDi4lARvaK3ceeO)
