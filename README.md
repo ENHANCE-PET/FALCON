@@ -21,6 +21,8 @@ FALCON is fully-automatic, which means it requires minimal user input and can be
 
 Whether you're working in research, clinical care, or industry, FALCON is the ideal choice for dynamic total-body or whole-body PET imaging motion correction. Try it today and experience the benefits of state-of-the-art image processing technology.
 
+We would love to know what you are using FALCON for! Please let us know your use-cases [here!](https://github.com/QIMP-Team/FALCON/discussions/42)
+
 ### 🚀 FALCON's motion correction in action
 
 <div align="center">
