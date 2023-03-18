@@ -23,6 +23,10 @@ Whether you're working in research, clinical care, or industry, FALCON is the id
 
 We would love to know what you are using FALCON for! Please let us know your use-cases [here!](https://github.com/QIMP-Team/FALCON/discussions/42)
 
+### 🏥 Commercial availability
+
+We would like to extend an invitation to all interested parties who seek a CE-certified commercial version of FALCON. Please do not hesitate to contact us via email at Lalith.shiyamsundar@meduniwien.ac.at to explore the potential of this cutting-edge technology. We are excited to hear from you and look forward to the opportunity to collaborate on your next project.
+
 ### 🚀 FALCON's motion correction in action
 
 <div align="center">
