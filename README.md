@@ -13,15 +13,15 @@
 </div>
 
 
-FALCON (Fast Algorithms for motion correction) is a fully-automatic and powerful tool for performing accurate motion correction in dynamic total-body or whole-body PET imaging. Unlike many existing solutions, FALCON is designed to be vendor, tracer, and organ independent, making it a flexible and reliable choice for a wide range of applications.
+FALCON (Fast Algorithms for motion correction) is a powerful and fully-automatic tool for motion correction in dynamic total-body or whole-body PET imaging. It is designed to be flexible and reliable for a wide range of applications, regardless of vendor, tracer, or organ.
 
-Built on top of the fast and efficient greedy registration toolkit, FALCON leverages cutting-edge algorithms to quickly and accurately correct for motion artifacts and improve the quality of PET images. With FALCON, researchers and clinicians can obtain clearer, more reliable results, even in challenging imaging scenarios.
+We are pleased to announce that FALCON is free for academic use, making it an accessible and valuable resource for researchers and clinicians alike. With cutting-edge algorithms and minimal user input, FALCON improves the quality of PET images and delivers clearer, more reliable results even in challenging imaging scenarios.
 
-FALCON is fully-automatic, which means it requires minimal user input and can be easily integrated into existing workflows. We believe FALCON is an essential tool for anyone working with dynamic brain, total-body or whole-body PET imaging, and we hope you'll find it as useful as we do. If you appreciate the work we've put into FALCON, please consider leaving a star on our GitHub repository. Your feedback and support are greatly appreciated.
+Built on top of the fast and efficient greedy registration toolkit, FALCON is easily integrated into existing workflows and an essential tool for anyone working with dynamic brain, total-body or whole-body PET imaging. If you appreciate the work we've put into FALCON, please consider leaving a star on our GitHub repository. Your feedback and support are greatly appreciated.
 
-Whether you're working in research, clinical care, or industry, FALCON is the ideal choice for dynamic total-body or whole-body PET imaging motion correction. Try it today and experience the benefits of state-of-the-art image processing technology.
+Whether you're working in research, clinical care, or industry, FALCON is the ideal choice for motion correction in dynamic total-body or whole-body PET imaging. Try it today and experience the benefits of state-of-the-art image processing technology.
 
-We would love to know what you are using FALCON for! Please let us know your use-cases [here!](https://github.com/QIMP-Team/FALCON/discussions/42)
+We would love to know how you are utilizing FALCON for your academic work. Please feel free to share your use-cases and feedback with us in the discussions section of our GitHub repository [here!](https://github.com/QIMP-Team/FALCON/discussions/42)
 
 ### 🏥 Commercial availability
 
