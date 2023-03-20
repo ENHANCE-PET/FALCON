@@ -109,7 +109,10 @@ In the example above, FALCON is performing deformable registration with 100, 50,
 falcon -m /Documents/Sub001 -r deformable # for whole-body registration
 falcon -m /Documents/Sub001 -r rigid # for brain only studies (much faster processing)
 ```
-As you can see from above, you don't need to specify a lot of additional parameters. The rest of the paramters are either inferred or set automatically based on common standards. Refer manuscript for more information.
+As you can see from above, you don't need to specify a lot of additional parameters. The rest of the parameters are either inferred or set automatically based on common standards. 
+
+##### ⚠️ Note
+If you are not happy with the 'inferred' start frame, you can always set it on your own (we have set the internal threshold to be quite safe). Refer manuscript for more information.
 
 - If you need help with FALCON or want to review the command line options, you can use the following command:
 
