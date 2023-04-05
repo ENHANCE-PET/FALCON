@@ -63,7 +63,7 @@ sudo git config --global url."https://".insteadOf git://
 2.) Clone the FALCON repository from GitHub by running the following command:
 
 ```bash
-git clone https://github.com/LalithShiyam/FALCON.git
+git clone https://github.com/QIMP-Team/FALCON.git
 ```
 
 3.) Navigate to the FALCON directory:
