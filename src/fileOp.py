@@ -42,7 +42,7 @@ def display_citation():
     Display manuscript citation
     :return:
     """
-    print(" L. K. Shiyam Sundar et al. “Fully-automated motion correction of dynamic total-body [18F]FDG PET/CT images using greedy diffeomorphisms, To be submitted: JNM 2022")
+    print(" Shiyam Sundar, L. K., Lassen, M. L., Gutschmayer, S., Ferrara, D., Calabrò, A., Yu, J., Kluge, K., Wang, Y., Nardo, L., Hasbak, P., Kjaer, A., Abdelhafez, Y. G., Wang, G., Cherry, S. R., Spencer, B. A., Badawi, R. D., Beyer, T., &amp; Muzik, O. (2023, June 8). Fully automated, fast motion correction of dynamic whole-body and total-body PET/CT Imaging Studies. Journal of Nuclear Medicine. https://jnm.snmjournals.org/content/early/2023/06/08/jnumed.122.265362 ")
     print(" Copyright 2022, Quantitative Imaging and Medical Physics Team, Medical University of Vienna")
 
 
