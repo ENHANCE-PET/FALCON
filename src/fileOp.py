@@ -34,7 +34,7 @@ def display_logo():
     :return:
     """
     print("\n")
-    result = pyfiglet.figlet_format("Falcon v0.1", font="speed")
+    result = pyfiglet.figlet_format("Falcon v1.0", font="speed")
     print(result)
 
 def display_citation():
