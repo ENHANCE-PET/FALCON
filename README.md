@@ -200,15 +200,15 @@ Venet L, Pati S, Feldman MD, Nasrallah MP, Yushkevich P, Bakas S. Accurate and R
 - This research is supported through an [IBM University Cloud Award](https://www.research.ibm.com/university/). 
 - The storyboard for `FALCON` was made by [Vivian Tseng](https://www.instagram.com/tsengiiii/) from the University of Applied Arts Vienna. 
 
-## 🛠  To do
+## 🛠  To do EANM 2023 release candidate
 
 - [x] Brain MoCo evaluation [@Keyn34](https://github.com/Keyn34) 
 - [x] Respiratory MoCo evaluation [@DariaFerrara](https://github.com/DariaFerrara)
 - [x] Cardiac MoCo evaluation [@DrLyngby](https://github.com/DrLyngby)
 - [x] Selection of the 'candidate frames' for motion correction using voxelwise NCC criteria [@LalithShiyam](https://github.com/LalithShiyam)
-- [ ] FALCON for Intel Macs and Apple Silicon Macs [@LalithShiyam](https://github.com/LalithShiyam)
-- [ ] Hold-your-breath: FALCON for Windows [@LalithShiyam](https://github.com/LalithShiyam)
-- [ ] Making FALCON as a python package that can be installed via pip. [@LalithShiyam](https://github.com/LalithShiyam)
+- [x] FALCON for Intel Macs and Apple Silicon Macs [@LalithShiyam](https://github.com/LalithShiyam)
+- [x] Hold-your-breath: FALCON for Windows [@LalithShiyam](https://github.com/LalithShiyam)
+- [x] Making FALCON as a python package that can be installed via pip. [@LalithShiyam](https://github.com/LalithShiyam)
 - [ ] Webservice (www.enhance.pet) for online motion correction of your datasets using FALCON [@Keyn34](https://github.com/Keyn34) 
 
 ## 🦅 FALCON: An ENHANCE-PET project
