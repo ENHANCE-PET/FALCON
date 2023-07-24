@@ -23,7 +23,7 @@ import zipfile
 
 import requests
 
-from pumaz import constants
+from falconz import constants
 
 from rich.console import Console
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, FileSizeColumn, TransferSpeedColumn
