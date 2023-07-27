@@ -42,45 +42,63 @@ def main():
     colorama.init()
 
     parser = argparse.ArgumentParser()
-
-    parser.add_argument("-d", "--image4d_directory", type=str,
-                        help="Subject directory containing the 4d PET images",
-                        required=True)
-    parser.add_argument("-r", "--registration", type=str,
-                        help="Registration method to use. Options: 'rigid', 'affine', 'deformable'",
-                        required=True)
-    parser.add_argument("-rf", "--reference_frame", type=str,
-                        help="Reference frame to use. Default is the last frame",
-                        required=False)
-    parser.add_argument("-sf", "--start_frame", type=str,
-                        help="Start frame to use, if not provided it will be calculated automatically",
-                        required=False)
-
+    parser.add_argument(
+        "-m",
+        "--main_folder",
+        type=str,
+        help="path containing the images to motion correct",
+        required=True,
+    )
+    parser.add_argument(
+        "-rf",
+        "--reference_frame_index",
+        type=int,
+        default=-1,
+        help="index of the reference frame [index starts from 0]",
+    )
+    parser.add_argument(
+        "-sf",
+        "--start_frame",
+        type=int,
+        default=99,
+        help="frame from which the motion correction will be performed"
+    )
+    parser.add_argument(
+        "-r",
+        "--registration",
+        type=str,
+        choices=constants.ALLOWED_REGISTRATION_PARADIGMS,
+        required=True,
+        help="Type of registration: rigid  | affine  | deformable"
+    )
+    parser.add_argument(
+        "-i",
+        "--multi_resolution_iterations",
+        type=str,
+        default=constants.MULTI_RESOLUTION_SCHEME,
+        help="Number of iterations for each resolution level"
+    )
     args = parser.parse_args()
-
-    image_directory = os.path.abspath(args.image4d_directory)
-    registration = args.registration
-
+    validator = InputValidation(args)
+    validator.validate()
 
     display.logo()
     display.citation()
 
     logging.info('----------------------------------------------------------------------------------------------------')
-    logging.info(
-        '                                     STARTING FALCON-Z V.2.0.0                                       ')
+    logging.info('                                     STARTING FALCON-Z V.2.0.0                                      ')
     logging.info('----------------------------------------------------------------------------------------------------')
 
     # ----------------------------------
     # INPUT VALIDATION AND PREPARATION
     # ----------------------------------
 
-    logging.info(' ')
-    logging.info('- Subject directory: ' + image_directory)
-    logging.info(' ')
     print(' ')
     print(f'{constants.ANSI_VIOLET} {emoji.emojize(":memo:")} NOTE:{constants.ANSI_RESET}')
     print(' ')
     display.expectations()
+    display.default_parameters(args)
+    display.derived_parameters(args)
 
     # ----------------------------------
     # DOWNLOADING THE BINARIES
@@ -114,21 +132,4 @@ def main():
     print(f"{constants.ANSI_GREEN} Standardization complete.{constants.ANSI_RESET}")
     logging.info(" Standardization complete.")
 
-    # # -------------------------------------------------
-    # # RUNNING PREPROCESSING AND REGISTRATION PIPELINE
-    # # -------------------------------------------------
-    # # calculate elapsed time for the entire procedure below
-    # start_time = time.time()
-    # print('')
-    # print(f'{constants.ANSI_VIOLET} {emoji.emojize(":rocket:")} RUNNING PREPROCESSING AND REGISTRATION PIPELINE:{constants.ANSI_RESET}')
-    # print('')
-    # logging.info(' ')
-    # logging.info(' RUNNING PREPROCESSING AND REGISTRATION PIPELINE:')
-    # logging.info(' ')
-    # puma_dir, ct_dir, pt_dir = image_processing.preprocess(puma_compliant_subjects)
-    # image_processing.align(puma_dir, ct_dir, pt_dir)
-    # end_time = time.time()
-    # elapsed_time = end_time - start_time
-    # # show elapsed time in minutes and round it to 2 decimal places
-    # elapsed_time = round(elapsed_time / 60, 2)
-    # print(f'{constants.ANSI_GREEN} {emoji.emojize(":hourglass_done:")} Preprocessing and registration complete. Elapsed time: {elapsed_time} minutes!')
+    # ----------------------------------

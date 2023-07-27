@@ -46,11 +46,9 @@ def citation():
     :return:
     """
     print(
-        " Shiyam Sundar, L. K., Lassen, M. L., Gutschmayer, S., Ferrara, D., Calabrò, A., Yu, J., Kluge, K., Wang, Y., "
-        " Nardo, L., Hasbak, P., Kjaer, A., Abdelhafez, Y. G., Wang, G., Cherry, S. R., Spencer, B. A., Badawi, R. D., "
-        " Beyer, T., Muzik, O. (2023, June 8). Fully automated, fast motion correction of dynamic whole-body and "
-        " total-body PET/CT Imaging Studies. Journal of Nuclear Medicine. "
-        " https://jnm.snmjournals.org/content/early/2023/06/08/jnumed.122.265362 ")
+        "Shiyam Sundar, L. K., Lassen, M. L., Muzik, O. (2023, June 8). Fully automated, fast motion correction of "
+        "dynamic whole-body and total-body PET/CT Imaging Studies. Journal of Nuclear Medicine. "
+        "https://jnm.snmjournals.org/content/early/2023/06/08/jnumed.122.265362 ")
     print(" Copyright 2022, Quantitative Imaging and Medical Physics Team, Medical University of Vienna")
 
 
@@ -66,3 +64,47 @@ def expectations():
 
     warning_message = "Only 4D images will be considered in the analysis."
     logging.warning(warning_message)
+
+
+def default_parameters(input_args):
+    """
+    Display default parameters for FALCON
+    :return:
+    """
+    if input_args.reference_frame_index == -1:
+        reference_frame_message = " Reference frame: Last frame"
+    else:
+        reference_frame_message = f" Reference frame: {input_args.reference_frame_index}"
+    if input_args.multi_resolution_iterations.__eq__(constants.MULTI_RESOLUTION_SCHEME):
+        multi_resolution_scheme_message = f" Multi-resolution scheme: {constants.MULTI_RESOLUTION_SCHEME}"
+    else:
+        multi_resolution_scheme_message = f" Multi-resolution scheme: {input_args.multi_resolution_iterations}"
+
+    print(f' Registration type: {input_args.registration} | Shrink level: {constants.SHRINK_LEVEL} | '
+          f'{multi_resolution_scheme_message} | {reference_frame_message}')
+
+
+def derived_parameters(input_args):
+    """
+    Display derived parameters for FALCON
+    :return:
+    """
+    if input_args.registration.__eq__('rigid'):
+        num_jobs, avail_memory, avail_threads = file_utilities.get_number_of_possible_jobs(
+            process_memory=c.MINIMUM_RAM_REQUIRED_RIGID,
+            process_threads=c.MINIMUM_THREADS_REQUIRED_RIGID)
+    elif input_args.registration.__eq__('affine'):
+        num_jobs, avail_memory, avail_threads = file_utilities.get_number_of_possible_jobs(
+            process_memory=c.MINIMUM_RAM_REQUIRED_AFFINE,
+            process_threads=c.MINIMUM_THREADS_REQUIRED_AFFINE)
+    elif input_args.registration.__eq__('deformable'):
+        num_jobs, avail_memory, avail_threads = file_utilities.get_number_of_possible_jobs(
+            process_memory=c.MINIMUM_RAM_REQUIRED_DEFORMABLE,
+            process_threads=c.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
+    else:
+        raise ValueError('Unsupported registration paradigm')
+
+    print(f' Available memory: {avail_memory} GB | Available threads: {avail_threads} | Number of motion correction '
+          f'done in parallel: {num_jobs}')
+    logging.info(f' Available memory: {avail_memory} GB | Available threads: {avail_threads} | Number of motion '
+                 f'correction done in parallel: {num_jobs}')
