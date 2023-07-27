@@ -32,8 +32,6 @@ from falconz import file_utilities
 from falconz import download
 from falconz import resources
 from falconz import image_conversion
-from falconz import input_validation
-from falconz import image_processing
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename=datetime.now().strftime('falconz-v.1.0.0.%H-%M-%d-%m-%Y.log'),
@@ -45,19 +43,31 @@ def main():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-d", "--pet4d_directory", type=str,
+    parser.add_argument("-d", "--image4d_directory", type=str,
                         help="Subject directory containing the 4d PET images",
                         required=True)
+    parser.add_argument("-r", "--registration", type=str,
+                        help="Registration method to use. Options: 'rigid', 'affine', 'deformable'",
+                        required=True)
+    parser.add_argument("-rf", "--reference_frame", type=str,
+                        help="Reference frame to use. Default is the last frame",
+                        required=False)
+    parser.add_argument("-sf", "--start_frame", type=str,
+                        help="Start frame to use, if not provided it will be calculated automatically",
+                        required=False)
 
     args = parser.parse_args()
 
-    subject_folder = os.path.abspath(args.subject_directory)
+    image_directory = os.path.abspath(args.image4d_directory)
+    registration = args.registration
+
 
     display.logo()
     display.citation()
 
     logging.info('----------------------------------------------------------------------------------------------------')
-    logging.info('                                     STARTING FALCON-Z V.2.0.0                                       ')
+    logging.info(
+        '                                     STARTING FALCON-Z V.2.0.0                                       ')
     logging.info('----------------------------------------------------------------------------------------------------')
 
     # ----------------------------------
@@ -65,7 +75,7 @@ def main():
     # ----------------------------------
 
     logging.info(' ')
-    logging.info('- Subject directory: ' + subject_folder)
+    logging.info('- Subject directory: ' + image_directory)
     logging.info(' ')
     print(' ')
     print(f'{constants.ANSI_VIOLET} {emoji.emojize(":memo:")} NOTE:{constants.ANSI_RESET}')
@@ -100,33 +110,25 @@ def main():
     logging.info(' ')
     logging.info(' STANDARDIZING INPUT DATA TO NIFTI:')
     logging.info(' ')
-    image_conversion.standardize_to_nifti(subject_folder)
+    image_conversion.standardize_to_nifti(image_directory)
     print(f"{constants.ANSI_GREEN} Standardization complete.{constants.ANSI_RESET}")
     logging.info(" Standardization complete.")
 
-    # --------------------------------------
-    # CHECKING FOR PUMA COMPLIANT SUBJECTS
-    # --------------------------------------
-
-    tracer_dirs = [os.path.join(subject_folder, d) for d in os.listdir(subject_folder) if
-                   os.path.isdir(os.path.join(subject_folder, d))]
-    puma_compliant_subjects = input_validation.select_puma_compliant_subjects(tracer_dirs, constants.MODALITIES)
-
-    # -------------------------------------------------
-    # RUNNING PREPROCESSING AND REGISTRATION PIPELINE
-    # -------------------------------------------------
-    # calculate elapsed time for the entire procedure below
-    start_time = time.time()
-    print('')
-    print(f'{constants.ANSI_VIOLET} {emoji.emojize(":rocket:")} RUNNING PREPROCESSING AND REGISTRATION PIPELINE:{constants.ANSI_RESET}')
-    print('')
-    logging.info(' ')
-    logging.info(' RUNNING PREPROCESSING AND REGISTRATION PIPELINE:')
-    logging.info(' ')
-    puma_dir, ct_dir, pt_dir = image_processing.preprocess(puma_compliant_subjects)
-    image_processing.align(puma_dir, ct_dir, pt_dir)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    # show elapsed time in minutes and round it to 2 decimal places
-    elapsed_time = round(elapsed_time / 60, 2)
-    print(f'{constants.ANSI_GREEN} {emoji.emojize(":hourglass_done:")} Preprocessing and registration complete. Elapsed time: {elapsed_time} minutes!')
+    # # -------------------------------------------------
+    # # RUNNING PREPROCESSING AND REGISTRATION PIPELINE
+    # # -------------------------------------------------
+    # # calculate elapsed time for the entire procedure below
+    # start_time = time.time()
+    # print('')
+    # print(f'{constants.ANSI_VIOLET} {emoji.emojize(":rocket:")} RUNNING PREPROCESSING AND REGISTRATION PIPELINE:{constants.ANSI_RESET}')
+    # print('')
+    # logging.info(' ')
+    # logging.info(' RUNNING PREPROCESSING AND REGISTRATION PIPELINE:')
+    # logging.info(' ')
+    # puma_dir, ct_dir, pt_dir = image_processing.preprocess(puma_compliant_subjects)
+    # image_processing.align(puma_dir, ct_dir, pt_dir)
+    # end_time = time.time()
+    # elapsed_time = end_time - start_time
+    # # show elapsed time in minutes and round it to 2 decimal places
+    # elapsed_time = round(elapsed_time / 60, 2)
+    # print(f'{constants.ANSI_GREEN} {emoji.emojize(":hourglass_done:")} Preprocessing and registration complete. Elapsed time: {elapsed_time} minutes!')

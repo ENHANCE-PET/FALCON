@@ -46,11 +46,11 @@ def citation():
     :return:
     """
     print(
-        "Shiyam Sundar, L. K., Lassen, M. L., Gutschmayer, S., Ferrara, D., Calabrò, A., Yu, J., Kluge, K., Wang, Y., "
-        "Nardo, L., Hasbak, P., Kjaer, A., Abdelhafez, Y. G., Wang, G., Cherry, S. R., Spencer, B. A., Badawi, R. D., "
-        "Beyer, T., &amp; Muzik, O. (2023, June 8). Fully automated, fast motion correction of dynamic whole-body and "
-        "total-body PET/CT Imaging Studies. Journal of Nuclear Medicine. "
-        "https://jnm.snmjournals.org/content/early/2023/06/08/jnumed.122.265362 ")
+        " Shiyam Sundar, L. K., Lassen, M. L., Gutschmayer, S., Ferrara, D., Calabrò, A., Yu, J., Kluge, K., Wang, Y., "
+        " Nardo, L., Hasbak, P., Kjaer, A., Abdelhafez, Y. G., Wang, G., Cherry, S. R., Spencer, B. A., Badawi, R. D., "
+        " Beyer, T., Muzik, O. (2023, June 8). Fully automated, fast motion correction of dynamic whole-body and "
+        " total-body PET/CT Imaging Studies. Journal of Nuclear Medicine. "
+        " https://jnm.snmjournals.org/content/early/2023/06/08/jnumed.122.265362 ")
     print(" Copyright 2022, Quantitative Imaging and Medical Physics Team, Medical University of Vienna")
 
 
@@ -59,8 +59,8 @@ def expectations():
     Display expected modalities for PUMA. This is used to check if the user has provided the correct set of modalities for each tracer set.
     """
     # display the expected modalities
-    print(f' Expected dimensions: {constants.EXPECTED_DIMENSIONS}')
-    logging.info(f' Expected dimensions: {constants.EXPECTED_DIMENSIONS}')
+    print(f' Expected dimensions: {constants.EXPECTED_DIMENSIONS} | Allowed modalities: {constants.MODALITIES}')
+    logging.info(f' Expected dimensions: {constants.EXPECTED_DIMENSIONS} | Allowed modalities: {constants.MODALITIES}')
     print(
         f"{constants.ANSI_ORANGE} Warning: Only 4D images will be considered in the analysis. {constants.ANSI_RESET}")
 

@@ -50,7 +50,8 @@ setup(
         'rich',
         'pandas',
         'dicom2nifti~=2.4.8',
-        'requests'
+        'requests',
+        'emoji',
     ],
     entry_points={
         'console_scripts': [
