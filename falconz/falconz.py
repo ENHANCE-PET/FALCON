@@ -130,7 +130,7 @@ def main():
     logging.info(' ')
     logging.info(' STANDARDIZING INPUT DATA TO NIFTI:')
     logging.info(' ')
-    image_conversion.standardize_to_nifti(main_folder)
+    image_conversion.standardize_to_nifti(args.main_folder)
     print(f"{constants.ANSI_GREEN} Standardization complete.{constants.ANSI_RESET}")
     logging.info(" Standardization complete.")
 
