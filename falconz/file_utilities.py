@@ -145,7 +145,7 @@ def get_number_of_possible_jobs(process_memory: int, process_threads: int) -> in
 
     # Get currently available resources
     available_memory = psutil.virtual_memory().available
-    available_memory = available_memory / 1024 / 1024 / 1024
+    available_memory = round(available_memory / 1024 / 1024 / 1024)
     available_threads = psutil.cpu_count()
 
     # Calculate number (integer) of possible jobs based on memory and thread number
