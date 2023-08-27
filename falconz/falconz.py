@@ -32,6 +32,8 @@ from falconz import file_utilities
 from falconz import download
 from falconz import resources
 from falconz import image_conversion
+from falconz import input_validation
+from falconz.input_validation import InputValidation
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename=datetime.now().strftime('falconz-v.1.0.0.%H-%M-%d-%m-%Y.log'),
