@@ -91,16 +91,16 @@ def derived_parameters(input_args):
     """
     if input_args.registration.__eq__('rigid'):
         num_jobs, avail_memory, avail_threads = file_utilities.get_number_of_possible_jobs(
-            process_memory=c.MINIMUM_RAM_REQUIRED_RIGID,
-            process_threads=c.MINIMUM_THREADS_REQUIRED_RIGID)
+            process_memory=constants.MINIMUM_RAM_REQUIRED_RIGID,
+            process_threads=constants.MINIMUM_THREADS_REQUIRED_RIGID)
     elif input_args.registration.__eq__('affine'):
         num_jobs, avail_memory, avail_threads = file_utilities.get_number_of_possible_jobs(
-            process_memory=c.MINIMUM_RAM_REQUIRED_AFFINE,
-            process_threads=c.MINIMUM_THREADS_REQUIRED_AFFINE)
+            process_memory=constants.MINIMUM_RAM_REQUIRED_AFFINE,
+            process_threads=constants.MINIMUM_THREADS_REQUIRED_AFFINE)
     elif input_args.registration.__eq__('deformable'):
         num_jobs, avail_memory, avail_threads = file_utilities.get_number_of_possible_jobs(
-            process_memory=c.MINIMUM_RAM_REQUIRED_DEFORMABLE,
-            process_threads=c.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
+            process_memory=constants.MINIMUM_RAM_REQUIRED_DEFORMABLE,
+            process_threads=constants.MINIMUM_THREADS_REQUIRED_DEFORMABLE)
     else:
         raise ValueError('Unsupported registration paradigm')
 
