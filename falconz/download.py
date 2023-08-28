@@ -33,9 +33,15 @@ import time
 def download(item_name, item_path, item_dict):
     """
     Downloads the item (model or binary) for the current system.
+
     :param item_name: The name of the item to download.
+    :type item_name: str
     :param item_path: The path to store the item.
+    :type item_path: str
     :param item_dict: The dictionary containing item info.
+    :type item_dict: dict
+    :return: The path to the downloaded item.
+    :rtype: str
     """
     item_info = item_dict[item_name]
     url = item_info["url"]

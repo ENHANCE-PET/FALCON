@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Author: Lalith Kumar Shiyam Sundar
-#
-# Institution: Medical University of Vienna
-# Research Group: Quantitative Imaging and Medical Physics (QIMP) Team
-# Date: 07.07.2023
-# Version: 2.0.0
-#
-# Description:
-# This module handles image processing for the falconz.
-#
-# Usage:
-# The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
-#
-# ----------------------------------------------------------------------------------------------------------------------
+"""
+.. module:: image_processing
+   :platform: Unix, Windows
+   :synopsis: A module for image processing for the falconz.
+
+.. moduleauthor:: Lalith Kumar Shiyam Sundar <lalith.shiyamsundar@meduniwien.ac.at>
+
+This module handles image processing for the falconz.
+
+Usage:
+    The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
+"""
+
 
 import SimpleITK as sitk
 import logging
@@ -235,6 +233,22 @@ class ImageRegistration:
 
 @delayed
 def align_single_image(fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir):
+    """
+    Aligns a single moving image to the fixed image using the specified registration type.
+
+    :param fixed_img: The path to the fixed image.
+    :type fixed_img: str
+    :param moving_img: The path to the moving image.
+    :type moving_img: str
+    :param registration_type: The type of registration to use.
+    :type registration_type: str
+    :param multi_resolution_iterations: The number of iterations to use for multi-resolution registration.
+    :type multi_resolution_iterations: str
+    :param moco_dir: The directory to store the resampled moving image.
+    :type moco_dir: str
+    :return: 1
+    :rtype: int
+    """
     aligner = ImageRegistration(fixed_img=fixed_img, multi_resolution_iterations=multi_resolution_iterations)
     aligner.set_moving_image(moving_img)
     aligner.registration(registration_type)
@@ -245,7 +259,18 @@ def align_single_image(fixed_img, moving_img, registration_type, multi_resolutio
 
 def align(fixed_img=str, moving_imgs=list, registration_type=str, multi_resolution_iterations=str, moco_dir=str):
     """
-    Aligns the moving_imgs to fixed_img using the specified registration_type.
+    Aligns the moving images to the fixed image using the specified registration type.
+
+    :param fixed_img: The path to the fixed image.
+    :type fixed_img: str
+    :param moving_imgs: A list of paths to the moving images.
+    :type moving_imgs: list
+    :param registration_type: The type of registration to use.
+    :type registration_type: str
+    :param multi_resolution_iterations: The number of iterations to use for multi-resolution registration.
+    :type multi_resolution_iterations: str
+    :param moco_dir: The directory to store the resampled moving images.
+    :type moco_dir: str
     """
     tasks = [
         align_single_image(fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir)
@@ -266,8 +291,12 @@ def align(fixed_img=str, moving_imgs=list, registration_type=str, multi_resoluti
 
 def get_dimensions(nifti_file: str) -> int:
     """
-    Get the dimensions of a NIFTI image file
-    :param nifti_file: NIFTI file to check
+    Get the dimensions of a NIFTI image file.
+
+    :param nifti_file: The path to the NIFTI file.
+    :type nifti_file: str
+    :return: The dimensions of the image.
+    :rtype: int
     """
     nifti_img = sitk.ReadImage(nifti_file)
     img_dim = nifti_img.GetDimension()
@@ -276,8 +305,12 @@ def get_dimensions(nifti_file: str) -> int:
 
 def get_pixel_id_type(nifti_file: str) -> str:
     """
-    Get the pixel id type of a NIFTI image file
-    :param nifti_file: NIFTI file to check
+    Get the pixel ID type of a NIFTI image file.
+
+    :param nifti_file: The path to the NIFTI file.
+    :type nifti_file: str
+    :return: The pixel ID type of the image.
+    :rtype: str
     """
     nifti_img = sitk.ReadImage(nifti_file)
     pixel_id_type = nifti_img.GetPixelIDTypeAsString()
@@ -286,10 +319,14 @@ def get_pixel_id_type(nifti_file: str) -> str:
 
 def get_intensity_statistics(nifti_file: str, multi_label_file: str) -> object:
     """
-    Get the intensity statistics of a NIFTI image file
-    :param nifti_file: NIFTI file to check
-    :param multi_label_file: Multilabel file that is used to calculate the intensity statistics from nifti_file
-    :return: stats_df, a dataframe with the intensity statistics
+    Get the intensity statistics of a NIFTI image file.
+
+    :param nifti_file: The path to the NIFTI file.
+    :type nifti_file: str
+    :param multi_label_file: The path to the multilabel file that is used to calculate the intensity statistics from the NIFTI file.
+    :type multi_label_file: str
+    :return: A pandas dataframe with the intensity statistics.
+    :rtype: pd.DataFrame
     """
     nifti_img = sitk.ReadImage(nifti_file)
     multi_label_img = sitk.ReadImage(multi_label_file)
@@ -305,10 +342,14 @@ def get_intensity_statistics(nifti_file: str, multi_label_file: str) -> object:
 
 def get_body_mask(nifti_file: str, mask_file: str) -> str:
     """
-    Get time activity curves from a 4d nifti file
-    :param nifti_file: 4d nifti file to get the time activity curves from
-    :param mask_file: Name of the mask file that is derived from the 4d nifti file.
-    :return: path of the mask file
+    Get a mask file for a NIFTI image file.
+    
+    :param nifti_file: The path to the NIFTI file.
+    :type nifti_file: str
+    :param mask_file: The path to save the mask file.
+    :type mask_file: str
+    :return: The path to the mask file.
+    :rtype: str
     """
     nifti_masker = NiftiMasker(mask_strategy='epi', memory="nilearn_cache", memory_level=2, smoothing_fwhm=8)
     nifti_masker.fit(nifti_file)
@@ -318,11 +359,16 @@ def get_body_mask(nifti_file: str, mask_file: str) -> str:
 
 def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
     """
-    Mask a NIFTI image file with a mask file
-    :param nifti_file: NIFTI file to mask
-    :param mask_file: Mask file to mask the nifti_file with
-    :param masked_file: Name of the masked file
-    :return: path of the masked nifti file
+    Mask a NIFTI image file with a mask file.
+    
+    :param nifti_file: The path to the NIFTI file.
+    :type nifti_file: str
+    :param mask_file: The path to the mask file.
+    :type mask_file: str
+    :param masked_file: The path to save the masked NIFTI file.
+    :type masked_file: str
+    :return: The path to the masked NIFTI file.
+    :rtype: str
     """
     img = sitk.ReadImage(nifti_file)
     mask = sitk.ReadImage(mask_file, sitk.sitkFloat32)
@@ -335,10 +381,14 @@ def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
 
 def downscale_image(downscale_param: tuple, input_image: str) -> str:
     """
-    Downscales an image based on the shrink factor and writes it to the output directory
-    :param downscale_param: output_dir (str), shrink_factor (int) packed in a tuple
-    :param input_image: input image to downscale
-    :return: path to downscaled image
+    Downscale an image based on the shrink factor and save it to the output directory.
+    
+    :param downscale_param: A tuple containing the output directory (str) and shrink factor (int).
+    :type downscale_param: tuple
+    :param input_image: The path to the input image.
+    :type input_image: str
+    :return: The path to the downscaled image.
+    :rtype: str
     """
     output_dir, shrink_factor = downscale_param
     input_image_name = os.path.basename(input_image)
@@ -372,11 +422,16 @@ def calc_mean_intensity(image: str) -> float:
 
 def calc_voxelwise_ncc_images(image1: str, image2: str, output_dir: str) -> str:
     """
-    Calculates voxelwise normalized cross correlation between two images and writes it to the output directory
-    :param image1: path to the first image
-    :param image2: path to the second image
-    :param output_dir: path to the output directory
-    :return: path to the voxelwise ncc image
+    Calculates voxelwise normalized cross correlation between two images and writes it to the output directory.
+    
+    :param image1: The path to the first image.
+    :type image1: str
+    :param image2: The path to the second image.
+    :type image2: str
+    :param output_dir: The path to the output directory.
+    :type output_dir: str
+    :return: The path to the voxelwise ncc image.
+    :rtype: str
     """
     # get the image names without the extension '.nii.gz'
     image1_name = os.path.basename(image1).split(".")[0]

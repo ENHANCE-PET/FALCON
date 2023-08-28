@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Author: Lalith Kumar Shiyam Sundar
-# Institution: Medical University of Vienna
-# Research Group: Quantitative Imaging and Medical Physics (QIMP) Team
-# Date: 04.07.2023
-# Version: 0.1.0
-#
-# Description:
-# The main module of the falconz. It contains the main function that is executed when the falconz is run.
-#
-# Usage:
-# The variables in this module can be imported and used in other modules within the falconz.
-#
-# ----------------------------------------------------------------------------------------------------------------------
+"""
+.. module:: falconz
+   :platform: Unix, Windows
+   :synopsis: Main module for the FalconZ project.
 
+.. moduleauthor:: Lalith Kumar Shiyam Sundar <lalith.shiyamsundar@meduniwien.ac.at>
+
+"""
+
+# Importing necessary libraries and modules
 
 import argparse
 import logging
@@ -46,7 +41,25 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d
 
 
 def main():
+    """
+    Main function to execute the FalconZ motion correction pipeline.
+    
+    It involves the following steps:
+    
+    1. Initialization (e.g. argument parsing)
+    2. Input validation and preparation
+    3. Downloading necessary binaries
+    4. Standardizing input data
+    5. Performing motion correction
+    6. Cleaning up and finalizing results
+    
+    :param None: This function doesn't take any direct arguments, but processes command line arguments.
+
+    :returns: None. But as a side-effect, produces motion-corrected images and other outputs.
+    """
     colorama.init()
+    
+    # Initialization: Setting up arguments, parsers, etc.
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

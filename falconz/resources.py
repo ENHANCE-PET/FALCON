@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Author: Lalith Kumar Shiyam Sundar
-# Institution: Medical University of Vienna
-# Research Group: Quantitative Imaging and Medical Physics (QIMP) Team
-# Date: 04.07.2023
-# Version: 0.1.0
-#
-# Description:
-# This module contains the urls and filenames of the binaries that are required for the falconz.
-#
-# Usage:
-# The variables in this module can be imported and used in other modules within the falconz to download the necessary
-# binaries for the falconz.
-#
-# ----------------------------------------------------------------------------------------------------------------------
+"""
+.. module:: resources
+   :platform: Unix, Windows
+   :synopsis: A module for storing urls and filenames of the binaries required for the falconz.
+
+.. moduleauthor:: Lalith Kumar Shiyam Sundar <lalith.shiyamsundar@meduniwien.ac.at>
+
+This module contains the urls and filenames of the binaries that are required for the falconz.
+
+Usage:
+    The variables in this module can be imported and used in other modules within the falconz to download the necessary
+    binaries for the falconz.
+"""
+
 
 GREEDY_BINARIES = {
     "greedy-windows-x86_64": {

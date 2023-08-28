@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Author: Lalith Kumar Shiyam Sundar
-#
-# Institution: Medical University of Vienna
-# Research Group: Quantitative Imaging and Medical Physics (QIMP) Team
-# Date: 07.07.2023
-# Version: 2.0.0
-#
-# Description:
-# This module handles image conversion for the falconz.
-#
-# Usage:
-# The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
-#
-# ----------------------------------------------------------------------------------------------------------------------
+"""
+.. module:: image_conversion
+   :platform: Unix, Windows
+   :synopsis: A module to handle image conversion for falconz.
 
+.. moduleauthor:: Lalith Kumar Shiyam Sundar
+
+This module handles image conversion for the falconz.
+
+Usage:
+    The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
+
+"""
 import os
 import SimpleITK
 import pydicom
@@ -34,6 +31,14 @@ from falconz import file_utilities as fop
 
 class ImageConverter:
     def __init__(self, input_directory: str, output_directory: str):
+        """
+        Initializes an ImageConverter object.
+
+        :param input_directory: The path to the input directory.
+        :type input_directory: str
+        :param output_directory: The path to the output directory.
+        :type output_directory: str
+        """
         self.input_directory = input_directory
         self.output_directory = output_directory
         self.split_nifti_directory = os.path.join(self.output_directory, 'split-nifti-files')
@@ -42,6 +47,15 @@ class ImageConverter:
             os.makedirs(self.split_nifti_directory)
 
     def non_nifti_to_nifti(self, input_path: str, output_directory: Optional[str] = None) -> None:
+        """
+        Converts non-NIfTI files to NIfTI format.
+
+        :param input_path: The path to the input file or directory.
+        :type input_path: str
+        :param output_directory: The path to the output directory.
+        :type output_directory: str
+        :return: None
+        """
         if not os.path.exists(input_path):
             print(f"Input path {input_path} does not exist.")
             return
@@ -67,6 +81,16 @@ class ImageConverter:
         SimpleITK.WriteImage(output_image, output_image_path)
 
     def dcm2niix(self, input_path: str, output_dir: str) -> str:
+        """
+        Converts DICOM files to NIfTI format using dcm2niix.
+
+        :param input_path: The path to the input directory.
+        :type input_path: str
+        :param output_dir: The path to the output directory.
+        :type output_dir: str
+        :return: The path to the output directory.
+        :rtype: str
+        """
         # Save the original stdout and stderr file descriptors.
         original_stdout_fd = os.dup(1)
         original_stderr_fd = os.dup(2)
@@ -91,6 +115,14 @@ class ImageConverter:
         return output_dir
 
     def remove_accents(self, unicode_filename):
+        """
+        Removes accents from a Unicode filename.
+
+        :param unicode_filename: The Unicode filename to remove accents from.
+        :type unicode_filename: str
+        :return: The filename without accents.
+        :rtype: str
+        """
         try:
             unicode_filename = str(unicode_filename).replace(" ", "_")
             cleaned_filename = unicodedata.normalize('NFKD', unicode_filename).encode('ASCII', 'ignore').decode('ASCII')
@@ -101,6 +133,14 @@ class ImageConverter:
             return unicode_filename
 
     def is_dicom_file(self, filename):
+        """
+        Determines if a file is a DICOM file.
+
+        :param filename: The name of the file to check.
+        :type filename: str
+        :return: True if the file is a DICOM file, False otherwise.
+        :rtype: bool
+        """
         try:
             pydicom.dcmread(filename)
             return True
@@ -108,6 +148,14 @@ class ImageConverter:
             return False
 
     def create_dicom_lookup(self, dicom_dir):
+        """
+        Creates a dictionary of DICOM file information.
+
+        :param dicom_dir: The path to the directory containing DICOM files.
+        :type dicom_dir: str
+        :return: A dictionary of DICOM file information.
+        :rtype: dict
+        """
         dicom_info = {}
         for filename in os.listdir(dicom_dir):
             full_path = os.path.join(dicom_dir, filename)
@@ -138,6 +186,15 @@ class ImageConverter:
         return dicom_info
 
     def rename_nifti_files(self, nifti_dir, dicom_info):
+        """
+        Renames NIfTI files based on DICOM file information.
+
+        :param nifti_dir: The path to the directory containing NIfTI files.
+        :type nifti_dir: str
+        :param dicom_info: A dictionary of DICOM file information.
+        :type dicom_info: dict
+        :return: None
+        """
         for filename in os.listdir(nifti_dir):
             if filename.endswith('.nii'):
                 modality = dicom_info.get(filename, '')
@@ -147,6 +204,15 @@ class ImageConverter:
                     del dicom_info[filename]
 
     def split4d(self, nifti_file: str, out_dir: str) -> None:
+        """
+        Splits a 4D NIfTI file into 3D NIfTI files.
+
+        :param nifti_file: The path to the 4D NIfTI file.
+        :type nifti_file: str
+        :param out_dir: The path to the output directory.
+        :type out_dir: str
+        :return: None
+        """
         split_nifti_files = nib.funcs.four_to_three(nib.funcs.squeeze_image(nib.load(nifti_file)))
         i = 0
         for file in split_nifti_files:
@@ -156,6 +222,12 @@ class ImageConverter:
             i += 1
 
     def convert(self):
+        """
+        Converts input files to NIfTI format and splits 4D NIfTI files into 3D NIfTI files.
+
+        :return: The path to the directory containing the split NIfTI files.
+        :rtype: str
+        """
         if os.path.isdir(self.input_directory):
             self.non_nifti_to_nifti(self.input_directory, self.output_directory)
         else:

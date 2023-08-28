@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Author: Lalith Kumar Shiyam Sundar
-# Institution: Medical University of Vienna
-# Research Group: Quantitative Imaging and Medical Physics (QIMP) Team
-# Date: 07.006.2023
-# Version: 1.0.0
-#
-# Description:
-# This module contains the functions for performing file operations for the falconz.
-#
-# Usage:
-# The functions in this module can be imported and used in other modules within the falconz to perform file operations.
-#
-# ----------------------------------------------------------------------------------------------------------------------
+"""
+.. module:: File Operations
+   :platform: Unix, Windows
+   :synopsis: A module with utilities to handle file operations for falconz.
+
+.. moduleauthor:: Lalith Kumar Shiyam Sundar <email@example.com>
+
+This module provides various utilities to handle file operations necessary for the falconz project.
+
+Usage:
+    The functions in this module can be imported and used in other modules within the falconz to perform file operations.
+"""
+
 import os
 import glob
 import shutil
@@ -27,6 +26,15 @@ import psutil
 
 
 def set_permissions(file_path, system_type):
+    """
+    Sets permissions for a file based on the system type.
+
+    :param file_path: The path to the file.
+    :type file_path: str
+    :param system_type: The type of the system.
+    :type system_type: str
+    :raises ValueError: If the system type is not supported.
+    """
     if system_type == "windows":
         subprocess.check_call(["icacls", file_path, "/grant", "Everyone:(F)"])
     elif system_type in ["linux", "mac"]:
@@ -36,12 +44,25 @@ def set_permissions(file_path, system_type):
 
 
 def get_virtual_env_root():
+    """
+    Gets the root directory of the virtual environment.
+
+    :return: The root directory of the virtual environment.
+    :rtype: str
+    """
     python_exe = sys.executable
     virtual_env_root = os.path.dirname(os.path.dirname(python_exe))
     return virtual_env_root
 
 
 def get_system():
+    """
+    Gets the system and architecture information.
+
+    :return: A tuple containing the system and architecture information.
+    :rtype: tuple
+    :raises ValueError: If the system or architecture is not supported.
+    """
     system = platform.system().lower()
     architecture = platform.machine().lower()
 
@@ -69,7 +90,9 @@ def get_system():
 def create_directory(directory_path: str):
     """
     Creates a directory at the specified path.
+
     :param directory_path: The path to the directory.
+    :type directory_path: str
     """
     if not os.path.isdir(directory_path):
         os.makedirs(directory_path)
@@ -78,22 +101,37 @@ def create_directory(directory_path: str):
 def get_files(directory_path: str, wildcard: str):
     """
     Gets the files from the specified directory using the wildcard.
+
     :param directory_path: The path to the directory.
+    :type directory_path: str
     :param wildcard: The wildcard to be used.
+    :type wildcard: str
     :return: The list of files.
+    :rtype: list
     """
     return sorted(glob.glob(os.path.join(directory_path, wildcard)))
 
 
 def copy_file(file, destination):
+    """
+    Copies a file to the destination directory.
+
+    :param file: The path to the file.
+    :type file: str
+    :param destination: The path to the destination directory.
+    :type destination: str
+    """
     shutil.copy(file, destination)
 
 
 def copy_files_to_destination(files: list, destination: str):
     """
     Copies the files inside the list to the destination directory in a parallel fashion.
+
     :param files: The list of files to be copied.
+    :type files: list
     :param destination: The path to the destination directory.
+    :type destination: str
     """
     with Pool(processes=len(files)) as pool:
         pool.starmap(copy_file, [(file, destination) for file in files])
@@ -102,9 +140,13 @@ def copy_files_to_destination(files: list, destination: str):
 def select_files_by_modality(tracer_dirs: list, modality_tag: str) -> list:
     """
     Selects the files with the selected modality tag from the tracer directory.
+
     :param tracer_dirs: Path to the tracer directory.
+    :type tracer_dirs: list
     :param modality_tag: The modality tag to be selected.
+    :type modality_tag: str
     :return: The list of selected files.
+    :rtype: list
     """
     selected_files = []
     for tracer_dir in tracer_dirs:
@@ -118,9 +160,13 @@ def select_files_by_modality(tracer_dirs: list, modality_tag: str) -> list:
 def organise_files_by_modality(tracer_dirs: list, modalities: list, pumaz_dir) -> None:
     """
     Organises the files by modality.
-    :param tracer_dirs: The list of tracer directories
+
+    :param tracer_dirs: The list of tracer directories.
+    :type tracer_dirs: list
     :param modalities: The list of modalities.
+    :type modalities: list
     :param pumaz_dir: The path to the pumaz directory.
+    :type pumaz_dir: str
     """
     for modality in modalities:
         files_to_copy = select_files_by_modality(tracer_dirs, modality)
@@ -128,15 +174,27 @@ def organise_files_by_modality(tracer_dirs: list, modalities: list, pumaz_dir) -
 
 
 def move_file(file, destination):
+    """
+    Moves a file to the destination directory.
+
+    :param file: The path to the file.
+    :type file: str
+    :param destination: The path to the destination directory.
+    :type destination: str
+    """
     shutil.move(file, destination)
 
 
 def get_number_of_possible_jobs(process_memory: int, process_threads: int) -> int:
     """
-    Gets the number of available jobs based on system specifications and process parameters
-    :param process_memory: Specify how much memory a process needs
-    :param process_threads: Specify how many threads a process needs
-    :return: Number of possible concurrent jobs as integer number
+    Gets the number of available jobs based on system specifications and process parameters.
+
+    :param process_memory: Specify how much memory a process needs.
+    :type process_memory: int
+    :param process_threads: Specify how many threads a process needs.
+    :type process_threads: int
+    :return: Number of possible concurrent jobs as integer number.
+    :rtype: int
     """
 
     # Calculates minimum memory and thread number for process

@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Author: Lalith Kumar Shiyam Sundar | Sebastian Gutschmayer
-# Institution: Medical University of Vienna
-# Research Group: Quantitative Imaging and Medical Physics (QIMP) Team
-# Date: 04.07.2023
-# Version: 0.1.0
-#
-# Description:
-# This module shows predefined display messages for the falconz.
-#
-# Usage:
-# The functions in this module can be imported and used in other modules within the falconz to show predefined display
-# messages.
-#
-# ----------------------------------------------------------------------------------------------------------------------
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+.. module:: display
+   :platform: Unix, Windows
+   :synopsis: A module with predefined display messages for the falconz.
+
+.. moduleauthor:: Lalith Kumar Shiyam Sundar <lalith.shiyamsundar@meduniwien.ac.at>
+.. moduleauthor:: Sebastian Gutschmayer <sebastian.gutschmayer@meduniwien.ac.at>
+
+This module shows predefined display messages for the falconz.
+
+Usage:
+    The functions in this module can be imported and used in other modules within the falconz to show predefined display messages.
+"""
+
 
 import pyfiglet
 import logging
@@ -25,8 +27,9 @@ from falconz import file_utilities
 
 def logo():
     """
-    Display FALCON logo
-    :return:
+    Display FALCON logo.
+
+    :return: None
     """
     print(' ')
     logo_color_code = constants.ANSI_VIOLET
@@ -42,8 +45,9 @@ def logo():
 
 def citation():
     """
-    Display manuscript citation
-    :return:
+    Display manuscript citation.
+
+    :return: None
     """
     print(
         " Shiyam Sundar, L. K., Lassen, M. L., Muzik, O. (2023, June 8). Fully automated, fast motion correction of "
@@ -55,8 +59,9 @@ def citation():
 def expectations():
     """
     Display expected modalities for PUMA. This is used to check if the user has provided the correct set of modalities for each tracer set.
+
+    :return: None
     """
-    # display the expected modalities
     print(f' Expected dimensions: {constants.EXPECTED_DIMENSIONS} | Allowed modalities: {constants.MODALITIES}')
     logging.info(f' Expected dimensions: {constants.EXPECTED_DIMENSIONS} | Allowed modalities: {constants.MODALITIES}')
     print(
@@ -68,8 +73,11 @@ def expectations():
 
 def default_parameters(input_args):
     """
-    Display default parameters for FALCON
-    :return:
+    Display default parameters for FALCON.
+
+    :param input_args: Input arguments for FALCON.
+    :type input_args: argparse.Namespace
+    :return: None
     """
     if input_args.reference_frame_index == -1:
         reference_frame_message = " Reference frame: Last frame"
@@ -86,8 +94,11 @@ def default_parameters(input_args):
 
 def derived_parameters(input_args):
     """
-    Display derived parameters for FALCON
-    :return:
+    Display derived parameters for FALCON.
+
+    :param input_args: Input arguments for FALCON.
+    :type input_args: argparse.Namespace
+    :return: None
     """
     if input_args.registration.__eq__('rigid'):
         num_jobs, avail_memory, avail_threads = file_utilities.get_number_of_possible_jobs(
@@ -112,4 +123,3 @@ def derived_parameters(input_args):
     if input_args.start_frame == 99:
         print(f' {constants.ANSI_ORANGE}Warning: Start frame not provided. It will be calculated on the fly. '
               f'{constants.ANSI_RESET}')
-
