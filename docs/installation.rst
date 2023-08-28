@@ -60,5 +60,5 @@ After you're done, you can deactivate the virtual environment:
 Support
 -------
 
-For any installation issues or further assistance, refer to the `documentation <link_to_docs>`_ or `contact us <link_to_contact>`_.
+For any installation issues or further assistance, refer to the `documentation <https://falconz.readthedocs.io/en/latest/>`_ or `contact us <https://github.com/QIMP-Team/FALCON/issues>`_.
 
