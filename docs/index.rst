@@ -10,6 +10,14 @@ Welcome to falconz's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   introduction
+   requirements
+   installation
+   usage_guide
+   contribute
+   qimp_philosophy
+   modules
+
 
 
 Indices and tables
@@ -18,3 +26,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
