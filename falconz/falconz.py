@@ -13,27 +13,27 @@
 # Importing necessary libraries and modules
 
 import argparse
+import colorama
+import emoji
 import logging
+import multiprocessing
 import os
+import shutil
 import sys
 import time
 from datetime import datetime
-import colorama
-import emoji
 
-from falconz import display
 from falconz import constants
-from falconz import file_utilities
+from falconz import display
 from falconz import download
-from falconz import resources
+from falconz import file_utilities
 from falconz import image_conversion
 from falconz import input_validation
-from falconz.input_validation import InputValidation
-from falconz.image_conversion import ImageConverter, merge3d
+from falconz import resources
 from falconz.constants import FALCON_WORKING_FOLDER
+from falconz.image_conversion import ImageConverter, merge3d
 from falconz.image_processing import determine_candidate_frames, align
-import multiprocessing
-import shutil
+from falconz.input_validation import InputValidation
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename=datetime.now().strftime('falconz-v.1.0.0.%H-%M-%d-%m-%Y.log'),
@@ -58,7 +58,7 @@ def main():
     :returns: None. But as a side-effect, produces motion-corrected images and other outputs.
     """
     colorama.init()
-    
+
     # Initialization: Setting up arguments, parsers, etc.
 
     parser = argparse.ArgumentParser()
@@ -175,7 +175,7 @@ def main():
     if args.start_frame == 99:
         n_jobs = multiprocessing.cpu_count()
         start_frame_file = determine_candidate_frames(candidate_frames, reference_file, falcon_dir,
-                                                      round(n_jobs/2))
+                                                      round(n_jobs / 2))
         # find the index of the start_frame_file in the org_nifti_files list
         start_frame = org_nifti_files.index(start_frame_file)
     # everything from and after start_frame will be motion corrected and will be called moving frames
@@ -194,14 +194,14 @@ def main():
     moco_dir = os.path.join(falcon_dir, constants.MOCO_FOLDER)
     file_utilities.create_directory(moco_dir)
     align(fixed_img=reference_file, moving_imgs=moving_frames, registration_type=args.registration,
-                    multi_resolution_iterations=args.multi_resolution_iterations, moco_dir=moco_dir)
+          multi_resolution_iterations=args.multi_resolution_iterations, moco_dir=moco_dir)
 
     # ----------------------------------
     # CLEANING UP
     # ----------------------------------
 
     # CLEAN TRANSFORMS
-    transforms_dir = os.path.join(falcon_dir,constants.TRANSFORMS_FOLDER)
+    transforms_dir = os.path.join(falcon_dir, constants.TRANSFORMS_FOLDER)
     file_utilities.create_directory(transforms_dir)
     for transform_keyword in constants.TRANSFORMS_KEYWORD:
         transform_files = file_utilities.get_files(split_nifti_dir, transform_keyword)
@@ -222,9 +222,7 @@ def main():
         moco_non_moco_frame = os.path.join(moco_dir, constants.MOCO_PREFIX + non_moco_frame_name)
         shutil.copy(non_moco_frame, moco_non_moco_frame)
 
-
     # MERGE THE 3D MOCO FRAMES TO A 4D NIFTI FILE
-    merge3d(moco_dir,constants.MOCO_PREFIX+'*', os.path.join(moco_dir,constants.MOCO_4D_FILE_NAME))
+    merge3d(moco_dir, constants.MOCO_PREFIX + '*', os.path.join(moco_dir, constants.MOCO_4D_FILE_NAME))
     print(f'{constants.ANSI_GREEN} Motion correction complete: '
           f'Results in {moco_dir} | 4D MoCo file: {constants.MOCO_4D_FILE_NAME}{constants.ANSI_RESET}')
-

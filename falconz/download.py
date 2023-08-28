@@ -19,15 +19,13 @@
 
 import logging
 import os
-import zipfile
-
 import requests
-
-from falconz import constants
-
+import time
+import zipfile
 from rich.console import Console
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, FileSizeColumn, TransferSpeedColumn
-import time
+
+from falconz import constants
 
 
 def download(item_name, item_path, item_dict):

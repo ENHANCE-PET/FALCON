@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -18,9 +18,9 @@ Usage:
     The functions in this module can be imported and used in other modules within the falconz to show predefined display messages.
 """
 
-
-import pyfiglet
 import logging
+import pyfiglet
+
 from falconz import constants
 from falconz import file_utilities
 
@@ -58,7 +58,7 @@ def citation():
 
 def expectations():
     """
-    Display expected modalities for PUMA. This is used to check if the user has provided the correct set of modalities for each tracer set.
+    Display expected modalities for FALCON. This is used to check if the user has provided the correct set of modalities for each tracer set.
 
     :return: None
     """

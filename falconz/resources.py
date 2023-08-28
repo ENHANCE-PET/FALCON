@@ -15,7 +15,6 @@ Usage:
     binaries for the falconz.
 """
 
-
 GREEDY_BINARIES = {
     "greedy-windows-x86_64": {
         "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/greedy-windows-x86_64.zip",
@@ -38,7 +37,6 @@ GREEDY_BINARIES = {
         "directory": "greedy-mac-arm64",
     },
 }
-
 
 C3D_BINARIES = {
     "c3d-windows-x86_64": {

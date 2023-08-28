@@ -14,18 +14,19 @@ Usage:
     The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
 
 """
-import os
 import SimpleITK
-import pydicom
+import contextlib
+import dcm2niix
 import dicom2nifti
+import io
+import logging
 import nibabel as nib
+import os
+import pydicom
 import re
 import unicodedata
-import contextlib
-import io
 from typing import Optional
-import dcm2niix
-import logging
+
 from falconz import file_utilities as fop
 
 
@@ -250,8 +251,6 @@ class ImageConverter:
             print(" Error: Motion correction cannot be performed on a single 3D image.")
 
         return self.split_nifti_directory
-
-
 
 
 def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:

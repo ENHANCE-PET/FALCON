@@ -14,7 +14,6 @@ Usage:
     The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
 """
 
-
 import SimpleITK as sitk
 import logging
 import multiprocessing
@@ -24,18 +23,18 @@ import pandas as pd
 import pathlib
 import re
 import subprocess
+from dask import delayed, compute
 from halo import Halo
 from mpire import WorkerPool
+from multiprocessing import Pool
 from nilearn.input_data import NiftiMasker
+from rich.progress import Progress, BarColumn, TextColumn
 from skimage.metrics import structural_similarity as ssim
 from tqdm import tqdm
 
 from falconz import constants
 from falconz import file_utilities as fop
 from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION
-from rich.progress import Progress, BarColumn, TextColumn
-from multiprocessing import Pool
-from dask import delayed, compute
 
 
 class ImageRegistration:
@@ -288,6 +287,7 @@ def align(fixed_img=str, moving_imgs=list, registration_type=str, multi_resoluti
         for count, _ in enumerate(compute(*tasks), 1):
             progress.update(task, advance=1,
                             description=f"[cyan] Aligning moving images to the reference frame [{count}/{total_images}]")
+
 
 def get_dimensions(nifti_file: str) -> int:
     """

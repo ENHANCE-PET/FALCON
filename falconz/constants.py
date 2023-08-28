@@ -8,8 +8,9 @@ The variables in this module can be imported and used in other modules within th
 """
 
 import os
-from falconz import file_utilities
 from datetime import datetime
+
+from falconz import file_utilities
 
 # Get the root directory of the virtual environment
 project_root = file_utilities.get_virtual_env_root()
@@ -58,7 +59,7 @@ NCC_RADIUS = '4x4x4'
 # Define the file names and folder names used in the FALCONZ pipeline
 MOCO_PREFIX = 'moco_'
 ALIGNED_PREFIX = 'aligned_'
-TRANSFORMS_KEYWORD = ['*warp.nii.gz','*rigid.mat','*affine.mat']
+TRANSFORMS_KEYWORD = ['*warp.nii.gz', '*rigid.mat', '*affine.mat']
 MOCO_4D_FILE_NAME = 'moco_4D.nii.gz'
 FALCON_WORKING_FOLDER = 'FALCONZ-V02' + '-' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 TRANSFORMS_FOLDER = 'transforms'

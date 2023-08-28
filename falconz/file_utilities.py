@@ -14,15 +14,15 @@ Usage:
     The functions in this module can be imported and used in other modules within the falconz to perform file operations.
 """
 
-import os
 import glob
-import shutil
-import sys
+import os
 import platform
-from multiprocessing import Pool
+import psutil
+import shutil
 import stat
 import subprocess
-import psutil
+import sys
+from multiprocessing import Pool
 
 
 def set_permissions(file_path, system_type):

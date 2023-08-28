@@ -13,8 +13,9 @@ This module handles input validation for the falconz.
 Usage:
     The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
 """
-import os
 import logging
+import os
+
 
 class InputValidation:
     """
