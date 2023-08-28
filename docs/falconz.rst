@@ -15,7 +15,7 @@ falconz.constants module
 falconz.display module
 ----------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.display
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ falconz.display module
 falconz.download module
 -----------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.download
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ falconz.download module
 falconz.falconz module
 ----------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.falconz
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,7 +39,7 @@ falconz.falconz module
 falconz.file\_utilities module
 ------------------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.file_utilities
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ falconz.file\_utilities module
 falconz.image\_conversion module
 --------------------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.image_conversion
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ falconz.image\_conversion module
 falconz.image\_processing module
 --------------------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.image_processing
    :members:
    :undoc-members:
    :show-inheritance:
@@ -63,7 +63,7 @@ falconz.image\_processing module
 falconz.input\_validation module
 --------------------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.input_validation
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,7 +71,7 @@ falconz.input\_validation module
 falconz.resources module
 ------------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.resources
    :members:
    :undoc-members:
    :show-inheritance:
