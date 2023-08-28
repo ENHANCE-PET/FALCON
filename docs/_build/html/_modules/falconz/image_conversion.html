@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>falconz.image_conversion &mdash; FALCONZ 2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            FALCONZ
+              <img src="../../_static/Falcon-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">FALCON: The Forefront of PET Imaging Motion Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../requirements.html">FALCON System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide for FalconZ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage_guide.html">FALCON Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Strengthen FalconZ: Report Bugs and Improvements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">falconz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FALCONZ</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">falconz.image_conversion</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for falconz.image_conversion</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: image_conversion</span>
+<span class="sd">   :platform: Unix, Windows</span>
+<span class="sd">   :synopsis: A module to handle image conversion for falconz.</span>
+
+<span class="sd">.. moduleauthor:: Lalith Kumar Shiyam Sundar</span>
+
+<span class="sd">This module handles image conversion for the falconz.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">    The functions in this module can be imported and used in other modules within the falconz to perform image conversion.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">SimpleITK</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">dcm2niix</span>
+<span class="kn">import</span> <span class="nn">dicom2nifti</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pydicom</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">unicodedata</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">falconz</span> <span class="kn">import</span> <span class="n">file_utilities</span> <span class="k">as</span> <span class="n">fop</span>
+
+
+<div class="viewcode-block" id="ImageConverter"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter">[docs]</a><span class="k">class</span> <span class="nc">ImageConverter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes an ImageConverter object.</span>
+
+<span class="sd">        :param input_directory: The path to the input directory.</span>
+<span class="sd">        :type input_directory: str</span>
+<span class="sd">        :param output_directory: The path to the output directory.</span>
+<span class="sd">        :type output_directory: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_directory</span> <span class="o">=</span> <span class="n">input_directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span> <span class="o">=</span> <span class="n">output_directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_nifti_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">,</span> <span class="s1">&#39;split-nifti-files&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_nifti_directory</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_nifti_directory</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ImageConverter.non_nifti_to_nifti"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.non_nifti_to_nifti">[docs]</a>    <span class="k">def</span> <span class="nf">non_nifti_to_nifti</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts non-NIfTI files to NIfTI format.</span>
+
+<span class="sd">        :param input_path: The path to the input file or directory.</span>
+<span class="sd">        :type input_path: str</span>
+<span class="sd">        :param output_directory: The path to the output directory.</span>
+<span class="sd">        :type output_directory: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input path </span><span class="si">{</span><span class="n">input_path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
+            <span class="n">dicom_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_dicom_lookup</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+            <span class="n">nifti_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dcm2niix</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rename_nifti_files</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">,</span> <span class="n">dicom_info</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;.nii&#39;</span><span class="p">)):</span>
+                <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output_image</span> <span class="o">=</span> <span class="n">SimpleITK</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+                <span class="n">output_image_basename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.nii&quot;</span>
+
+        <span class="k">if</span> <span class="n">output_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+
+        <span class="n">output_image_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">output_image_basename</span><span class="p">)</span>
+        <span class="n">SimpleITK</span><span class="o">.</span><span class="n">WriteImage</span><span class="p">(</span><span class="n">output_image</span><span class="p">,</span> <span class="n">output_image_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageConverter.dcm2niix"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.dcm2niix">[docs]</a>    <span class="k">def</span> <span class="nf">dcm2niix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts DICOM files to NIfTI format using dcm2niix.</span>
+
+<span class="sd">        :param input_path: The path to the input directory.</span>
+<span class="sd">        :type input_path: str</span>
+<span class="sd">        :param output_dir: The path to the output directory.</span>
+<span class="sd">        :type output_dir: str</span>
+<span class="sd">        :return: The path to the output directory.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Save the original stdout and stderr file descriptors.</span>
+        <span class="n">original_stdout_fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">dup</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">original_stderr_fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">dup</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Open a null file to redirect the output.</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">null_file</span><span class="p">:</span>
+            <span class="n">null_fd</span> <span class="o">=</span> <span class="n">null_file</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
+
+            <span class="c1"># Redirect stdout and stderr to the null file.</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">null_fd</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">null_fd</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dcm2niix</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s1">&#39;-z&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">input_path</span><span class="p">])</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="c1"># Restore the original stdout and stderr file descriptors.</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">original_stdout_fd</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">original_stderr_fd</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">original_stdout_fd</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">original_stderr_fd</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output_dir</span></div>
+
+<div class="viewcode-block" id="ImageConverter.remove_accents"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.remove_accents">[docs]</a>    <span class="k">def</span> <span class="nf">remove_accents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unicode_filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes accents from a Unicode filename.</span>
+
+<span class="sd">        :param unicode_filename: The Unicode filename to remove accents from.</span>
+<span class="sd">        :type unicode_filename: str</span>
+<span class="sd">        :return: The filename without accents.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">unicode_filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">unicode_filename</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">cleaned_filename</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s1">&#39;NFKD&#39;</span><span class="p">,</span> <span class="n">unicode_filename</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ASCII&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ASCII&#39;</span><span class="p">)</span>
+            <span class="n">cleaned_filename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^\w\s-]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">cleaned_filename</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">cleaned_filename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[-\s]+&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">cleaned_filename</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cleaned_filename</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">unicode_filename</span></div>
+
+<div class="viewcode-block" id="ImageConverter.is_dicom_file"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.is_dicom_file">[docs]</a>    <span class="k">def</span> <span class="nf">is_dicom_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if a file is a DICOM file.</span>
+
+<span class="sd">        :param filename: The name of the file to check.</span>
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :return: True if the file is a DICOM file, False otherwise.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pydicom</span><span class="o">.</span><span class="n">dcmread</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">InvalidDicomError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="ImageConverter.create_dicom_lookup"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.create_dicom_lookup">[docs]</a>    <span class="k">def</span> <span class="nf">create_dicom_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dicom_dir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a dictionary of DICOM file information.</span>
+
+<span class="sd">        :param dicom_dir: The path to the directory containing DICOM files.</span>
+<span class="sd">        :type dicom_dir: str</span>
+<span class="sd">        :return: A dictionary of DICOM file information.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dicom_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dicom_dir</span><span class="p">):</span>
+            <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dicom_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dicom_file</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
+                <span class="n">ds</span> <span class="o">=</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">dcmread</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+                <span class="n">series_number</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">SeriesNumber</span> <span class="k">if</span> <span class="s1">&#39;SeriesNumber&#39;</span> <span class="ow">in</span> <span class="n">ds</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">series_description</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">SeriesDescription</span> <span class="k">if</span> <span class="s1">&#39;SeriesDescription&#39;</span> <span class="ow">in</span> <span class="n">ds</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">sequence_name</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">SequenceName</span> <span class="k">if</span> <span class="s1">&#39;SequenceName&#39;</span> <span class="ow">in</span> <span class="n">ds</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">protocol_name</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">ProtocolName</span> <span class="k">if</span> <span class="s1">&#39;ProtocolName&#39;</span> <span class="ow">in</span> <span class="n">ds</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">series_instance_UID</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">SeriesInstanceUID</span> <span class="k">if</span> <span class="s1">&#39;SeriesInstanceUID&#39;</span> <span class="ow">in</span> <span class="n">ds</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">Modality</span> <span class="o">==</span> <span class="s1">&#39;PT&#39;</span><span class="p">:</span>
+                    <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;PET&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">modality</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">Modality</span>
+
+                <span class="k">if</span> <span class="n">series_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">base_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_accents</span><span class="p">(</span><span class="n">series_number</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">series_description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">anticipated_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_filename</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_accents</span><span class="p">(</span><span class="n">series_description</span><span class="p">)</span><span class="si">}</span><span class="s2">.nii&quot;</span>
+                    <span class="k">elif</span> <span class="n">sequence_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">anticipated_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_filename</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_accents</span><span class="p">(</span><span class="n">sequence_name</span><span class="p">)</span><span class="si">}</span><span class="s2">.nii&quot;</span>
+                    <span class="k">elif</span> <span class="n">protocol_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">anticipated_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_filename</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_accents</span><span class="p">(</span><span class="n">protocol_name</span><span class="p">)</span><span class="si">}</span><span class="s2">.nii&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">anticipated_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_accents</span><span class="p">(</span><span class="n">series_instance_UID</span><span class="p">)</span><span class="si">}</span><span class="s2">.nii&quot;</span>
+
+                <span class="n">dicom_info</span><span class="p">[</span><span class="n">anticipated_filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">modality</span>
+        <span class="k">return</span> <span class="n">dicom_info</span></div>
+
+<div class="viewcode-block" id="ImageConverter.rename_nifti_files"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.rename_nifti_files">[docs]</a>    <span class="k">def</span> <span class="nf">rename_nifti_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nifti_dir</span><span class="p">,</span> <span class="n">dicom_info</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renames NIfTI files based on DICOM file information.</span>
+
+<span class="sd">        :param nifti_dir: The path to the directory containing NIfTI files.</span>
+<span class="sd">        :type nifti_dir: str</span>
+<span class="sd">        :param dicom_info: A dictionary of DICOM file information.</span>
+<span class="sd">        :type dicom_info: dict</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.nii&#39;</span><span class="p">):</span>
+                <span class="n">modality</span> <span class="o">=</span> <span class="n">dicom_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">modality</span><span class="p">:</span>
+                    <span class="n">new_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">,</span> <span class="n">new_filename</span><span class="p">))</span>
+                    <span class="k">del</span> <span class="n">dicom_info</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ImageConverter.split4d"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.split4d">[docs]</a>    <span class="k">def</span> <span class="nf">split4d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Splits a 4D NIfTI file into 3D NIfTI files.</span>
+
+<span class="sd">        :param nifti_file: The path to the 4D NIfTI file.</span>
+<span class="sd">        :type nifti_file: str</span>
+<span class="sd">        :param out_dir: The path to the output directory.</span>
+<span class="sd">        :type out_dir: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">split_nifti_files</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">funcs</span><span class="o">.</span><span class="n">four_to_three</span><span class="p">(</span><span class="n">nib</span><span class="o">.</span><span class="n">funcs</span><span class="o">.</span><span class="n">squeeze_image</span><span class="p">(</span><span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">)))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">split_nifti_files</span><span class="p">:</span>
+            <span class="c1"># vol should be named as vol0000.nii, vol0001.nii, etc.</span>
+
+            <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="s1">&#39;vol&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.nii.gz&#39;</span><span class="p">))</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="ImageConverter.convert"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts input files to NIfTI format and splits 4D NIfTI files into 3D NIfTI files.</span>
+
+<span class="sd">        :return: The path to the directory containing the split NIfTI files.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_directory</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">non_nifti_to_nifti</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_directory</span><span class="si">}</span><span class="s2"> is not a directory.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">nifti_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_directory</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">&#39;.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;.nii.gz&#39;</span><span class="p">)):</span>
+                    <span class="n">nifti_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">nifti_files</span><span class="p">:</span>
+            <span class="n">nifti_image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nifti_image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">split4d</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_nifti_directory</span><span class="p">)</span>
+                <span class="n">nifti_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nifti_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Error: Motion correction cannot be performed on a single 3D image.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_nifti_directory</span></div></div>
+
+
+<div class="viewcode-block" id="merge3d"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.merge3d">[docs]</a><span class="k">def</span> <span class="nf">merge3d</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wild_card</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nifti_outfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merge 3D NIFTI files into a 4D NIFTI file using nibabel</span>
+<span class="sd">    :param nifti_dir: Directory containing the 3D NIFTI files</span>
+<span class="sd">    :param wild_card: Wildcard to use to find the 3D NIFTI files</span>
+<span class="sd">    :param nifti_outfile: User-defined output file name for the 4D NIFTI file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Merging 3D nifti files in </span><span class="si">{</span><span class="n">nifti_dir</span><span class="si">}</span><span class="s2"> with wildcard </span><span class="si">{</span><span class="n">wild_card</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">files_to_merge</span> <span class="o">=</span> <span class="n">fop</span><span class="o">.</span><span class="n">get_files</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">,</span> <span class="n">wild_card</span><span class="p">)</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nib</span><span class="o">.</span><span class="n">funcs</span><span class="o">.</span><span class="n">concat_images</span><span class="p">(</span><span class="n">files_to_merge</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="n">nifti_outfile</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Quantitative Imaging and Medical Physics Team, Medical University of Vienna.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
