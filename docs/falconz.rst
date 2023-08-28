@@ -7,7 +7,7 @@ Submodules
 falconz.constants module
 ------------------------
 
-.. automodule:: falconz
+.. automodule:: falconz.constants
    :members:
    :undoc-members:
    :show-inheritance:
