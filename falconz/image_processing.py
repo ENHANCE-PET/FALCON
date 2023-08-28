@@ -78,13 +78,12 @@ class ImageRegistration:
         """
         Sets the moving image for registration and updates the transform files if specified.
 
-        Parameters:
-        -----------
-        moving_img : str
-            Path to the moving/source image.
-        update_transforms : bool, default=True
-            If True, will update the paths for the transformation files based on the moving image name.
+        :param moving_img: Path to the moving/source image.
+        :type moving_img: str
+        :param update_transforms: If True, will update the paths for the transformation files based on the moving image name. Default is True.
+        :type update_transforms: bool
         """
+
         self.moving_img = moving_img
         if update_transforms:
             out_dir = pathlib.Path(self.moving_img).parent

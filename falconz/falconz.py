@@ -28,7 +28,6 @@ from falconz import display
 from falconz import download
 from falconz import file_utilities
 from falconz import image_conversion
-from falconz import input_validation
 from falconz import resources
 from falconz.constants import FALCON_WORKING_FOLDER
 from falconz.image_conversion import ImageConverter, merge3d

@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Author: Lalith Kumar Shiyam Sundar
-# Institution: Medical University of Vienna
-# Research Group: Quantitative Imaging and Medical Physics (QIMP) Team
-# Date: 04.07.2023
-# Version: 0.1.0
-#
-# Description:
-# This module downloads the necessary binaries and models for the falconz.
-#
-# Usage:
-# The functions in this module can be imported and used in other modules within the pumaz to download the necessary
-# binaries and models for the falconz.
-#
-# ----------------------------------------------------------------------------------------------------------------------
+"""
+.. module:: download
+   :synopsis: This module downloads the necessary binaries and models for the falconz.
+
+.. moduleauthor:: Lalith Kumar Shiyam Sundar <lalith.email@example.com>
+
+.. note::
+   Research Group: Quantitative Imaging and Medical Physics (QIMP) Team
+
+**Version**: 0.1.0
+
+**Date**: 04.07.2023
+
+Usage
+-----
+The functions in this module can be imported and used in other modules within the falconz to download the necessary
+binaries and models for the falconz.
+"""
 
 import logging
 import os
