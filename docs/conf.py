@@ -39,8 +39,8 @@ html_static_path = ['_static']
 # GitHub linking for "Edit on Github" feature
 html_context = {
     "display_github": True,
-    "github_user": "LalithShiyam",
-    "github_repo": "MOOSE",
+    "github_user": "QIMP-Team",
+    "github_repo": "FALCON",
     "github_version": "main",
     "conf_py_path": "/docs/",
 }
