@@ -46,7 +46,7 @@ def citation():
     :return:
     """
     print(
-        "Shiyam Sundar, L. K., Lassen, M. L., Muzik, O. (2023, June 8). Fully automated, fast motion correction of "
+        " Shiyam Sundar, L. K., Lassen, M. L., Muzik, O. (2023, June 8). Fully automated, fast motion correction of "
         "dynamic whole-body and total-body PET/CT Imaging Studies. Journal of Nuclear Medicine. "
         "https://jnm.snmjournals.org/content/early/2023/06/08/jnumed.122.265362 ")
     print(" Copyright 2022, Quantitative Imaging and Medical Physics Team, Medical University of Vienna")

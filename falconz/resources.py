@@ -39,3 +39,27 @@ GREEDY_BINARIES = {
         "directory": "greedy-mac-arm64",
     },
 }
+
+
+C3D_BINARIES = {
+    "c3d-windows-x86_64": {
+        "url": "https://c3d.s3.eu.cloud-object-storage.appdomain.cloud/c3d-windows-x86_64.zip",
+        "filename": "c3d-windows-x86_64.zip",
+        "directory": "c3d-windows-x86_64",
+    },
+    "c3d-linux-x86_64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/c3d-linux-x86_64.zip",
+        "filename": "c3d-linux-x86_64.zip",
+        "directory": "c3d-linux-x86_64",
+    },
+    "c3d-mac-x86_64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/c3d-mac-x86_64.zip",
+        "filename": "c3d-mac-x86_64.zip",
+        "directory": "c3d-mac-x86_64",
+    },
+    "c3d-mac-arm64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/c3d-mac-arm64.zip",
+        "filename": "c3d-mac-arm64.zip",
+        "directory": "c3d-mac-arm64",
+    },
+}

@@ -64,7 +64,7 @@ def download(item_name, item_path, item_dict):
         )
 
         with progress:
-            task = progress.add_task("[white] Downloading system specific registration binaries", total=total_size)
+            task = progress.add_task(f"[white] Downloading system specific binaries: {item_name}", total=total_size)
             for chunk in response.iter_content(chunk_size=chunk_size):
                 open(filename, "ab").write(chunk)
                 progress.update(task, advance=chunk_size)
@@ -85,7 +85,7 @@ def download(item_name, item_path, item_dict):
         with progress:
             with zipfile.ZipFile(filename, 'r') as zip_ref:
                 total_size = sum((file.file_size for file in zip_ref.infolist()))
-                task = progress.add_task("[white] Extracting system specific registration binaries",
+                task = progress.add_task(f"[white] Extracting system specific binaries: {item_name}",
                                          total=total_size)
                 # Get the parent directory of 'directory'
                 parent_directory = os.path.dirname(directory)
@@ -98,11 +98,11 @@ def download(item_name, item_path, item_dict):
 
         # Delete the zip file
         os.remove(filename)
-        print(f"{constants.ANSI_GREEN} Registration binaries - download complete. {constants.ANSI_RESET}")
-        logging.info(f" Registration binaries - download complete.")
+        print(f"{constants.ANSI_GREEN} Binaries - download complete. {constants.ANSI_RESET}")
+        logging.info(f" Binaries - download complete.")
     else:
-        print(f"{constants.ANSI_GREEN} A local instance of the system specific registration binary has been detected. "
+        print(f"{constants.ANSI_GREEN} A local instance of {item_name} binaries has been detected. "
               f"{constants.ANSI_RESET}")
-        logging.info(f" A local instance of registration binary has been detected.")
+        logging.info(f" A local instance of {item_name} has been detected.")
 
     return os.path.join(item_path, item_name)

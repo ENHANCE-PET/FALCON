@@ -34,146 +34,235 @@ from tqdm import tqdm
 
 from falconz import constants
 from falconz import file_utilities as fop
+from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION
+from rich.progress import Progress, BarColumn, TextColumn
+from multiprocessing import Pool
 from dask import delayed, compute
 
-class GreedyException(Exception):
-    pass
 
+class ImageRegistration:
+    """
+    A class for performing image registration using the Greedy method.
 
-class GreedyCommand:
-    def __init__(self, cmd_name, fixed_img, moving_img, cost_function, multi_resolution_iterations, dof, out_file):
-        self.cmd_name = cmd_name
+    Attributes:
+    -----------
+    fixed_img : str
+        Path to the fixed/target image for registration.
+    multi_resolution_iterations : str
+        String specifying the number of iterations at each resolution level.
+    fixed_mask : str, optional
+        Path to a mask for the fixed image. If provided, only the masked region of the fixed image will be used in the registration.
+    moving_img : str, optional
+        Path to the moving/source image to be registered to the fixed image.
+    transform_files : dict, optional
+        Dictionary containing paths to the output transformation files for each registration type.
+    """
+
+    def __init__(self, fixed_img: str, multi_resolution_iterations: str, fixed_mask: str = None):
+        """
+        Initializes the ImageRegistration class.
+
+        Parameters:
+        -----------
+        fixed_img : str
+            Path to the fixed/target image.
+        multi_resolution_iterations : str
+            String specifying the number of iterations at each resolution level.
+        fixed_mask : str, optional
+            Path to the mask of the fixed image.
+        """
         self.fixed_img = fixed_img
-        self.moving_img = moving_img
-        self.cost_function = cost_function
+        self.fixed_mask = fixed_mask
         self.multi_resolution_iterations = multi_resolution_iterations
-        self.dof = dof
-        self.out_file = out_file
+        self.moving_img = None
+        self.transform_files = None
 
-    def _generate_command(self):
-        return f"greedy -d 3 -a -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} -ia-image-centers -dof {self.dof} -o {re.escape(self.out_file)} -n {self.multi_resolution_iterations} -m {self.cost_function}"
+    def set_moving_image(self, moving_img: str, update_transforms: bool = True):
+        """
+        Sets the moving image for registration and updates the transform files if specified.
 
-    def run(self):
-        cmd = self._generate_command()
-        result = subprocess.run(cmd, shell=True, capture_output=True)
+        Parameters:
+        -----------
+        moving_img : str
+            Path to the moving/source image.
+        update_transforms : bool, default=True
+            If True, will update the paths for the transformation files based on the moving image name.
+        """
+        self.moving_img = moving_img
+        if update_transforms:
+            out_dir = pathlib.Path(self.moving_img).parent
+            moving_img_filename = pathlib.Path(self.moving_img).name
+            self.transform_files = {
+                'rigid': os.path.join(out_dir, f"{moving_img_filename}_rigid.mat"),
+                'affine': os.path.join(out_dir, f"{moving_img_filename}_affine.mat"),
+                'warp': os.path.join(out_dir, f"{moving_img_filename}_warp.nii.gz"),
+                'inverse_warp': os.path.join(out_dir, f"{moving_img_filename}_inverse_warp.nii.gz")
+            }
 
-        if result.returncode != 0:
-            raise GreedyException(f"Command '{cmd}' failed with error: {result.stderr}")
+    def rigid(self) -> str:
+        """
+        Perform rigid registration between the moving and fixed images.
 
+        Returns:
+        --------
+        str
+            Path to the resulting rigid transformation file.
+        """
+        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
+                     f"{mask_cmd} -ia-image-centers -dof 6 -o {re.escape(self.transform_files['rigid'])} " \
+                     f"-n {self.multi_resolution_iterations} -m {COST_FUNCTION}"
+        subprocess.run(cmd_to_run, shell=True, capture_output=True)
         logging.info(
-            f"{self.cmd_name} alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} | Aligned image: moco-{pathlib.Path(self.moving_img).name} | Cost function: {self.cost_function} | Initial alignment: Image centers | Transform file: {pathlib.Path(self.out_file).name}")
+            f"Rigid alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} | Aligned image: "
+            f"moco-{pathlib.Path(self.moving_img).name} | Transform file: {pathlib.Path(self.transform_files['rigid']).name}")
+        return self.transform_files['rigid']
 
-        return self.out_file
+    def affine(self) -> str:
+        """
+        Perform affine registration between the moving and fixed images.
 
+        Returns:
+        --------
+        str
+            Path to the resulting affine transformation file.
+        """
+        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
+                     f"{mask_cmd} -ia-image-centers -dof 12 -o {re.escape(self.transform_files['affine'])} " \
+                     f"-n {self.multi_resolution_iterations} -m {COST_FUNCTION}"
+        subprocess.run(cmd_to_run, shell=True, capture_output=True)
+        logging.info(
+            f"Affine alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} |"
+            f" Aligned image: moco-{pathlib.Path(self.moving_img).name} | Transform file: {pathlib.Path(self.transform_files['affine']).name}")
+        return self.transform_files['affine']
 
-class Registration:
-    def __init__(self, fixed_img, moving_img, cost_function, multi_resolution_iterations):
-        self.fixed_img = fixed_img
-        self.moving_img = moving_img
-        self.cost_function = cost_function
-        self.multi_resolution_iterations = multi_resolution_iterations
-        self.out_dir = pathlib.Path(moving_img).parent
-        self.moving_img_filename = pathlib.Path(moving_img).name
+    def deformable(self) -> tuple:
+        """
+        Perform deformable registration between the moving and fixed images.
 
-    def register(self):
-        raise NotImplementedError
+        Returns:
+        --------
+        tuple
+            A tuple containing paths to the resulting affine, warp, and inverse warp transformation files.
+        """
+        self.affine()
+        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -m {COST_FUNCTION} -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
+                     f"{mask_cmd} -it {re.escape(self.transform_files['affine'])} -o {re.escape(self.transform_files['warp'])} " \
+                     f"-oinv {re.escape(self.transform_files['inverse_warp'])} -sv -n {self.multi_resolution_iterations}"
+        subprocess.run(cmd_to_run, shell=True, capture_output=True)
+        logging.info(
+            f"Deformable alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} | "
+            f"Aligned image: moco-{pathlib.Path(self.moving_img).name} | "
+            f"Initial alignment: {pathlib.Path(self.transform_files['affine']).name}"
+            f" | warp file: {pathlib.Path(self.transform_files['warp']).name}")
+        return self.transform_files['affine'], self.transform_files['warp'], self.transform_files['inverse_warp']
 
+    def registration(self, registration_type: str) -> None:
+        """
+        Register the moving image to the fixed image using the specified registration type.
 
-class RigidRegistration(Registration):
-    def register(self):
-        rigid_transform_file = os.path.join(self.out_dir, f"{self.moving_img_filename}_rigid.mat")
-        cmd = GreedyCommand("Rigid", self.fixed_img, self.moving_img, self.cost_function,
-                            self.multi_resolution_iterations, 6, rigid_transform_file)
-        return cmd.run()
-
-
-class AffineRegistration(Registration):
-    def register(self):
-        affine_transform_file = os.path.join(self.out_dir, f"{self.moving_img_filename}_affine.mat")
-        cmd = GreedyCommand("Affine", self.fixed_img, self.moving_img, self.cost_function,
-                            self.multi_resolution_iterations, 12, affine_transform_file)
-        return cmd.run()
-
-
-class DeformableRegistration(Registration):
-    def register(self):
-        warp_file = os.path.join(self.out_dir, f"{self.moving_img_filename}_warp.nii.gz")
-        inverse_warp_file = os.path.join(self.out_dir, f"{self.moving_img_filename}_inverse_warp.nii.gz")
-        affine_transform_file = AffineRegistration(self.fixed_img, self.moving_img, self.cost_function,
-                                                   self.multi_resolution_iterations).register()
-        cmd = GreedyCommand("Deformable", self.fixed_img, self.moving_img, self.cost_function,
-                            self.multi_resolution_iterations, 6, warp_file)
-        return cmd.run()
-
-
-class ImageResampler:
-    def __init__(self, fixed_img, moving_img, resampled_moving_img, registration_type, segmentation="",
-                 resampled_seg=""):
-        self.fixed_img = fixed_img
-        self.moving_img = moving_img
-        self.resampled_moving_img = resampled_moving_img
-        self.registration_type = registration_type
-        self.segmentation = segmentation
-        self.resampled_seg = resampled_seg
-        self.out_dir = pathlib.Path(moving_img).parent
-        self.moving_img_file = pathlib.Path(moving_img).name
-
-    def resample(self):
-        if self.registration_type == 'rigid':
-            transform_file = os.path.join(self.out_dir, f"{self.moving_img_file}_rigid.mat")
-        elif self.registration_type == 'affine':
-            transform_file = os.path.join(self.out_dir, f"{self.moving_img_file}_affine.mat")
-        elif self.registration_type == 'deformable':
-            transform_file = os.path.join(self.out_dir, f"{self.moving_img_file}_warp.nii.gz")
+        Parameters:
+        -----------
+        registration_type : str
+            Type of registration to perform. Supported values are 'rigid', 'affine', and 'deformable'.
+        """
+        if registration_type == 'rigid':
+            self.rigid()
+        elif registration_type == 'affine':
+            self.affine()
+        elif registration_type == 'deformable':
+            self.deformable()
         else:
-            raise GreedyException("Registration type not supported!")
+            sys.exit("Registration type not supported!")
 
-        if self.segmentation and self.resampled_seg:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(self.fixed_img)} -ri LINEAR -rm {re.escape(self.moving_img)} " \
-                         f"{re.escape(self.resampled_moving_img)} -ri LABEL 0.2vox -rm {re.escape(self.segmentation)} " \
-                         f"{re.escape(self.resampled_seg)} -r {re.escape(transform_file)}"
-        else:
-            cmd_to_run = f"greedy -d 3 -rf {re.escape(self.fixed_img)} -ri LINEAR -rm {re.escape(self.moving_img)} " \
-                         f"{re.escape(self.resampled_moving_img)} -r {re.escape(transform_file)}"
+    def resample(self, resampled_moving_img: str, registration_type: str, segmentation="", resampled_seg="") -> None:
+        """
+        Resample the moving image based on the computed transformation.
 
+        Parameters:
+        -----------
+        resampled_moving_img : str
+            Path to save the resampled moving image.
+        registration_type : str
+            Type of registration used. Supported values are 'rigid', 'affine', and 'deformable'.
+        segmentation : str, optional
+            Path to the segmentation of the moving image.
+        resampled_seg : str, optional
+            Path to save the resampled segmentation.
+        """
+        if registration_type == 'rigid':
+            cmd_to_run = self._build_cmd(resampled_moving_img, segmentation, resampled_seg,
+                                         self.transform_files['rigid'])
+        elif registration_type == 'affine':
+            cmd_to_run = self._build_cmd(resampled_moving_img, segmentation, resampled_seg,
+                                         self.transform_files['affine'])
+        elif registration_type == 'deformable':
+            cmd_to_run = self._build_cmd(resampled_moving_img, segmentation, resampled_seg,
+                                         self.transform_files['warp'], self.transform_files['affine'])
         subprocess.run(cmd_to_run, shell=True, capture_output=True)
 
+    def _build_cmd(self, resampled_moving_img: str, segmentation: str, resampled_seg: str,
+                   *transform_files: str) -> str:
+        """
+        Build the command for the greedy registration tool.
 
-class ImageAligner:
-    def __init__(self, n_jobs):
-        self.n_jobs = n_jobs
+        Parameters:
+        -----------
+        resampled_moving_img : str
+            Path to save the resampled moving image.
+        segmentation : str
+            Path to the segmentation of the moving image.
+        resampled_seg : str
+            Path to save the resampled segmentation.
+        *transform_files : str
+            Paths to the transformation files used for resampling.
 
-    def align(self, fixed_img, moving_imgs, registration_type, multi_resolution_iterations, moco_dir):
-        logging.info("Aligning images...")
+        Returns:
+        --------
+        str
+            The command string to run.
+        """
+        cmd = f"{GREEDY_PATH} -d 3 -rf {re.escape(self.fixed_img)} -ri LINEAR -rm " \
+              f"{re.escape(self.moving_img)} {re.escape(resampled_moving_img)}"
+        if segmentation and resampled_seg:
+            cmd += f" -ri LABEL 0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)}"
+        for transform_file in transform_files:
+            cmd += f" -r {re.escape(transform_file)}"
+        return cmd
 
-        with multiprocessing.Pool(self.n_jobs) as p:
-            max_ = len(moving_imgs)
-            with tqdm(total=max_, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt}', ncols=70, colour='violet') as pbar:
-                for i, _ in tqdm(enumerate(p.imap_unordered(self.align_single, [
-                    (fixed_img, img, registration_type, multi_resolution_iterations, moco_dir) for img in
-                    moving_imgs]))):
-                    pbar.update()
-                    if pbar.n == max_:
-                        pbar.colour = 'green'
 
-    def align_single(self, align_param):
-        fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir = align_param
+@delayed
+def align_single_image(fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir):
+    aligner = ImageRegistration(fixed_img=fixed_img, multi_resolution_iterations=multi_resolution_iterations)
+    aligner.set_moving_image(moving_img)
+    aligner.registration(registration_type)
+    aligner.resample(resampled_moving_img=os.path.join(moco_dir, constants.MOCO_PREFIX + os.path.basename(moving_img)),
+                     registration_type=registration_type)
+    return 1
 
-        if registration_type == 'rigid':
-            registration = RigidRegistration(fixed_img, moving_img, 'NMI', multi_resolution_iterations)
-        elif registration_type == 'affine':
-            registration = AffineRegistration(fixed_img, moving_img, 'NMI', multi_resolution_iterations)
-        elif registration_type == 'deformable':
-            registration = DeformableRegistration(fixed_img, moving_img, 'NCC 2x2x2', multi_resolution_iterations)
-        else:
-            raise GreedyException("Registration type not supported!")
 
-        registration.register()
+def align(fixed_img=str, moving_imgs=list, registration_type=str, multi_resolution_iterations=str, moco_dir=str):
+    """
+    Aligns the moving_imgs to fixed_img using the specified registration_type.
+    """
+    tasks = [
+        align_single_image(fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir)
+        for moving_img in moving_imgs
+    ]
 
-        resampler = ImageResampler(fixed_img, moving_img,
-                                   os.path.join(moco_dir, 'moco-' + pathlib.Path(moving_img).name), registration_type)
-        resampler.resample()
+    total_images = len(moving_imgs)
 
+    # Initialize the progress bar
+    with Progress() as progress:
+        task_description = f"[cyan] Aligning moving images to the reference frame [0/{total_images}]"
+        task = progress.add_task(task_description, total=total_images)
+
+        # Using dask to compute results and update the progress bar
+        for count, _ in enumerate(compute(*tasks), 1):
+            progress.update(task, advance=1,
+                            description=f"[cyan] Aligning moving images to the reference frame [{count}/{total_images}]")
 
 def get_dimensions(nifti_file: str) -> int:
     """
@@ -244,82 +333,91 @@ def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
     return masked_file
 
 
-class FrameSelector:
-
-    def __init__(self, n_jobs, ncc_radius=constants.NCC_RADIUS, ncc_threshold=constants.NCC_THRESHOLD):
-        self.n_jobs = n_jobs
-        self.ncc_radius = ncc_radius
-        self.ncc_threshold = ncc_threshold
-
-    def _gaussian_smoothing(self, image, variance):
-        """Smooth the image using Gaussian blur."""
-        return sitk.SmoothingRecursiveGaussian(image, variance)
-
-    def downscale_image(self, downscale_param: tuple, input_image: str) -> str:
-        output_dir, shrink_factor = downscale_param
-        input_image_name = os.path.basename(input_image)
-        input_image_sitk = sitk.ReadImage(input_image)
-
-        # Blur the input image first
-        input_image_blurred = self._gaussian_smoothing(input_image_sitk, (shrink_factor / 2) ** 2)
-        blurred_path = os.path.join(output_dir, f"{shrink_factor}x_blurred_{input_image_name}")
-        sitk.WriteImage(input_image_blurred, blurred_path)
-
-        # Resample the smoothed input image
-        resample_factor = [1.0 / shrink_factor] * input_image_sitk.GetDimension()
-        resampler = sitk.ResampleImageFilter()
-        resampler.SetSize([int(sz * rf) for sz, rf in zip(input_image_sitk.GetSize(), resample_factor)])
-        resampler.SetOutputSpacing([sp * rf for sp, rf in zip(input_image_sitk.GetSpacing(), resample_factor)])
-        input_image_downscaled = resampler.Execute(input_image_blurred)
-        downscaled_path = os.path.join(output_dir, f"{shrink_factor}x_downscaled_{input_image_name}")
-        sitk.WriteImage(input_image_downscaled, downscaled_path)
-
-        return downscaled_path
-
-    @delayed
-    def calc_mean_intensity(self, image: str) -> float:
-        image_sitk = sitk.ReadImage(image)
-        return sitk.GetArrayViewFromImage(image_sitk).mean()
+def downscale_image(downscale_param: tuple, input_image: str) -> str:
+    """
+    Downscales an image based on the shrink factor and writes it to the output directory
+    :param downscale_param: output_dir (str), shrink_factor (int) packed in a tuple
+    :param input_image: input image to downscale
+    :return: path to downscaled image
+    """
+    output_dir, shrink_factor = downscale_param
+    input_image_name = os.path.basename(input_image)
+    # Blur the input image first
+    input_image_blurred = os.path.join(output_dir, f"{shrink_factor}x_blurred_{input_image_name}")
+    gauss_variance = (shrink_factor / 2) ** 2
+    gauss_variance = int(gauss_variance)
+    cmd_to_smooth = f"{C3D_PATH} {re.escape(input_image)} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
+                    f" {re.escape(input_image_blurred)} "
+    subprocess.run(cmd_to_smooth, shell=True, capture_output=False)
+    # Resample the smoothed input image later
+    input_image_downscaled = os.path.join(output_dir, f"{shrink_factor}x_downscaled_{input_image_name}")
+    shrink_percentage = str(int(100 / shrink_factor))
+    cmd_to_downscale = f"{C3D_PATH} {re.escape(input_image_blurred)} -resample {shrink_percentage}x{shrink_percentage}x" \
+                       f"{shrink_percentage}% -o {re.escape(input_image_downscaled)}"
+    subprocess.run(cmd_to_downscale, shell=True, capture_output=False)
+    return input_image_downscaled
 
 
-    @delayed
-    def calc_voxelwise_ncc_images(self, image1: str, image2: str, output_dir: str) -> str:
-        # Get the names of the images without extensions
-        image1_name = os.path.basename(image1).split(".")[0]
-        image2_name = os.path.basename(image2).split(".")[0]
+# Calculate the mean intensity of an image using SimpleITK
+def calc_mean_intensity(image: str) -> float:
+    """
+    Calculates the mean intensity of an image using SimpleITK
+    :param image: path to the image
+    :return: mean intensity of the image
+    :rtype: float
+    """
+    image = sitk.ReadImage(image, sitk.sitkFloat32)
+    return sitk.GetArrayFromImage(image).mean()
 
-        # Specify the output path for the resulting NCC image
-        output_image = os.path.join(output_dir, f"ncc_{image2_name}.nii.gz")
 
-        # Load the images using SimpleITK
-        image1_sitk = sitk.ReadImage(image1)
-        image2_sitk = sitk.ReadImage(image2)
+def calc_voxelwise_ncc_images(image1: str, image2: str, output_dir: str) -> str:
+    """
+    Calculates voxelwise normalized cross correlation between two images and writes it to the output directory
+    :param image1: path to the first image
+    :param image2: path to the second image
+    :param output_dir: path to the output directory
+    :return: path to the voxelwise ncc image
+    """
+    # get the image names without the extension '.nii.gz'
+    image1_name = os.path.basename(image1).split(".")[0]
+    image2_name = os.path.basename(image2).split(".")[0]
+    output_image = os.path.join(output_dir, f"ncc_{image2_name}.nii.gz")
+    c3d_cmd = f"{C3D_PATH} {re.escape(image1)} {re.escape(image2)} -ncc {NCC_RADIUS} -o {re.escape(output_image)}"
+    subprocess.run(c3d_cmd, shell=True, capture_output=False)
+    # clip the negative correlations to zero
+    c3d_cmd = f"{C3D_PATH} {re.escape(output_image)} -clip 0 inf -o {re.escape(output_image)}"
+    subprocess.run(c3d_cmd, shell=True, capture_output=False)
+    return output_image
 
-        # Create a filter to calculate NCC and set the radius
-        ncc_filter = sitk.NormalizedCorrelationImageFilter()
-        # Execute the filter to get the NCC image
-        ncc_image = ncc_filter.Execute(image1_sitk, image2_sitk, image1_sitk)
-        # Clamp the image to remove negative values
-        ncc_image = sitk.Clamp(ncc_image, lowerBound=0)
 
-        # Save the result
-        sitk.WriteImage(ncc_image, output_image)
+def determine_candidate_frames(candidate_files: list, reference_file: str, output_dir: str, njobs: int) -> int:
+    """
+    Determines the candidate frames of a 4D PET series on which motion correction can be performed effectively
+    :param candidate_files: list of 3D candidate moving PET files
+    :param reference_file: path to the reference PET file
+    :param output_dir: path to the parent directory of the candidate files
+    :param njobs: number of jobs to run in parallel
+    :return:  Index of the starting frame from which motion correction can be performed
+    :rtype: int
+    """
+    # Get the parent directory for pet_files
+    falcon_dir = output_dir
 
-        return output_image
+    # Create the folder to dump the ncc images
+    ncc_dir = os.path.join(falcon_dir, "ncc-images")
+    fop.create_directory(ncc_dir)
 
-    def determine_candidate_frames(self, candidate_files: list, reference_file: str, output_dir: str) -> int:
-        ncc_dir = os.path.join(output_dir, "ncc-images")
-        fop.create_directory(ncc_dir)
-        print(ncc_dir)
+    # using mpire to run the ncc calculation in parallel
+    with WorkerPool(njobs) as pool:
+        ncc_images = pool.map(calc_voxelwise_ncc_images, [(reference_file, file, ncc_dir) for file in candidate_files])
 
-        ncc_images = [self.calc_voxelwise_ncc_images(reference_file, file, ncc_dir) for file in candidate_files]
-        ncc_images = compute(*ncc_images)  # Execute parallel computation
-
-        mean_intensities = [self.calc_mean_intensity(ncc_image) for ncc_image in ncc_images]
-        mean_intensities = compute(*mean_intensities)  # Execute parallel computation
-
-        max_observed_ncc = sum(sorted(mean_intensities, reverse=True)[:3]) / 3
-        candidate_frames = [i for i, mean_intensity in enumerate(mean_intensities) if
-                            mean_intensity > self.ncc_threshold * max_observed_ncc]
-
-        return candidate_frames[0]
+    ncc_images = fop.get_files(ncc_dir, "ncc_*.nii.gz")
+    # calculate the mean intensity of files in the ncc folder and store it as mean_intensities
+    mean_intensities = [calc_mean_intensity(ncc_image) for ncc_image in ncc_images]
+    # calculate the average value of the top 3 mean intensities
+    max_observed_ncc = sum(sorted(mean_intensities, reverse=True)[:3]) / 3
+    # Identify the indices of the frames with mean intensity greater than NCC_THRESHOLD * max_observed_ncc
+    candidate_frames = [i for i, mean_intensity in enumerate(mean_intensities) if
+                        mean_intensity > NCC_THRESHOLD * max_observed_ncc]
+    # return the filenames corresponding to the candidate frames
+    return candidate_files[candidate_frames[0]]

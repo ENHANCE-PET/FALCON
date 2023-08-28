@@ -82,7 +82,7 @@ def get_files(directory_path: str, wildcard: str):
     :param wildcard: The wildcard to be used.
     :return: The list of files.
     """
-    return glob.glob(os.path.join(directory_path, wildcard))
+    return sorted(glob.glob(os.path.join(directory_path, wildcard)))
 
 
 def copy_file(file, destination):

@@ -34,10 +34,11 @@ from falconz import resources
 from falconz import image_conversion
 from falconz import input_validation
 from falconz.input_validation import InputValidation
-from falconz.image_conversion import ImageConverter
+from falconz.image_conversion import ImageConverter, merge3d
 from falconz.constants import FALCON_WORKING_FOLDER
-from falconz.image_processing import FrameSelector
+from falconz.image_processing import determine_candidate_frames, align
 import multiprocessing
+import shutil
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename=datetime.now().strftime('falconz-v.1.0.0.%H-%M-%d-%m-%Y.log'),
@@ -122,6 +123,9 @@ def main():
     download.download(item_name=f'greedy-{system_os}-{system_arch}', item_path=binary_path,
                       item_dict=resources.GREEDY_BINARIES)
     file_utilities.set_permissions(constants.GREEDY_PATH, system_os)
+    download.download(item_name=f'c3d-{system_os}-{system_arch}', item_path=binary_path,
+                      item_dict=resources.C3D_BINARIES)
+    file_utilities.set_permissions(constants.C3D_PATH, system_os)
 
     # ----------------------------------
     # INPUT STANDARDIZATION
@@ -147,22 +151,67 @@ def main():
     # MOTION CORRECTION
     # ----------------------------------
 
-    org_nifti_files = [os.path.join(split_nifti_dir, f) for f in os.listdir(split_nifti_dir)
-                       if f.endswith(('.nii', '.nii.gz')) and os.path.isfile(os.path.join(split_nifti_dir, f))]
+    org_nifti_files = file_utilities.get_files(split_nifti_dir, '*.nii')
+    if len(org_nifti_files) == 0:
+        org_nifti_files = file_utilities.get_files(split_nifti_dir, '*.nii.gz')
     reference_file = org_nifti_files[args.reference_frame_index]
-    moving_files = [f for f in org_nifti_files if f != reference_file]
+    candidate_frames = org_nifti_files.copy()
+    candidate_frames.remove(reference_file)
     start_frame = args.start_frame
+    # choose start frame automatically if not specified
     if args.start_frame == 99:
         n_jobs = multiprocessing.cpu_count()
-        frame_selector = FrameSelector(n_jobs)
-        start_frame = frame_selector.determine_candidate_frames(org_nifti_files, reference_file, falcon_dir)
-
+        start_frame_file = determine_candidate_frames(candidate_frames, reference_file, falcon_dir,
+                                                      round(n_jobs/2))
+        # find the index of the start_frame_file in the org_nifti_files list
+        start_frame = org_nifti_files.index(start_frame_file)
+    # everything from and after start_frame will be motion corrected and will be called moving frames
+    moving_frames = org_nifti_files[start_frame:]
+    moving_frames.remove(reference_file)
+    # everything before that will not be motion corrected and will be called non-moco frames
+    non_moco_frames = org_nifti_files[:start_frame]
     print('')
-    print(f'{constants.ANSI_VIOLET} {emoji.emojize(":running:")} PERFORMING MOTION CORRECTION:{constants.ANSI_RESET}')
+    print(f'{constants.ANSI_VIOLET} {emoji.emojize(":eagle:")} PERFORMING MOTION CORRECTION:{constants.ANSI_RESET}')
     print('')
     logging.info(' ')
     logging.info(' PERFORMING MOTION CORRECTION:')
     logging.info(' ')
-    print(f' Number of files to motion correct: {len(moving_files)} | Reference file: '
+    print(f' Number of files to motion correct: {len(candidate_frames)} | Reference file: '
           f'{os.path.basename(reference_file)} | Start frame: {start_frame}')
+    moco_dir = os.path.join(falcon_dir, constants.MOCO_FOLDER)
+    file_utilities.create_directory(moco_dir)
+    align(fixed_img=reference_file, moving_imgs=moving_frames, registration_type=args.registration,
+                    multi_resolution_iterations=args.multi_resolution_iterations, moco_dir=moco_dir)
+
+    # ----------------------------------
+    # CLEANING UP
+    # ----------------------------------
+
+    # CLEAN TRANSFORMS
+    transforms_dir = os.path.join(falcon_dir,constants.TRANSFORMS_FOLDER)
+    file_utilities.create_directory(transforms_dir)
+    for transform_keyword in constants.TRANSFORMS_KEYWORD:
+        transform_files = file_utilities.get_files(split_nifti_dir, transform_keyword)
+        if len(transform_files) > 0:
+            for transform_file in transform_files:
+                shutil.move(transform_file, transforms_dir)
+        else:
+            continue
+
+    # COPY THE REFERENCE FRAME FROM THE SPLIT NIFTI FOLDER TO THE MOCO FOLDER WITH MOCO PREFIX
+    reference_file_name = os.path.basename(reference_file)
+    moco_reference_file = os.path.join(moco_dir, constants.MOCO_PREFIX + reference_file_name)
+    shutil.copy(reference_file, moco_reference_file)
+
+    # COPY THE NON-MOCO FRAMES FROM THE SPLIT NIFTI FOLDER TO THE MOCO FOLDER WITH MOCO PREFIX
+    for non_moco_frame in non_moco_frames:
+        non_moco_frame_name = os.path.basename(non_moco_frame)
+        moco_non_moco_frame = os.path.join(moco_dir, constants.MOCO_PREFIX + non_moco_frame_name)
+        shutil.copy(non_moco_frame, moco_non_moco_frame)
+
+
+    # MERGE THE 3D MOCO FRAMES TO A 4D NIFTI FILE
+    merge3d(moco_dir,constants.MOCO_PREFIX+'*', os.path.join(moco_dir,constants.MOCO_4D_FILE_NAME))
+    print(f'{constants.ANSI_GREEN} Motion correction complete: '
+          f'Results in {moco_dir} | 4D MoCo file: {constants.MOCO_4D_FILE_NAME}{constants.ANSI_RESET}')
 

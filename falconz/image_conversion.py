@@ -28,6 +28,8 @@ import contextlib
 import io
 from typing import Optional
 import dcm2niix
+import logging
+from falconz import file_utilities as fop
 
 
 class ImageConverter:
@@ -148,7 +150,9 @@ class ImageConverter:
         split_nifti_files = nib.funcs.four_to_three(nib.funcs.squeeze_image(nib.load(nifti_file)))
         i = 0
         for file in split_nifti_files:
-            nib.save(file, os.path.join(out_dir, 'vol' + str(i) + '.nii'))
+            # vol should be named as vol0000.nii, vol0001.nii, etc.
+
+            nib.save(file, os.path.join(out_dir, 'vol' + str(i).zfill(4) + '.nii.gz'))
             i += 1
 
     def convert(self):
@@ -174,3 +178,19 @@ class ImageConverter:
             print(" Error: Motion correction cannot be performed on a single 3D image.")
 
         return self.split_nifti_directory
+
+
+
+
+def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
+    """
+    Merge 3D NIFTI files into a 4D NIFTI file using nibabel
+    :param nifti_dir: Directory containing the 3D NIFTI files
+    :param wild_card: Wildcard to use to find the 3D NIFTI files
+    :param nifti_outfile: User-defined output file name for the 4D NIFTI file
+    """
+    logging.info(f"Merging 3D nifti files in {nifti_dir} with wildcard {wild_card}")
+    files_to_merge = fop.get_files(nifti_dir, wild_card)
+    nib.save(nib.funcs.concat_images(files_to_merge, False), nifti_outfile)
+    os.chdir(nifti_dir)
+    logging.info("Done")

@@ -28,9 +28,13 @@ BINARY_PATH = os.path.join(project_root, 'bin')
 if file_utilities.get_system()[0] == 'windows':
     GREEDY_PATH = os.path.join(BINARY_PATH, f'greedy-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                                'greedy.exe')
+    C3D_PATH = os.path.join(BINARY_PATH, f'c3d-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+                            'c3d.exe')
 elif file_utilities.get_system()[0] in ['linux', 'mac']:
     GREEDY_PATH = os.path.join(BINARY_PATH, f'greedy-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                                'greedy')
+    C3D_PATH = os.path.join(BINARY_PATH, f'c3d-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+                            'c3d')
 else:
     raise ValueError('Unsupported OS')
 
@@ -55,14 +59,15 @@ MINIMUM_THREADS_REQUIRED_DEFORMABLE = 8  # in number of threads
 
 # Shrink levels supported:
 SHRINK_LEVEL = [2, 4, 8]
-NCC_THRESHOLD = 0.6  # Normalized cross correlation threshold
-NCC_RADIUS = (4, 4, 4)  # Normalized cross correlation radius
+NCC_THRESHOLD = 0.5  # Normalized cross correlation threshold
+NCC_RADIUS = '4x4x4'  # Normalized cross correlation radius
 
 # FILE NAMES
 
 MOCO_PREFIX = 'moco_'
 ALIGNED_PREFIX = 'aligned_'
-
+TRANSFORMS_KEYWORD = ['*warp.nii.gz','*rigid.mat','*affine.mat']
+MOCO_4D_FILE_NAME = 'moco_4D.nii.gz'
 # FOLDER NAMES
 
 FALCON_WORKING_FOLDER = 'FALCONZ-V02' + '-' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
@@ -76,3 +81,4 @@ EXPECTED_DIMENSIONS = 4
 ALLOWED_REGISTRATION_PARADIGMS = ["rigid", "affine", "deformable"]
 IMAGE_INTERPOLATION = 'Linear'
 MASK_INTERPOLATION = 'Nearest Neighbor'
+COST_FUNCTION = 'NCC 2x2x2'
