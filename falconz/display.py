@@ -108,3 +108,8 @@ def derived_parameters(input_args):
           f'done in parallel: {num_jobs}')
     logging.info(f' Available memory: {avail_memory} GB | Available threads: {avail_threads} | Number of motion '
                  f'correction done in parallel: {num_jobs}')
+    # if input arguments doesn't have start frame, display message saying it will be calculated on the fly
+    if input_args.start_frame == 99:
+        print(f' {constants.ANSI_ORANGE}Warning: Start frame not provided. It will be calculated on the fly. '
+              f'{constants.ANSI_RESET}')
+

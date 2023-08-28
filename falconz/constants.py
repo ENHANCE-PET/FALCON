@@ -34,13 +34,11 @@ elif file_utilities.get_system()[0] in ['linux', 'mac']:
 else:
     raise ValueError('Unsupported OS')
 
-
 # COLOR CODES
 ANSI_ORANGE = '\033[38;5;208m'
 ANSI_GREEN = '\033[38;5;40m'
 ANSI_VIOLET = '\033[38;5;141m'
 ANSI_RESET = '\033[0m'
-
 
 # ALLOWED MODALITIES
 
@@ -58,17 +56,16 @@ MINIMUM_THREADS_REQUIRED_DEFORMABLE = 8  # in number of threads
 # Shrink levels supported:
 SHRINK_LEVEL = [2, 4, 8]
 NCC_THRESHOLD = 0.6  # Normalized cross correlation threshold
-NCC_RADIUS = '4x4x4'  # Normalized cross correlation radius
+NCC_RADIUS = (4, 4, 4)  # Normalized cross correlation radius
 
 # FILE NAMES
 
 MOCO_PREFIX = 'moco_'
 ALIGNED_PREFIX = 'aligned_'
 
-
 # FOLDER NAMES
 
-FALCON_WORKING_FOLDER = 'FALCONZ-V02'+'-' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+FALCON_WORKING_FOLDER = 'FALCONZ-V02' + '-' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 TRANSFORMS_FOLDER = 'transforms'
 MOCO_FOLDER = 'Motion-corrected-images'
 

@@ -52,6 +52,11 @@ setup(
         'dicom2nifti~=2.4.8',
         'requests',
         'emoji',
+        'psutil',
+        'dcm2niix',
+        'nilearn',
+        'scikit-image',
+        'dask'
     ],
     entry_points={
         'console_scripts': [

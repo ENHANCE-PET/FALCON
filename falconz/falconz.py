@@ -34,6 +34,10 @@ from falconz import resources
 from falconz import image_conversion
 from falconz import input_validation
 from falconz.input_validation import InputValidation
+from falconz.image_conversion import ImageConverter
+from falconz.constants import FALCON_WORKING_FOLDER
+from falconz.image_processing import FrameSelector
+import multiprocessing
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename=datetime.now().strftime('falconz-v.1.0.0.%H-%M-%d-%m-%Y.log'),
@@ -130,8 +134,35 @@ def main():
     logging.info(' ')
     logging.info(' STANDARDIZING INPUT DATA TO NIFTI:')
     logging.info(' ')
-    image_conversion.standardize_to_nifti(args.main_folder)
+    image_dir = args.main_folder
+    parent_dir = os.path.dirname(image_dir)
+    falcon_dir = os.path.join(parent_dir, FALCON_WORKING_FOLDER)
+    file_utilities.create_directory(falcon_dir)
+    image_converter = ImageConverter(input_directory=image_dir, output_directory=falcon_dir)
+    split_nifti_dir = image_converter.convert()
     print(f"{constants.ANSI_GREEN} Standardization complete.{constants.ANSI_RESET}")
     logging.info(" Standardization complete.")
 
     # ----------------------------------
+    # MOTION CORRECTION
+    # ----------------------------------
+
+    org_nifti_files = [os.path.join(split_nifti_dir, f) for f in os.listdir(split_nifti_dir)
+                       if f.endswith(('.nii', '.nii.gz')) and os.path.isfile(os.path.join(split_nifti_dir, f))]
+    reference_file = org_nifti_files[args.reference_frame_index]
+    moving_files = [f for f in org_nifti_files if f != reference_file]
+    start_frame = args.start_frame
+    if args.start_frame == 99:
+        n_jobs = multiprocessing.cpu_count()
+        frame_selector = FrameSelector(n_jobs)
+        start_frame = frame_selector.determine_candidate_frames(org_nifti_files, reference_file, falcon_dir)
+
+    print('')
+    print(f'{constants.ANSI_VIOLET} {emoji.emojize(":running:")} PERFORMING MOTION CORRECTION:{constants.ANSI_RESET}')
+    print('')
+    logging.info(' ')
+    logging.info(' PERFORMING MOTION CORRECTION:')
+    logging.info(' ')
+    print(f' Number of files to motion correct: {len(moving_files)} | Reference file: '
+          f'{os.path.basename(reference_file)} | Start frame: {start_frame}')
+
