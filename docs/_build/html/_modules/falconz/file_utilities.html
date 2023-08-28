@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>falconz.file_utilities &mdash; FALCON 2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            FALCON
+              <img src="../../_static/Falcon-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FALCON</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">falconz.file_utilities</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for falconz.file_utilities</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: File Operations</span>
+<span class="sd">   :platform: Unix, Windows</span>
+<span class="sd">   :synopsis: A module with utilities to handle file operations for falconz.</span>
+
+<span class="sd">.. moduleauthor:: Lalith Kumar Shiyam Sundar &lt;email@example.com&gt;</span>
+
+<span class="sd">This module provides various utilities to handle file operations necessary for the falconz project.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">    The functions in this module can be imported and used in other modules within the falconz to perform file operations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">stat</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span>
+
+
+<div class="viewcode-block" id="set_permissions"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.set_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_permissions</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">system_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets permissions for a file based on the system type.</span>
+
+<span class="sd">    :param file_path: The path to the file.</span>
+<span class="sd">    :type file_path: str</span>
+<span class="sd">    :param system_type: The type of the system.</span>
+<span class="sd">    :type system_type: str</span>
+<span class="sd">    :raises ValueError: If the system type is not supported.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">system_type</span> <span class="o">==</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">([</span><span class="s2">&quot;icacls&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;/grant&quot;</span><span class="p">,</span> <span class="s2">&quot;Everyone:(F)&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">system_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;linux&quot;</span><span class="p">,</span> <span class="s2">&quot;mac&quot;</span><span class="p">]:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IRWXU</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IRGRP</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IROTH</span><span class="p">)</span>  <span class="c1"># equivalent to &#39;chmod u+x&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported OS&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_virtual_env_root"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.get_virtual_env_root">[docs]</a><span class="k">def</span> <span class="nf">get_virtual_env_root</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the root directory of the virtual environment.</span>
+
+<span class="sd">    :return: The root directory of the virtual environment.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">python_exe</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">executable</span>
+    <span class="n">virtual_env_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">python_exe</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">virtual_env_root</span></div>
+
+
+<div class="viewcode-block" id="get_system"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.get_system">[docs]</a><span class="k">def</span> <span class="nf">get_system</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the system and architecture information.</span>
+
+<span class="sd">    :return: A tuple containing the system and architecture information.</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    :raises ValueError: If the system or architecture is not supported.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">system</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">architecture</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">machine</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="c1"># Convert system output to match your keys</span>
+    <span class="k">if</span> <span class="n">system</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+        <span class="n">system</span> <span class="o">=</span> <span class="s2">&quot;mac&quot;</span>
+    <span class="k">elif</span> <span class="n">system</span> <span class="o">==</span> <span class="s2">&quot;windows&quot;</span><span class="p">:</span>
+        <span class="n">system</span> <span class="o">=</span> <span class="s2">&quot;windows&quot;</span>
+    <span class="k">elif</span> <span class="n">system</span> <span class="o">==</span> <span class="s2">&quot;linux&quot;</span><span class="p">:</span>
+        <span class="n">system</span> <span class="o">=</span> <span class="s2">&quot;linux&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported OS type&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Convert architecture output to match your keys</span>
+    <span class="k">if</span> <span class="n">architecture</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;x86_64&quot;</span><span class="p">,</span> <span class="s2">&quot;amd64&quot;</span><span class="p">]:</span>
+        <span class="n">architecture</span> <span class="o">=</span> <span class="s2">&quot;x86_64&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;arm&quot;</span> <span class="ow">in</span> <span class="n">architecture</span><span class="p">:</span>
+        <span class="n">architecture</span> <span class="o">=</span> <span class="s2">&quot;arm64&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported architecture&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">system</span><span class="p">,</span> <span class="n">architecture</span></div>
+
+
+<div class="viewcode-block" id="create_directory"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.create_directory">[docs]</a><span class="k">def</span> <span class="nf">create_directory</span><span class="p">(</span><span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a directory at the specified path.</span>
+
+<span class="sd">    :param directory_path: The path to the directory.</span>
+<span class="sd">    :type directory_path: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory_path</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_files"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.get_files">[docs]</a><span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span><span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the files from the specified directory using the wildcard.</span>
+
+<span class="sd">    :param directory_path: The path to the directory.</span>
+<span class="sd">    :type directory_path: str</span>
+<span class="sd">    :param wildcard: The wildcard to be used.</span>
+<span class="sd">    :type wildcard: str</span>
+<span class="sd">    :return: The list of files.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory_path</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="copy_file"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.copy_file">[docs]</a><span class="k">def</span> <span class="nf">copy_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copies a file to the destination directory.</span>
+
+<span class="sd">    :param file: The path to the file.</span>
+<span class="sd">    :type file: str</span>
+<span class="sd">    :param destination: The path to the destination directory.</span>
+<span class="sd">    :type destination: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="copy_files_to_destination"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.copy_files_to_destination">[docs]</a><span class="k">def</span> <span class="nf">copy_files_to_destination</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copies the files inside the list to the destination directory in a parallel fashion.</span>
+
+<span class="sd">    :param files: The list of files to be copied.</span>
+<span class="sd">    :type files: list</span>
+<span class="sd">    :param destination: The path to the destination directory.</span>
+<span class="sd">    :type destination: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">copy_file</span><span class="p">,</span> <span class="p">[(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="select_files_by_modality"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.select_files_by_modality">[docs]</a><span class="k">def</span> <span class="nf">select_files_by_modality</span><span class="p">(</span><span class="n">tracer_dirs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">modality_tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Selects the files with the selected modality tag from the tracer directory.</span>
+
+<span class="sd">    :param tracer_dirs: Path to the tracer directory.</span>
+<span class="sd">    :type tracer_dirs: list</span>
+<span class="sd">    :param modality_tag: The modality tag to be selected.</span>
+<span class="sd">    :type modality_tag: str</span>
+<span class="sd">    :return: The list of selected files.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">selected_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tracer_dir</span> <span class="ow">in</span> <span class="n">tracer_dirs</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">tracer_dir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">modality_tag</span><span class="p">)</span> <span class="ow">and</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.nii&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">):</span>
+                <span class="n">selected_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tracer_dir</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">selected_files</span></div>
+
+
+<div class="viewcode-block" id="organise_files_by_modality"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.organise_files_by_modality">[docs]</a><span class="k">def</span> <span class="nf">organise_files_by_modality</span><span class="p">(</span><span class="n">tracer_dirs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">modalities</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">pumaz_dir</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Organises the files by modality.</span>
+
+<span class="sd">    :param tracer_dirs: The list of tracer directories.</span>
+<span class="sd">    :type tracer_dirs: list</span>
+<span class="sd">    :param modalities: The list of modalities.</span>
+<span class="sd">    :type modalities: list</span>
+<span class="sd">    :param pumaz_dir: The path to the pumaz directory.</span>
+<span class="sd">    :type pumaz_dir: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">modalities</span><span class="p">:</span>
+        <span class="n">files_to_copy</span> <span class="o">=</span> <span class="n">select_files_by_modality</span><span class="p">(</span><span class="n">tracer_dirs</span><span class="p">,</span> <span class="n">modality</span><span class="p">)</span>
+        <span class="n">copy_files_to_destination</span><span class="p">(</span><span class="n">files_to_copy</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pumaz_dir</span><span class="p">,</span> <span class="n">modality</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="move_file"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.move_file">[docs]</a><span class="k">def</span> <span class="nf">move_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moves a file to the destination directory.</span>
+
+<span class="sd">    :param file: The path to the file.</span>
+<span class="sd">    :type file: str</span>
+<span class="sd">    :param destination: The path to the destination directory.</span>
+<span class="sd">    :type destination: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_number_of_possible_jobs"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.get_number_of_possible_jobs">[docs]</a><span class="k">def</span> <span class="nf">get_number_of_possible_jobs</span><span class="p">(</span><span class="n">process_memory</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">process_threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the number of available jobs based on system specifications and process parameters.</span>
+
+<span class="sd">    :param process_memory: Specify how much memory a process needs.</span>
+<span class="sd">    :type process_memory: int</span>
+<span class="sd">    :param process_threads: Specify how many threads a process needs.</span>
+<span class="sd">    :type process_threads: int</span>
+<span class="sd">    :return: Number of possible concurrent jobs as integer number.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Calculates minimum memory and thread number for process</span>
+    <span class="n">min_memory</span> <span class="o">=</span> <span class="n">process_memory</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># GB</span>
+    <span class="n">min_threads</span> <span class="o">=</span> <span class="n">process_threads</span>
+
+    <span class="c1"># Get currently available resources</span>
+    <span class="n">available_memory</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">virtual_memory</span><span class="p">()</span><span class="o">.</span><span class="n">available</span>
+    <span class="n">available_memory</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">available_memory</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">)</span>
+    <span class="n">available_threads</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+
+    <span class="c1"># Calculate number (integer) of possible jobs based on memory and thread number</span>
+    <span class="n">possible_jobs_memory</span> <span class="o">=</span> <span class="n">available_memory</span> <span class="o">//</span> <span class="n">min_memory</span>
+    <span class="n">possible_jobs_threads</span> <span class="o">=</span> <span class="n">available_threads</span> <span class="o">//</span> <span class="n">min_threads</span>
+
+    <span class="c1"># Get the smallest value to determine number of jobs</span>
+    <span class="n">number_of_jobs</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">possible_jobs_memory</span><span class="p">,</span> <span class="n">possible_jobs_threads</span><span class="p">)</span>
+
+    <span class="c1"># Set number of jobs to 1, if it was 0 before</span>
+    <span class="k">if</span> <span class="n">number_of_jobs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">number_of_jobs</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">number_of_jobs</span><span class="p">,</span> <span class="n">available_memory</span><span class="p">,</span> <span class="n">available_threads</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Quantitative Imaging and Medical Physics Team, Medical University of Vienna.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

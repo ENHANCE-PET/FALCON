@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>falconz.image_processing &mdash; FALCON 2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/general.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/dark_mode_css/dark.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/dark_mode_js/default_dark.js"></script>
+        <script src="../../_static/dark_mode_js/theme_switcher.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            FALCON
+              <img src="../../_static/Falcon-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FALCON</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">falconz.image_processing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for falconz.image_processing</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: image_processing</span>
+<span class="sd">   :platform: Unix, Windows</span>
+<span class="sd">   :synopsis: A module for image processing for the falconz.</span>
+
+<span class="sd">.. moduleauthor:: Lalith Kumar Shiyam Sundar &lt;lalith.shiyamsundar@meduniwien.ac.at&gt;</span>
+
+<span class="sd">This module handles image processing for the falconz.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">    The functions in this module can be imported and used in other modules within the falconz to perform image conversion.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">nibabel</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">dask</span> <span class="kn">import</span> <span class="n">delayed</span><span class="p">,</span> <span class="n">compute</span>
+<span class="kn">from</span> <span class="nn">halo</span> <span class="kn">import</span> <span class="n">Halo</span>
+<span class="kn">from</span> <span class="nn">mpire</span> <span class="kn">import</span> <span class="n">WorkerPool</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span>
+<span class="kn">from</span> <span class="nn">nilearn.input_data</span> <span class="kn">import</span> <span class="n">NiftiMasker</span>
+<span class="kn">from</span> <span class="nn">rich.progress</span> <span class="kn">import</span> <span class="n">Progress</span><span class="p">,</span> <span class="n">BarColumn</span><span class="p">,</span> <span class="n">TextColumn</span>
+<span class="kn">from</span> <span class="nn">skimage.metrics</span> <span class="kn">import</span> <span class="n">structural_similarity</span> <span class="k">as</span> <span class="n">ssim</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">falconz</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">falconz</span> <span class="kn">import</span> <span class="n">file_utilities</span> <span class="k">as</span> <span class="n">fop</span>
+<span class="kn">from</span> <span class="nn">falconz.constants</span> <span class="kn">import</span> <span class="n">GREEDY_PATH</span><span class="p">,</span> <span class="n">C3D_PATH</span><span class="p">,</span> <span class="n">NCC_RADIUS</span><span class="p">,</span> <span class="n">NCC_THRESHOLD</span><span class="p">,</span> <span class="n">COST_FUNCTION</span>
+
+
+<div class="viewcode-block" id="ImageRegistration"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration">[docs]</a><span class="k">class</span> <span class="nc">ImageRegistration</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for performing image registration using the Greedy method.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    fixed_img : str</span>
+<span class="sd">        Path to the fixed/target image for registration.</span>
+<span class="sd">    multi_resolution_iterations : str</span>
+<span class="sd">        String specifying the number of iterations at each resolution level.</span>
+<span class="sd">    fixed_mask : str, optional</span>
+<span class="sd">        Path to a mask for the fixed image. If provided, only the masked region of the fixed image will be used in the registration.</span>
+<span class="sd">    moving_img : str, optional</span>
+<span class="sd">        Path to the moving/source image to be registered to the fixed image.</span>
+<span class="sd">    transform_files : dict, optional</span>
+<span class="sd">        Dictionary containing paths to the output transformation files for each registration type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fixed_img</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">multi_resolution_iterations</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fixed_mask</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the ImageRegistration class.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        fixed_img : str</span>
+<span class="sd">            Path to the fixed/target image.</span>
+<span class="sd">        multi_resolution_iterations : str</span>
+<span class="sd">            String specifying the number of iterations at each resolution level.</span>
+<span class="sd">        fixed_mask : str, optional</span>
+<span class="sd">            Path to the mask of the fixed image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_img</span> <span class="o">=</span> <span class="n">fixed_img</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_mask</span> <span class="o">=</span> <span class="n">fixed_mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_resolution_iterations</span> <span class="o">=</span> <span class="n">multi_resolution_iterations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ImageRegistration.set_moving_image"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.set_moving_image">[docs]</a>    <span class="k">def</span> <span class="nf">set_moving_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moving_img</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">update_transforms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the moving image for registration and updates the transform files if specified.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        moving_img : str</span>
+<span class="sd">            Path to the moving/source image.</span>
+<span class="sd">        update_transforms : bool, default=True</span>
+<span class="sd">            If True, will update the paths for the transformation files based on the moving image name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span> <span class="o">=</span> <span class="n">moving_img</span>
+        <span class="k">if</span> <span class="n">update_transforms</span><span class="p">:</span>
+            <span class="n">out_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+            <span class="n">moving_img_filename</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;rigid&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">moving_img_filename</span><span class="si">}</span><span class="s2">_rigid.mat&quot;</span><span class="p">),</span>
+                <span class="s1">&#39;affine&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">moving_img_filename</span><span class="si">}</span><span class="s2">_affine.mat&quot;</span><span class="p">),</span>
+                <span class="s1">&#39;warp&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">moving_img_filename</span><span class="si">}</span><span class="s2">_warp.nii.gz&quot;</span><span class="p">),</span>
+                <span class="s1">&#39;inverse_warp&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">moving_img_filename</span><span class="si">}</span><span class="s2">_inverse_warp.nii.gz&quot;</span><span class="p">)</span>
+            <span class="p">}</span></div>
+
+<div class="viewcode-block" id="ImageRegistration.rigid"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.rigid">[docs]</a>    <span class="k">def</span> <span class="nf">rigid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform rigid registration between the moving and fixed images.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">        str</span>
+<span class="sd">            Path to the resulting rigid transformation file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;-gm </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_mask</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_mask</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">cmd_to_run</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">GREEDY_PATH</span><span class="si">}</span><span class="s2"> -d 3 -a -i </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_img</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span> \
+                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mask_cmd</span><span class="si">}</span><span class="s2"> -ia-image-centers -dof 6 -o </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;rigid&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> &quot;</span> \
+                     <span class="sa">f</span><span class="s2">&quot;-n </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_resolution_iterations</span><span class="si">}</span><span class="s2"> -m </span><span class="si">{</span><span class="n">COST_FUNCTION</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_to_run</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Rigid alignment: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | Aligned image: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;moco-</span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | Transform file: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;rigid&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;rigid&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ImageRegistration.affine"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.affine">[docs]</a>    <span class="k">def</span> <span class="nf">affine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform affine registration between the moving and fixed images.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">        str</span>
+<span class="sd">            Path to the resulting affine transformation file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;-gm </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_mask</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_mask</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">cmd_to_run</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">GREEDY_PATH</span><span class="si">}</span><span class="s2"> -d 3 -a -i </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_img</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span> \
+                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mask_cmd</span><span class="si">}</span><span class="s2"> -ia-image-centers -dof 12 -o </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> &quot;</span> \
+                     <span class="sa">f</span><span class="s2">&quot;-n </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_resolution_iterations</span><span class="si">}</span><span class="s2"> -m </span><span class="si">{</span><span class="n">COST_FUNCTION</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_to_run</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Affine alignment: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> |&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; Aligned image: moco-</span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | Transform file: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ImageRegistration.deformable"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.deformable">[docs]</a>    <span class="k">def</span> <span class="nf">deformable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform deformable registration between the moving and fixed images.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            A tuple containing paths to the resulting affine, warp, and inverse warp transformation files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">()</span>
+        <span class="n">mask_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;-gm </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_mask</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_mask</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">cmd_to_run</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">GREEDY_PATH</span><span class="si">}</span><span class="s2"> -d 3 -m </span><span class="si">{</span><span class="n">COST_FUNCTION</span><span class="si">}</span><span class="s2"> -i </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_img</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span> \
+                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mask_cmd</span><span class="si">}</span><span class="s2"> -it </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> -o </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;warp&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> &quot;</span> \
+                     <span class="sa">f</span><span class="s2">&quot;-oinv </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;inverse_warp&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> -sv -n </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multi_resolution_iterations</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_to_run</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Deformable alignment: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Aligned image: moco-</span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Initial alignment: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; | warp file: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;warp&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;warp&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;inverse_warp&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ImageRegistration.registration"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.registration">[docs]</a>    <span class="k">def</span> <span class="nf">registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registration_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register the moving image to the fixed image using the specified registration type.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        registration_type : str</span>
+<span class="sd">            Type of registration to perform. Supported values are &#39;rigid&#39;, &#39;affine&#39;, and &#39;deformable&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">registration_type</span> <span class="o">==</span> <span class="s1">&#39;rigid&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rigid</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">registration_type</span> <span class="o">==</span> <span class="s1">&#39;affine&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">registration_type</span> <span class="o">==</span> <span class="s1">&#39;deformable&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deformable</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Registration type not supported!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageRegistration.resample"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.resample">[docs]</a>    <span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resampled_moving_img</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">registration_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">segmentation</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">resampled_seg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resample the moving image based on the computed transformation.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        resampled_moving_img : str</span>
+<span class="sd">            Path to save the resampled moving image.</span>
+<span class="sd">        registration_type : str</span>
+<span class="sd">            Type of registration used. Supported values are &#39;rigid&#39;, &#39;affine&#39;, and &#39;deformable&#39;.</span>
+<span class="sd">        segmentation : str, optional</span>
+<span class="sd">            Path to the segmentation of the moving image.</span>
+<span class="sd">        resampled_seg : str, optional</span>
+<span class="sd">            Path to save the resampled segmentation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">registration_type</span> <span class="o">==</span> <span class="s1">&#39;rigid&#39;</span><span class="p">:</span>
+            <span class="n">cmd_to_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_cmd</span><span class="p">(</span><span class="n">resampled_moving_img</span><span class="p">,</span> <span class="n">segmentation</span><span class="p">,</span> <span class="n">resampled_seg</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;rigid&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">registration_type</span> <span class="o">==</span> <span class="s1">&#39;affine&#39;</span><span class="p">:</span>
+            <span class="n">cmd_to_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_cmd</span><span class="p">(</span><span class="n">resampled_moving_img</span><span class="p">,</span> <span class="n">segmentation</span><span class="p">,</span> <span class="n">resampled_seg</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">registration_type</span> <span class="o">==</span> <span class="s1">&#39;deformable&#39;</span><span class="p">:</span>
+            <span class="n">cmd_to_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_cmd</span><span class="p">(</span><span class="n">resampled_moving_img</span><span class="p">,</span> <span class="n">segmentation</span><span class="p">,</span> <span class="n">resampled_seg</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;warp&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">])</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_to_run</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_build_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resampled_moving_img</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">segmentation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resampled_seg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                   <span class="o">*</span><span class="n">transform_files</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the command for the greedy registration tool.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        resampled_moving_img : str</span>
+<span class="sd">            Path to save the resampled moving image.</span>
+<span class="sd">        segmentation : str</span>
+<span class="sd">            Path to the segmentation of the moving image.</span>
+<span class="sd">        resampled_seg : str</span>
+<span class="sd">            Path to save the resampled segmentation.</span>
+<span class="sd">        *transform_files : str</span>
+<span class="sd">            Paths to the transformation files used for resampling.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">        str</span>
+<span class="sd">            The command string to run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">GREEDY_PATH</span><span class="si">}</span><span class="s2"> -d 3 -rf </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_img</span><span class="p">)</span><span class="si">}</span><span class="s2"> -ri LINEAR -rm &quot;</span> \
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">resampled_moving_img</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">segmentation</span> <span class="ow">and</span> <span class="n">resampled_seg</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -ri LABEL 0.2vox -rm </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">segmentation</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">resampled_seg</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">transform_file</span> <span class="ow">in</span> <span class="n">transform_files</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; -r </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">transform_file</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">cmd</span></div>
+
+
+<span class="nd">@delayed</span>
+<span class="k">def</span> <span class="nf">align_single_image</span><span class="p">(</span><span class="n">fixed_img</span><span class="p">,</span> <span class="n">moving_img</span><span class="p">,</span> <span class="n">registration_type</span><span class="p">,</span> <span class="n">multi_resolution_iterations</span><span class="p">,</span> <span class="n">moco_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Aligns a single moving image to the fixed image using the specified registration type.</span>
+
+<span class="sd">    :param fixed_img: The path to the fixed image.</span>
+<span class="sd">    :type fixed_img: str</span>
+<span class="sd">    :param moving_img: The path to the moving image.</span>
+<span class="sd">    :type moving_img: str</span>
+<span class="sd">    :param registration_type: The type of registration to use.</span>
+<span class="sd">    :type registration_type: str</span>
+<span class="sd">    :param multi_resolution_iterations: The number of iterations to use for multi-resolution registration.</span>
+<span class="sd">    :type multi_resolution_iterations: str</span>
+<span class="sd">    :param moco_dir: The directory to store the resampled moving image.</span>
+<span class="sd">    :type moco_dir: str</span>
+<span class="sd">    :return: 1</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">aligner</span> <span class="o">=</span> <span class="n">ImageRegistration</span><span class="p">(</span><span class="n">fixed_img</span><span class="o">=</span><span class="n">fixed_img</span><span class="p">,</span> <span class="n">multi_resolution_iterations</span><span class="o">=</span><span class="n">multi_resolution_iterations</span><span class="p">)</span>
+    <span class="n">aligner</span><span class="o">.</span><span class="n">set_moving_image</span><span class="p">(</span><span class="n">moving_img</span><span class="p">)</span>
+    <span class="n">aligner</span><span class="o">.</span><span class="n">registration</span><span class="p">(</span><span class="n">registration_type</span><span class="p">)</span>
+    <span class="n">aligner</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">resampled_moving_img</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">moco_dir</span><span class="p">,</span> <span class="n">constants</span><span class="o">.</span><span class="n">MOCO_PREFIX</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">moving_img</span><span class="p">)),</span>
+                     <span class="n">registration_type</span><span class="o">=</span><span class="n">registration_type</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span>
+
+
+<div class="viewcode-block" id="align"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.align">[docs]</a><span class="k">def</span> <span class="nf">align</span><span class="p">(</span><span class="n">fixed_img</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">moving_imgs</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">registration_type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">multi_resolution_iterations</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">moco_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Aligns the moving images to the fixed image using the specified registration type.</span>
+
+<span class="sd">    :param fixed_img: The path to the fixed image.</span>
+<span class="sd">    :type fixed_img: str</span>
+<span class="sd">    :param moving_imgs: A list of paths to the moving images.</span>
+<span class="sd">    :type moving_imgs: list</span>
+<span class="sd">    :param registration_type: The type of registration to use.</span>
+<span class="sd">    :type registration_type: str</span>
+<span class="sd">    :param multi_resolution_iterations: The number of iterations to use for multi-resolution registration.</span>
+<span class="sd">    :type multi_resolution_iterations: str</span>
+<span class="sd">    :param moco_dir: The directory to store the resampled moving images.</span>
+<span class="sd">    :type moco_dir: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">align_single_image</span><span class="p">(</span><span class="n">fixed_img</span><span class="p">,</span> <span class="n">moving_img</span><span class="p">,</span> <span class="n">registration_type</span><span class="p">,</span> <span class="n">multi_resolution_iterations</span><span class="p">,</span> <span class="n">moco_dir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">moving_img</span> <span class="ow">in</span> <span class="n">moving_imgs</span>
+    <span class="p">]</span>
+
+    <span class="n">total_images</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moving_imgs</span><span class="p">)</span>
+
+    <span class="c1"># Initialize the progress bar</span>
+    <span class="k">with</span> <span class="n">Progress</span><span class="p">()</span> <span class="k">as</span> <span class="n">progress</span><span class="p">:</span>
+        <span class="n">task_description</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[cyan] Aligning moving images to the reference frame [0/</span><span class="si">{</span><span class="n">total_images</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">task_description</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">total_images</span><span class="p">)</span>
+
+        <span class="c1"># Using dask to compute results and update the progress bar</span>
+        <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">compute</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">),</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">advance</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[cyan] Aligning moving images to the reference frame [</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_images</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_dimensions"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.get_dimensions">[docs]</a><span class="k">def</span> <span class="nf">get_dimensions</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the dimensions of a NIFTI image file.</span>
+
+<span class="sd">    :param nifti_file: The path to the NIFTI file.</span>
+<span class="sd">    :type nifti_file: str</span>
+<span class="sd">    :return: The dimensions of the image.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nifti_img</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">)</span>
+    <span class="n">img_dim</span> <span class="o">=</span> <span class="n">nifti_img</span><span class="o">.</span><span class="n">GetDimension</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">img_dim</span></div>
+
+
+<div class="viewcode-block" id="get_pixel_id_type"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.get_pixel_id_type">[docs]</a><span class="k">def</span> <span class="nf">get_pixel_id_type</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the pixel ID type of a NIFTI image file.</span>
+
+<span class="sd">    :param nifti_file: The path to the NIFTI file.</span>
+<span class="sd">    :type nifti_file: str</span>
+<span class="sd">    :return: The pixel ID type of the image.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nifti_img</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">)</span>
+    <span class="n">pixel_id_type</span> <span class="o">=</span> <span class="n">nifti_img</span><span class="o">.</span><span class="n">GetPixelIDTypeAsString</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">pixel_id_type</span></div>
+
+
+<div class="viewcode-block" id="get_intensity_statistics"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.get_intensity_statistics">[docs]</a><span class="k">def</span> <span class="nf">get_intensity_statistics</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">multi_label_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the intensity statistics of a NIFTI image file.</span>
+
+<span class="sd">    :param nifti_file: The path to the NIFTI file.</span>
+<span class="sd">    :type nifti_file: str</span>
+<span class="sd">    :param multi_label_file: The path to the multilabel file that is used to calculate the intensity statistics from the NIFTI file.</span>
+<span class="sd">    :type multi_label_file: str</span>
+<span class="sd">    :return: A pandas dataframe with the intensity statistics.</span>
+<span class="sd">    :rtype: pd.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nifti_img</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">)</span>
+    <span class="n">multi_label_img</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">multi_label_file</span><span class="p">)</span>
+    <span class="n">intensity_statistics</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">LabelIntensityStatisticsImageFilter</span><span class="p">()</span>
+    <span class="n">intensity_statistics</span><span class="o">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">multi_label_img</span><span class="p">,</span> <span class="n">nifti_img</span><span class="p">)</span>
+    <span class="n">stats_list</span> <span class="o">=</span> <span class="p">[(</span><span class="n">intensity_statistics</span><span class="o">.</span><span class="n">GetMean</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">intensity_statistics</span><span class="o">.</span><span class="n">GetStandardDeviation</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                   <span class="n">intensity_statistics</span><span class="o">.</span><span class="n">GetMedian</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">intensity_statistics</span><span class="o">.</span><span class="n">GetMaximum</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                   <span class="n">intensity_statistics</span><span class="o">.</span><span class="n">GetMinimum</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">intensity_statistics</span><span class="o">.</span><span class="n">GetLabels</span><span class="p">()]</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Standard Deviation&#39;</span><span class="p">,</span> <span class="s1">&#39;Median&#39;</span><span class="p">,</span> <span class="s1">&#39;Maximum&#39;</span><span class="p">,</span> <span class="s1">&#39;Minimum&#39;</span><span class="p">]</span>
+    <span class="n">stats_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats_list</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">intensity_statistics</span><span class="o">.</span><span class="n">GetLabels</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stats_df</span></div>
+
+
+<div class="viewcode-block" id="get_body_mask"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.get_body_mask">[docs]</a><span class="k">def</span> <span class="nf">get_body_mask</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mask_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a mask file for a NIFTI image file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param nifti_file: The path to the NIFTI file.</span>
+<span class="sd">    :type nifti_file: str</span>
+<span class="sd">    :param mask_file: The path to save the mask file.</span>
+<span class="sd">    :type mask_file: str</span>
+<span class="sd">    :return: The path to the mask file.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nifti_masker</span> <span class="o">=</span> <span class="n">NiftiMasker</span><span class="p">(</span><span class="n">mask_strategy</span><span class="o">=</span><span class="s1">&#39;epi&#39;</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="s2">&quot;nilearn_cache&quot;</span><span class="p">,</span> <span class="n">memory_level</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">smoothing_fwhm</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">nifti_masker</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">)</span>
+    <span class="n">nibabel</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nifti_masker</span><span class="o">.</span><span class="n">mask_img_</span><span class="p">,</span> <span class="n">mask_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mask_file</span></div>
+
+
+<div class="viewcode-block" id="mask_img"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.mask_img">[docs]</a><span class="k">def</span> <span class="nf">mask_img</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mask_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">masked_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mask a NIFTI image file with a mask file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param nifti_file: The path to the NIFTI file.</span>
+<span class="sd">    :type nifti_file: str</span>
+<span class="sd">    :param mask_file: The path to the mask file.</span>
+<span class="sd">    :type mask_file: str</span>
+<span class="sd">    :param masked_file: The path to save the masked NIFTI file.</span>
+<span class="sd">    :type masked_file: str</span>
+<span class="sd">    :return: The path to the masked NIFTI file.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">mask_file</span><span class="p">,</span> <span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span>
+    <span class="n">masked_img</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">sitk</span><span class="o">.</span><span class="n">Multiply</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">VectorIndexSelectionCast</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">mask</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+         <span class="nb">range</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">GetNumberOfComponentsPerPixel</span><span class="p">())])</span>
+    <span class="n">sitk</span><span class="o">.</span><span class="n">WriteImage</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">Cast</span><span class="p">(</span><span class="n">masked_img</span><span class="p">,</span> <span class="n">sitk</span><span class="o">.</span><span class="n">sitkVectorFloat32</span><span class="p">),</span> <span class="n">masked_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">masked_file</span></div>
+
+
+<div class="viewcode-block" id="downscale_image"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.downscale_image">[docs]</a><span class="k">def</span> <span class="nf">downscale_image</span><span class="p">(</span><span class="n">downscale_param</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">input_image</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downscale an image based on the shrink factor and save it to the output directory.</span>
+<span class="sd">    </span>
+<span class="sd">    :param downscale_param: A tuple containing the output directory (str) and shrink factor (int).</span>
+<span class="sd">    :type downscale_param: tuple</span>
+<span class="sd">    :param input_image: The path to the input image.</span>
+<span class="sd">    :type input_image: str</span>
+<span class="sd">    :return: The path to the downscaled image.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_dir</span><span class="p">,</span> <span class="n">shrink_factor</span> <span class="o">=</span> <span class="n">downscale_param</span>
+    <span class="n">input_image_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_image</span><span class="p">)</span>
+    <span class="c1"># Blur the input image first</span>
+    <span class="n">input_image_blurred</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shrink_factor</span><span class="si">}</span><span class="s2">x_blurred_</span><span class="si">{</span><span class="n">input_image_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">gauss_variance</span> <span class="o">=</span> <span class="p">(</span><span class="n">shrink_factor</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">gauss_variance</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gauss_variance</span><span class="p">)</span>
+    <span class="n">cmd_to_smooth</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">C3D_PATH</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">input_image</span><span class="p">)</span><span class="si">}</span><span class="s2"> -smooth-fast </span><span class="si">{</span><span class="n">gauss_variance</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">gauss_variance</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">gauss_variance</span><span class="si">}</span><span class="s2">vox -o&quot;</span> \
+                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">input_image_blurred</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_to_smooth</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Resample the smoothed input image later</span>
+    <span class="n">input_image_downscaled</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shrink_factor</span><span class="si">}</span><span class="s2">x_downscaled_</span><span class="si">{</span><span class="n">input_image_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">shrink_percentage</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">/</span> <span class="n">shrink_factor</span><span class="p">))</span>
+    <span class="n">cmd_to_downscale</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">C3D_PATH</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">input_image_blurred</span><span class="p">)</span><span class="si">}</span><span class="s2"> -resample </span><span class="si">{</span><span class="n">shrink_percentage</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">shrink_percentage</span><span class="si">}</span><span class="s2">x&quot;</span> \
+                       <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shrink_percentage</span><span class="si">}</span><span class="s2">% -o </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">input_image_downscaled</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_to_downscale</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">input_image_downscaled</span></div>
+
+
+<span class="c1"># Calculate the mean intensity of an image using SimpleITK</span>
+<div class="viewcode-block" id="calc_mean_intensity"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.calc_mean_intensity">[docs]</a><span class="k">def</span> <span class="nf">calc_mean_intensity</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the mean intensity of an image using SimpleITK</span>
+<span class="sd">    :param image: path to the image</span>
+<span class="sd">    :return: mean intensity of the image</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="calc_voxelwise_ncc_images"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.calc_voxelwise_ncc_images">[docs]</a><span class="k">def</span> <span class="nf">calc_voxelwise_ncc_images</span><span class="p">(</span><span class="n">image1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates voxelwise normalized cross correlation between two images and writes it to the output directory.</span>
+<span class="sd">    </span>
+<span class="sd">    :param image1: The path to the first image.</span>
+<span class="sd">    :type image1: str</span>
+<span class="sd">    :param image2: The path to the second image.</span>
+<span class="sd">    :type image2: str</span>
+<span class="sd">    :param output_dir: The path to the output directory.</span>
+<span class="sd">    :type output_dir: str</span>
+<span class="sd">    :return: The path to the voxelwise ncc image.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get the image names without the extension &#39;.nii.gz&#39;</span>
+    <span class="n">image1_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image1</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">image2_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image2</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">output_image</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ncc_</span><span class="si">{</span><span class="n">image2_name</span><span class="si">}</span><span class="s2">.nii.gz&quot;</span><span class="p">)</span>
+    <span class="n">c3d_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">C3D_PATH</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">image1</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">image2</span><span class="p">)</span><span class="si">}</span><span class="s2"> -ncc </span><span class="si">{</span><span class="n">NCC_RADIUS</span><span class="si">}</span><span class="s2"> -o </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">output_image</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">c3d_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># clip the negative correlations to zero</span>
+    <span class="n">c3d_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">C3D_PATH</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">output_image</span><span class="p">)</span><span class="si">}</span><span class="s2"> -clip 0 inf -o </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">output_image</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">c3d_cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_image</span></div>
+
+
+<div class="viewcode-block" id="determine_candidate_frames"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.determine_candidate_frames">[docs]</a><span class="k">def</span> <span class="nf">determine_candidate_frames</span><span class="p">(</span><span class="n">candidate_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">reference_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">njobs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the candidate frames of a 4D PET series on which motion correction can be performed effectively</span>
+<span class="sd">    :param candidate_files: list of 3D candidate moving PET files</span>
+<span class="sd">    :param reference_file: path to the reference PET file</span>
+<span class="sd">    :param output_dir: path to the parent directory of the candidate files</span>
+<span class="sd">    :param njobs: number of jobs to run in parallel</span>
+<span class="sd">    :return:  Index of the starting frame from which motion correction can be performed</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the parent directory for pet_files</span>
+    <span class="n">falcon_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
+
+    <span class="c1"># Create the folder to dump the ncc images</span>
+    <span class="n">ncc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">falcon_dir</span><span class="p">,</span> <span class="s2">&quot;ncc-images&quot;</span><span class="p">)</span>
+    <span class="n">fop</span><span class="o">.</span><span class="n">create_directory</span><span class="p">(</span><span class="n">ncc_dir</span><span class="p">)</span>
+
+    <span class="c1"># using mpire to run the ncc calculation in parallel</span>
+    <span class="k">with</span> <span class="n">WorkerPool</span><span class="p">(</span><span class="n">njobs</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">ncc_images</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">calc_voxelwise_ncc_images</span><span class="p">,</span> <span class="p">[(</span><span class="n">reference_file</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">ncc_dir</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">candidate_files</span><span class="p">])</span>
+
+    <span class="n">ncc_images</span> <span class="o">=</span> <span class="n">fop</span><span class="o">.</span><span class="n">get_files</span><span class="p">(</span><span class="n">ncc_dir</span><span class="p">,</span> <span class="s2">&quot;ncc_*.nii.gz&quot;</span><span class="p">)</span>
+    <span class="c1"># calculate the mean intensity of files in the ncc folder and store it as mean_intensities</span>
+    <span class="n">mean_intensities</span> <span class="o">=</span> <span class="p">[</span><span class="n">calc_mean_intensity</span><span class="p">(</span><span class="n">ncc_image</span><span class="p">)</span> <span class="k">for</span> <span class="n">ncc_image</span> <span class="ow">in</span> <span class="n">ncc_images</span><span class="p">]</span>
+    <span class="c1"># calculate the average value of the top 3 mean intensities</span>
+    <span class="n">max_observed_ncc</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">mean_intensities</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3</span>
+    <span class="c1"># Identify the indices of the frames with mean intensity greater than NCC_THRESHOLD * max_observed_ncc</span>
+    <span class="n">candidate_frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mean_intensity</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mean_intensities</span><span class="p">)</span> <span class="k">if</span>
+                        <span class="n">mean_intensity</span> <span class="o">&gt;</span> <span class="n">NCC_THRESHOLD</span> <span class="o">*</span> <span class="n">max_observed_ncc</span><span class="p">]</span>
+    <span class="c1"># return the filenames corresponding to the candidate frames</span>
+    <span class="k">return</span> <span class="n">candidate_files</span><span class="p">[</span><span class="n">candidate_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Quantitative Imaging and Medical Physics Team, Medical University of Vienna.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
