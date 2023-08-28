@@ -52,7 +52,7 @@ def linkcode_resolve(domain, info):
     if not info['module']:
         return None
     filename = info['module'].replace('.', '/')
-    return f"https://github.com/QIMP-Team/FALCON/tree/main/falconz/{filename}.py"
+    return f"https://github.com/QIMP-Team/FALCON/blob/main/{filename}.py"
 
 
 html_theme_options = {
