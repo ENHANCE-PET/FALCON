@@ -23,6 +23,6 @@ python:
 
 # Optionally specify a custom build environment
 build:
-  os: latest
+  os: ubuntu-22.04
 
 # Clean up any commented-out configurations to avoid confusion.
