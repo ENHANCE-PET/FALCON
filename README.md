@@ -13,6 +13,7 @@ FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automati
 - **Cross-Platform Support**: Whether you're on Linux, Windows, or Mac, FALCON V2 has got you covered. 
 - **Universal Architecture Compatibility**: Run FALCON V2 seamlessly on x86, ARM, or even the latest M1 Silicon.
 - **Python-Powered**: As a Python package, FALCON V2 is compatible with Python 3.9 and beyond, ensuring smooth integration into modern workflows.
+- **Versatile Application**: FALCON V2 is designed to work for any region, any tracer, and any modality, making it truly universal for all your diagnostic and analytical needs.
 
 ## 🛠 Installation Guide
 
