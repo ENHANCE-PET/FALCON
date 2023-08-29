@@ -150,7 +150,7 @@ def main():
     logging.info(' ')
     logging.info(' STANDARDIZING INPUT DATA TO NIFTI:')
     logging.info(' ')
-    image_dir = args.main_folder
+    image_dir = os.path.normpath(args.main_folder)
     parent_dir = os.path.dirname(image_dir)
     falcon_dir = os.path.join(parent_dir, FALCON_WORKING_FOLDER)
     file_utilities.create_directory(falcon_dir)
