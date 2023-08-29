@@ -104,9 +104,9 @@ class ImageRegistration:
         str
             Path to the resulting rigid transformation file.
         """
-        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
-                     f"{mask_cmd} -ia-image-centers -dof 6 -o {re.escape(self.transform_files['rigid'])} " \
+        mask_cmd = f"-gm {"self.fixed_mask"}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {"self.fixed_img"} {"self.moving_img"} " \
+                     f"{mask_cmd} -ia-image-centers -dof 6 -o {"self.transform_files['rigid']"} " \
                      f"-n {self.multi_resolution_iterations} -m {COST_FUNCTION}"
         subprocess.run(cmd_to_run, shell=True, capture_output=True)
         logging.info(
@@ -123,9 +123,9 @@ class ImageRegistration:
         str
             Path to the resulting affine transformation file.
         """
-        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
-                     f"{mask_cmd} -ia-image-centers -dof 12 -o {re.escape(self.transform_files['affine'])} " \
+        mask_cmd = f"-gm {"self.fixed_mask"}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {"self.fixed_img"} {"self.moving_img"} " \
+                     f"{mask_cmd} -ia-image-centers -dof 12 -o {"self.transform_files['affine']"} " \
                      f"-n {self.multi_resolution_iterations} -m {COST_FUNCTION}"
         subprocess.run(cmd_to_run, shell=True, capture_output=True)
         logging.info(
@@ -143,10 +143,10 @@ class ImageRegistration:
             A tuple containing paths to the resulting affine, warp, and inverse warp transformation files.
         """
         self.affine()
-        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -m {COST_FUNCTION} -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
-                     f"{mask_cmd} -it {re.escape(self.transform_files['affine'])} -o {re.escape(self.transform_files['warp'])} " \
-                     f"-oinv {re.escape(self.transform_files['inverse_warp'])} -sv -n {self.multi_resolution_iterations}"
+        mask_cmd = f"-gm {"self.fixed_mask"}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -m {COST_FUNCTION} -i {"self.fixed_img"} {"self.moving_img"} " \
+                     f"{mask_cmd} -it {"self.transform_files['affine']"} -o {"self.transform_files['warp']"} " \
+                     f"-oinv {"self.transform_files['inverse_warp']"} -sv -n {self.multi_resolution_iterations}"
         subprocess.run(cmd_to_run, shell=True, capture_output=True)
         logging.info(
             f"Deformable alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} | "
@@ -220,12 +220,12 @@ class ImageRegistration:
         str
             The command string to run.
         """
-        cmd = f"{GREEDY_PATH} -d 3 -rf {re.escape(self.fixed_img)} -ri LINEAR -rm " \
-              f"{re.escape(self.moving_img)} {re.escape(resampled_moving_img)}"
+        cmd = f"{GREEDY_PATH} -d 3 -rf {"self.fixed_img"} -ri LINEAR -rm " \
+              f"{"self.moving_img"} {"resampled_moving_img"}"
         if segmentation and resampled_seg:
-            cmd += f" -ri LABEL 0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)}"
+            cmd += f" -ri LABEL 0.2vox -rm {"segmentation"} {"resampled_seg"}"
         for transform_file in transform_files:
-            cmd += f" -r {re.escape(transform_file)}"
+            cmd += f" -r {"transform_file"}"
         return cmd
 
 
@@ -395,14 +395,14 @@ def downscale_image(downscale_param: tuple, input_image: str) -> str:
     input_image_blurred = os.path.join(output_dir, f"{shrink_factor}x_blurred_{input_image_name}")
     gauss_variance = (shrink_factor / 2) ** 2
     gauss_variance = int(gauss_variance)
-    cmd_to_smooth = f"{C3D_PATH} {re.escape(input_image)} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
-                    f" {re.escape(input_image_blurred)} "
+    cmd_to_smooth = f"{C3D_PATH} {"input_image"} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
+                    f" {"input_image_blurred"} "
     subprocess.run(cmd_to_smooth, shell=True, capture_output=False)
     # Resample the smoothed input image later
     input_image_downscaled = os.path.join(output_dir, f"{shrink_factor}x_downscaled_{input_image_name}")
     shrink_percentage = str(int(100 / shrink_factor))
-    cmd_to_downscale = f"{C3D_PATH} {re.escape(input_image_blurred)} -resample {shrink_percentage}x{shrink_percentage}x" \
-                       f"{shrink_percentage}% -o {re.escape(input_image_downscaled)}"
+    cmd_to_downscale = f"{C3D_PATH} {"input_image_blurred"} -resample {shrink_percentage}x{shrink_percentage}x" \
+                       f"{shrink_percentage}% -o {"input_image_downscaled"}"
     subprocess.run(cmd_to_downscale, shell=True, capture_output=False)
     return input_image_downscaled
 
@@ -436,10 +436,10 @@ def calc_voxelwise_ncc_images(image1: str, image2: str, output_dir: str) -> str:
     image1_name = os.path.basename(image1).split(".")[0]
     image2_name = os.path.basename(image2).split(".")[0]
     output_image = os.path.join(output_dir, f"ncc_{image2_name}.nii.gz")
-    c3d_cmd = f"{C3D_PATH} {re.escape(image1)} {re.escape(image2)} -ncc {NCC_RADIUS} -o {re.escape(output_image)}"
+    c3d_cmd = f"{C3D_PATH} {"image1"} {"image2"} -ncc {NCC_RADIUS} -o {"output_image"}"
     subprocess.run(c3d_cmd, shell=True, capture_output=False)
     # clip the negative correlations to zero
-    c3d_cmd = f"{C3D_PATH} {re.escape(output_image)} -clip 0 inf -o {re.escape(output_image)}"
+    c3d_cmd = f"{C3D_PATH} {"output_image"} -clip 0 inf -o {"output_image"}"
     subprocess.run(c3d_cmd, shell=True, capture_output=False)
     return output_image
 
