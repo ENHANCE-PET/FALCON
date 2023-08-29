@@ -40,7 +40,7 @@ GREEDY_BINARIES = {
 
 C3D_BINARIES = {
     "c3d-windows-x86_64": {
-        "url": "https://c3d.s3.eu.cloud-object-storage.appdomain.cloud/c3d-windows-x86_64.zip",
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/c3d-windows-x86_64.zip",
         "filename": "c3d-windows-x86_64.zip",
         "directory": "c3d-windows-x86_64",
     },
