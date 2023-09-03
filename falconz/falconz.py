@@ -22,6 +22,11 @@ import shutil
 import sys
 import time
 from datetime import datetime
+from halo import Halo
+from rich.progress import Progress, TextColumn, TimeElapsedColumn, SpinnerColumn
+from rich.console import Console
+from rich.live import Live
+from rich.panel import Panel
 
 from falconz import constants
 from falconz import display
@@ -30,7 +35,7 @@ from falconz import file_utilities
 from falconz import image_conversion
 from falconz import resources
 from falconz.constants import FALCON_WORKING_FOLDER
-from falconz.image_conversion import ImageConverter, merge3d
+from falconz.image_conversion import NiftiConverter, NiftiConverterError, merge3d
 from falconz.image_processing import determine_candidate_frames, align
 from falconz.input_validation import InputValidation
 
@@ -132,11 +137,9 @@ def main():
     system_os, system_arch = file_utilities.get_system()
     print(f'{constants.ANSI_ORANGE} Detected system: {system_os} | Detected architecture: {system_arch}'
           f'{constants.ANSI_RESET}')
-    download.download(item_name=f'greedy-{system_os}-{system_arch}', item_path=binary_path,
-                      item_dict=resources.GREEDY_BINARIES)
+    download.download(item_name=f'falcon-{system_os}-{system_arch}', item_path=binary_path,
+                      item_dict=resources.FALCON_BINARIES)
     file_utilities.set_permissions(constants.GREEDY_PATH, system_os)
-    download.download(item_name=f'c3d-{system_os}-{system_arch}', item_path=binary_path,
-                      item_dict=resources.C3D_BINARIES)
     file_utilities.set_permissions(constants.C3D_PATH, system_os)
 
     # ----------------------------------
@@ -154,10 +157,34 @@ def main():
     parent_dir = os.path.dirname(image_dir)
     falcon_dir = os.path.join(parent_dir, FALCON_WORKING_FOLDER)
     file_utilities.create_directory(falcon_dir)
-    image_converter = ImageConverter(input_directory=image_dir, output_directory=falcon_dir)
-    split_nifti_dir = image_converter.convert()
-    print(f"{constants.ANSI_GREEN} Standardization complete.{constants.ANSI_RESET}")
-    logging.info(" Standardization complete.")
+    split_nifti_dir = os.path.join(falcon_dir, constants.SPLIT_FOLDER)
+    file_utilities.create_directory(split_nifti_dir)
+
+    console = Console()
+
+    with Progress(
+            TextColumn("[cyan]{task.fields[text]}"),
+            TimeElapsedColumn(),
+            console=console
+    ) as progress:
+
+        base_text = " Standardizing images to NIFTI format • Time elapsed:"
+        task = progress.add_task("[cyan]" + base_text,
+                                 text=base_text, total=100)
+
+        try:
+            image_converter = NiftiConverter(input_directory=image_dir, output_directory=split_nifti_dir)
+
+            # Update the task text to "Standardization complete" in green after the task is done
+            progress.update(task, text="[green] Standardization complete • Elapsed time:")
+            logging.info(" Standardization complete.")
+
+        except NiftiConverterError as e:
+            # Update the task text to "Standardization failed" in red on error
+            progress.update(task, text="[red] Standardization failed.")
+            logging.error(" Standardization failed.")
+            logging.error(e)
+            sys.exit(1)
 
     # ----------------------------------
     # MOTION CORRECTION

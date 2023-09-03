@@ -56,7 +56,8 @@ setup(
         'dcm2niix',
         'nilearn',
         'scikit-image',
-        'dask'
+        'dask',
+        'dask[distributed]'
     ],
     entry_points={
         'console_scripts': [

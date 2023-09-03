@@ -60,3 +60,26 @@ C3D_BINARIES = {
         "directory": "c3d-mac-arm64",
     },
 }
+
+FALCON_BINARIES = {
+    "falcon-windows-x86_64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/falcon-windows-x86_64.zip",
+        "filename": "falcon-windows-x86_64.zip",
+        "directory": "falcon-windows-x86_64",
+    },
+    "falcon-linux-x86_64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/falcon-linux-x86_64.zip",
+        "filename": "falcon-linux-x86_64.zip",
+        "directory": "falcon-linux-x86_64",
+    },
+    "falcon-mac-x86_64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/falcon-mac-x86_64.zip",
+        "filename": "falcon-mac-x86_64.zip",
+        "directory": "falcon-mac-x86_64",
+    },
+    "falcon-mac-arm64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/falcon-mac-arm64.zip",
+        "filename": "falcon-mac-arm64.zip",
+        "directory": "falcon-mac-arm64",
+    },
+}

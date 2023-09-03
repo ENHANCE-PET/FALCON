@@ -17,7 +17,6 @@ Usage:
 import SimpleITK
 import contextlib
 import dcm2niix
-import dicom2nifti
 import io
 import logging
 import nibabel as nib
@@ -26,71 +25,198 @@ import pydicom
 import re
 import unicodedata
 from typing import Optional
+import pathlib
 
 from falconz import file_utilities as fop
+from falconz.constants import C3D_PATH, VALID_EXTENSIONS
 
 
-class ImageConverter:
-    def __init__(self, input_directory: str, output_directory: str):
+class NiftiConverter:
+    """
+    A utility for converting various medical image formats in a directory into 3D NIFTI files.
+
+    Attributes:
+        input_directory (str): Path to the directory containing input images.
+        output_directory (str): Path to the directory where the converted images will be saved.
+    """
+
+    def __init__(self, input_directory: str, output_directory: str = None):
         """
-        Initializes an ImageConverter object.
+        Initializes the NiftiConverter.
 
-        :param input_directory: The path to the input directory.
-        :type input_directory: str
-        :param output_directory: The path to the output directory.
-        :type output_directory: str
+        :param str input_directory: Directory containing input images.
+        :param str output_directory: Directory for converted images. Defaults to 'converted' in input_directory.
+        :raises NiftiConverterError: If the input directory is not accessible or does not exist.
         """
+        if not os.path.exists(input_directory):
+            raise NiftiConverterError(f"Input directory '{input_directory}' does not exist or is not accessible.")
+
         self.input_directory = input_directory
-        self.output_directory = output_directory
-        self.split_nifti_directory = os.path.join(self.output_directory, 'split-nifti-files')
+        self.output_directory = output_directory if output_directory else os.path.join(input_directory, 'converted')
+        self._ensure_output_directory_exists()
+        self._process_input_directory()
 
-        if not os.path.exists(self.split_nifti_directory):
-            os.makedirs(self.split_nifti_directory)
+    def _ensure_output_directory_exists(self):
+        """Ensures the output directory exists, creating it if necessary."""
+        try:
+            if not os.path.exists(self.output_directory):
+                os.makedirs(self.output_directory)
+        except Exception as e:
+            raise NiftiConverterError(f"Error creating output directory: {e}")
 
-    def non_nifti_to_nifti(self, input_path: str, output_directory: Optional[str] = None) -> None:
+    def _process_input_directory(self):
+        """Processes the input directory based on the image types present."""
+        try:
+            file_list = [f for f in os.listdir(self.input_directory) if
+                         os.path.isfile(os.path.join(self.input_directory, f))]
+        except Exception as e:
+            raise NiftiConverterError(f"Error processing input directory: {e}")
+
+        if self._contains_dicom_images(file_list):
+            self._convert_dicom_series()
+        elif len(file_list) == 1:
+            self._process_single_image_file(file_list[0])
+        else:
+            self._process_multiple_image_files(file_list)
+
+    def _contains_dicom_images(self, file_list):
         """
-        Converts non-NIfTI files to NIfTI format.
+        Checks if the directory contains DICOM images.
 
-        :param input_path: The path to the input file or directory.
-        :type input_path: str
-        :param output_directory: The path to the output directory.
-        :type output_directory: str
-        :return: None
+        :param list file_list: List of filenames.
+        :return: True if DICOM images are detected, False otherwise.
+        :rtype: bool
         """
-        if not os.path.exists(input_path):
-            print(f"Input path {input_path} does not exist.")
-            return
+        return any(self._is_dicom(os.path.join(self.input_directory, file)) for file in file_list)
 
-        if os.path.isdir(input_path):
-            dicom_info = self.create_dicom_lookup(input_path)
-            nifti_dir = self.dcm2niix(input_path, output_directory)
-            self.rename_nifti_files(nifti_dir, dicom_info)
-            return
+    def _convert_dicom_series(self):
+        """Converts DICOM series in the directory to 3D NIFTI files."""
+        self.dcm2niix(self.input_directory, self.output_directory)
+        # remove the json file
+        json_file = [f for f in os.listdir(self.output_directory) if f.endswith('.json')]
+        if len(json_file) > 0:
+            os.remove(os.path.join(self.output_directory, json_file[0]))
 
-        if os.path.isfile(input_path):
-            _, filename = os.path.split(input_path)
-            if filename.startswith('.') or filename.endswith(('.nii.gz', '.nii')):
-                return
-            else:
-                output_image = SimpleITK.ReadImage(input_path)
-                output_image_basename = f"{os.path.splitext(filename)[0]}.nii"
+        # Scan the output directory for the generated nifti files
+        converted_files = [f for f in os.listdir(self.output_directory) if f.endswith('.nii.gz')]
 
-        if output_directory is None:
-            output_directory = os.path.dirname(input_path)
+        for nifti_file in converted_files:
+            file_path = os.path.join(self.output_directory, nifti_file)
 
-        output_image_path = os.path.join(output_directory, output_image_basename)
-        SimpleITK.WriteImage(output_image, output_image_path)
+            # Check if the file is 4D and needs to be split
+            if self._is_4d_image(file_path):
+                self._split_4d_image(file_path)
+                os.remove(file_path)
+
+    def _process_single_image_file(self, file_name):
+        """
+        Processes a single image file in the directory.
+
+        :param str file_name: Name of the image file.
+        """
+        full_path = os.path.join(self.input_directory, file_name)
+        if not self._has_valid_extension(file_name):
+            raise NiftiConverterError(f"Unsupported file format: {file_name}")
+
+        if self._is_4d_image(full_path):
+            self._split_4d_image(full_path)
+        else:
+            raise NiftiConverterError("Only a single 3D volume provided. Expecting a 4D volume or multiple 3D volumes.")
+
+    def _process_multiple_image_files(self, file_list):
+        """
+        Processes multiple image files in the directory.
+
+        :param list file_list: List of image filenames.
+        """
+        for file_name in file_list:
+            full_path = os.path.join(self.input_directory, file_name)
+            if file_name.endswith(('.nii', '.nii.gz')):
+                shutil.copy(full_path, self.output_directory)
+            elif self._has_valid_extension(file_name):
+                self._convert_to_nifti_format(full_path)
+
+    def _has_valid_extension(self, file_name):
+        """
+        Checks if a file has a valid image extension.
+
+        :param str file_name: Name of the file.
+        :return: True if valid, False otherwise.
+        :rtype: bool
+        """
+        return any(file_name.endswith(ext) for ext in self.VALID_EXTENSIONS)
+
+    def _is_4d_image(self, image_path):
+        """
+        Checks if a given image is 4D.
+
+        :param str image_path: Path to the image file.
+        :return: True if the image is 4D, False otherwise.
+        :rtype: bool
+        """
+        try:
+            img = nib.load(image_path)
+            return img.ndim == 4
+        except:
+            return False
+
+    def _is_dicom(self, file_path):
+        """
+        Checks if a given file is a DICOM image.
+
+        :param str file_path: Path to the file.
+        :return: True if the file is a DICOM image, False otherwise.
+        :rtype: bool
+        """
+        try:
+            _ = pydicom.dcmread(file_path)
+            return True
+        except:
+            return False
+
+    def _split_4d_image(self, image_path):
+        """
+        Splits a 4D image into multiple 3D NIFTI volumes.
+
+        :param str image_path: Path to the 4D image file.
+        """
+        try:
+            split_nifti_files = nib.funcs.four_to_three(nib.funcs.squeeze_image(nib.load(image_path)))
+            for i, file in enumerate(split_nifti_files):
+                # file name should start with vol, with 4 digits, using leading zeros (zfill)
+                file_name = 'vol_' + str(i).zfill(4) + '.nii.gz'
+                output_path = os.path.join(self.output_directory, file_name)
+                nib.save(file, output_path)
+        except Exception as e:
+            raise NiftiConverterError(f"Error splitting 4D image: {e}")
+
+    def _convert_to_nifti_format(self, image_path):
+        """
+        Converts a given image to NIFTI format.
+
+        :param str image_path: Path to the image file.
+        :raises NiftiConverterError: If there's an error during conversion.
+        """
+        try:
+            output_path = os.path.join(self.output_directory, f"{pathlib.Path(image_path).stem}.nii.gz")
+            img = nib.load(image_path)
+            nib.save(img, output_path)
+        except Exception as e:
+            raise NiftiConverterError(f"Error converting image to NIFTI: {e}")
 
     def dcm2niix(self, input_path: str, output_dir: str) -> str:
         """
         Converts DICOM files to NIfTI format using dcm2niix.
 
-        :param input_path: The path to the input directory.
-        :type input_path: str
-        :param output_dir: The path to the output directory.
-        :type output_dir: str
-        :return: The path to the output directory.
-        :rtype: str
+        Args:
+            input_path (str): The path to the input directory.
+            output_dir (str): The path to the output directory.
+
+        Returns:
+            str: The path to the output directory.
+
+        Raises:
+            NiftiConverterError: If there's an error during DICOM to NIFTI conversion.
         """
         # Save the original stdout and stderr file descriptors.
         original_stdout_fd = os.dup(1)
@@ -106,6 +232,8 @@ class ImageConverter:
 
             try:
                 dcm2niix.main(['-z', 'y', '-o', output_dir, input_path])
+            except Exception as e:
+                raise NiftiConverterError(f"Error during DICOM to NIFTI conversion using dcm2niix: {e}")
             finally:
                 # Restore the original stdout and stderr file descriptors.
                 os.dup2(original_stdout_fd, 1)
@@ -115,142 +243,9 @@ class ImageConverter:
 
         return output_dir
 
-    def remove_accents(self, unicode_filename):
-        """
-        Removes accents from a Unicode filename.
 
-        :param unicode_filename: The Unicode filename to remove accents from.
-        :type unicode_filename: str
-        :return: The filename without accents.
-        :rtype: str
-        """
-        try:
-            unicode_filename = str(unicode_filename).replace(" ", "_")
-            cleaned_filename = unicodedata.normalize('NFKD', unicode_filename).encode('ASCII', 'ignore').decode('ASCII')
-            cleaned_filename = re.sub(r'[^\w\s-]', '', cleaned_filename.strip().lower())
-            cleaned_filename = re.sub(r'[-\s]+', '-', cleaned_filename)
-            return cleaned_filename
-        except:
-            return unicode_filename
-
-    def is_dicom_file(self, filename):
-        """
-        Determines if a file is a DICOM file.
-
-        :param filename: The name of the file to check.
-        :type filename: str
-        :return: True if the file is a DICOM file, False otherwise.
-        :rtype: bool
-        """
-        try:
-            pydicom.dcmread(filename)
-            return True
-        except pydicom.errors.InvalidDicomError:
-            return False
-
-    def create_dicom_lookup(self, dicom_dir):
-        """
-        Creates a dictionary of DICOM file information.
-
-        :param dicom_dir: The path to the directory containing DICOM files.
-        :type dicom_dir: str
-        :return: A dictionary of DICOM file information.
-        :rtype: dict
-        """
-        dicom_info = {}
-        for filename in os.listdir(dicom_dir):
-            full_path = os.path.join(dicom_dir, filename)
-            if self.is_dicom_file(full_path):
-                ds = pydicom.dcmread(full_path)
-                series_number = ds.SeriesNumber if 'SeriesNumber' in ds else None
-                series_description = ds.SeriesDescription if 'SeriesDescription' in ds else None
-                sequence_name = ds.SequenceName if 'SequenceName' in ds else None
-                protocol_name = ds.ProtocolName if 'ProtocolName' in ds else None
-                series_instance_UID = ds.SeriesInstanceUID if 'SeriesInstanceUID' in ds else None
-                if ds.Modality == 'PT':
-                    modality = 'PET'
-                else:
-                    modality = ds.Modality
-
-                if series_number is not None:
-                    base_filename = self.remove_accents(series_number)
-                    if series_description is not None:
-                        anticipated_filename = f"{base_filename}_{self.remove_accents(series_description)}.nii"
-                    elif sequence_name is not None:
-                        anticipated_filename = f"{base_filename}_{self.remove_accents(sequence_name)}.nii"
-                    elif protocol_name is not None:
-                        anticipated_filename = f"{base_filename}_{self.remove_accents(protocol_name)}.nii"
-                else:
-                    anticipated_filename = f"{self.remove_accents(series_instance_UID)}.nii"
-
-                dicom_info[anticipated_filename] = modality
-        return dicom_info
-
-    def rename_nifti_files(self, nifti_dir, dicom_info):
-        """
-        Renames NIfTI files based on DICOM file information.
-
-        :param nifti_dir: The path to the directory containing NIfTI files.
-        :type nifti_dir: str
-        :param dicom_info: A dictionary of DICOM file information.
-        :type dicom_info: dict
-        :return: None
-        """
-        for filename in os.listdir(nifti_dir):
-            if filename.endswith('.nii'):
-                modality = dicom_info.get(filename, '')
-                if modality:
-                    new_filename = f"{modality}_{filename}"
-                    os.rename(os.path.join(nifti_dir, filename), os.path.join(nifti_dir, new_filename))
-                    del dicom_info[filename]
-
-    def split4d(self, nifti_file: str, out_dir: str) -> None:
-        """
-        Splits a 4D NIfTI file into 3D NIfTI files.
-
-        :param nifti_file: The path to the 4D NIfTI file.
-        :type nifti_file: str
-        :param out_dir: The path to the output directory.
-        :type out_dir: str
-        :return: None
-        """
-        split_nifti_files = nib.funcs.four_to_three(nib.funcs.squeeze_image(nib.load(nifti_file)))
-        i = 0
-        for file in split_nifti_files:
-            # vol should be named as vol0000.nii, vol0001.nii, etc.
-
-            nib.save(file, os.path.join(out_dir, 'vol' + str(i).zfill(4) + '.nii.gz'))
-            i += 1
-
-    def convert(self):
-        """
-        Converts input files to NIfTI format and splits 4D NIfTI files into 3D NIfTI files.
-
-        :return: The path to the directory containing the split NIfTI files.
-        :rtype: str
-        """
-        if os.path.isdir(self.input_directory):
-            self.non_nifti_to_nifti(self.input_directory, self.output_directory)
-        else:
-            print(f"Input {self.input_directory} is not a directory.")
-            return
-
-        nifti_files = []
-        for root, dirs, files in os.walk(self.output_directory):
-            for file in files:
-                if file.endswith(('.nii', '.nii.gz')):
-                    nifti_files.append(os.path.join(root, file))
-
-        for file in nifti_files:
-            nifti_image = nib.load(file)
-            if len(nifti_image.shape) == 4:
-                self.split4d(file, self.split_nifti_directory)
-                nifti_files.remove(file)
-
-        if len(nifti_files) == 1:
-            print(" Error: Motion correction cannot be performed on a single 3D image.")
-
-        return self.split_nifti_directory
+class NiftiConverterError(Exception):
+    pass
 
 
 def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:

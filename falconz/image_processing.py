@@ -24,11 +24,12 @@ import pathlib
 import re
 import subprocess
 from dask import delayed, compute
+from dask.distributed import Client, as_completed
+import dask.bag as db
 from halo import Halo
 from mpire import WorkerPool
 from multiprocessing import Pool
-from nilearn.input_data import NiftiMasker
-from rich.progress import Progress, BarColumn, TextColumn
+from rich.progress import Progress, BarColumn, TextColumn, SpinnerColumn
 from skimage.metrics import structural_similarity as ssim
 from tqdm import tqdm
 
@@ -255,37 +256,36 @@ def align_single_image(fixed_img, moving_img, registration_type, multi_resolutio
     return 1
 
 
-def align(fixed_img=str, moving_imgs=list, registration_type=str, multi_resolution_iterations=str, moco_dir=str):
-    """
-    Aligns the moving images to the fixed image using the specified registration type.
-
-    :param fixed_img: The path to the fixed image.
-    :type fixed_img: str
-    :param moving_imgs: A list of paths to the moving images.
-    :type moving_imgs: list
-    :param registration_type: The type of registration to use.
-    :type registration_type: str
-    :param multi_resolution_iterations: The number of iterations to use for multi-resolution registration.
-    :type multi_resolution_iterations: str
-    :param moco_dir: The directory to store the resampled moving images.
-    :type moco_dir: str
-    """
-    tasks = [
-        align_single_image(fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir)
-        for moving_img in moving_imgs
-    ]
+def align(fixed_img, moving_imgs, registration_type, multi_resolution_iterations, moco_dir):
+    # Configuring Dask Client
+    num_cores = int(multiprocessing.cpu_count() * 1 / 8)  # 1/4 of available cores
+    client = Client(n_workers=num_cores, threads_per_worker=1)
 
     total_images = len(moving_imgs)
 
-    # Initialize the progress bar
-    with Progress() as progress:
-        task_description = f"[cyan] Aligning moving images to the reference frame [0/{total_images}]"
-        task = progress.add_task(task_description, total=total_images)
+    # Define tasks outside of the progress context so that the progress bar appears first
+    tasks = [align_single_image(fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir)
+             for moving_img in moving_imgs]
 
-        # Using dask to compute results and update the progress bar
-        for count, _ in enumerate(compute(*tasks), 1):
-            progress.update(task, advance=1,
-                            description=f"[cyan] Aligning moving images to the reference frame [{count}/{total_images}]")
+    with Progress(
+            SpinnerColumn(),
+            "[progress.description]{task.description}",
+            "[progress.percentage]{task.percentage:>3.0f}%",
+            BarColumn(),
+            "({task.completed}/{task.total})"
+    ) as progress:
+        task_description = "[cyan]Aligning moving images..."
+        task_id = progress.add_task(task_description, total=total_images)  # this returns an integer ID
+
+        futures = client.compute(tasks)
+
+        # Update progress bar as tasks complete
+        for future, result in as_completed(futures, with_results=True):
+            progress.update(task_id, advance=1,
+                            description=f"[cyan]Aligning moving images:")
+
+    # Close the client to release resources after computation
+    client.close()
 
 
 def get_dimensions(nifti_file: str) -> int:
@@ -337,45 +337,6 @@ def get_intensity_statistics(nifti_file: str, multi_label_file: str) -> object:
     columns = ['Mean', 'Standard Deviation', 'Median', 'Maximum', 'Minimum']
     stats_df = pd.DataFrame(data=stats_list, index=intensity_statistics.GetLabels(), columns=columns)
     return stats_df
-
-
-def get_body_mask(nifti_file: str, mask_file: str) -> str:
-    """
-    Get a mask file for a NIFTI image file.
-    
-    :param nifti_file: The path to the NIFTI file.
-    :type nifti_file: str
-    :param mask_file: The path to save the mask file.
-    :type mask_file: str
-    :return: The path to the mask file.
-    :rtype: str
-    """
-    nifti_masker = NiftiMasker(mask_strategy='epi', memory="nilearn_cache", memory_level=2, smoothing_fwhm=8)
-    nifti_masker.fit(nifti_file)
-    nibabel.save(nifti_masker.mask_img_, mask_file)
-    return mask_file
-
-
-def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
-    """
-    Mask a NIFTI image file with a mask file.
-    
-    :param nifti_file: The path to the NIFTI file.
-    :type nifti_file: str
-    :param mask_file: The path to the mask file.
-    :type mask_file: str
-    :param masked_file: The path to save the masked NIFTI file.
-    :type masked_file: str
-    :return: The path to the masked NIFTI file.
-    :rtype: str
-    """
-    img = sitk.ReadImage(nifti_file)
-    mask = sitk.ReadImage(mask_file, sitk.sitkFloat32)
-    masked_img = sitk.Compose(
-        [sitk.Multiply(sitk.VectorIndexSelectionCast(img, i), mask) for i in
-         range(img.GetNumberOfComponentsPerPixel())])
-    sitk.WriteImage(sitk.Cast(masked_img, sitk.sitkVectorFloat32), masked_file)
-    return masked_file
 
 
 def downscale_image(downscale_param: tuple, input_image: str) -> str:
