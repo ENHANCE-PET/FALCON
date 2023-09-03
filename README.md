@@ -6,7 +6,7 @@
 
 ## 🦅 About FALCON V2
 [![Documentation Status](https://readthedocs.org/projects/falconz/badge/?version=latest)](https://falconz.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://badge.fury.io/py/falconz.svg)](https://pypi.org/project/falconz/) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-blue.svg?logo=discord&logoColor=white)](https://discord.gg/Q7ge3psMT9)
+[![PyPI version](https://badge.fury.io/py/falconz.svg)](https://pypi.org/project/falconz/) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-800080.svg?logo=discord&logoColor=white)](https://discord.gg/Q7ge3psMT9)
 
 
 FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automatic tool for motion correction in dynamic total-body or whole-body PET imaging. Designed with flexibility and reliability at its core, it's now even more versatile, capable of operating across various operating systems and architectures. 🚀
