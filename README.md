@@ -84,7 +84,7 @@ Here's an example of using FALCON in lazy mode:
 falconz -d /Documents/Sub001 -r deformable # for whole-body registration
 falconz -d /Documents/Sub001 -r rigid # for brain only studies (much faster processing)
 ```
-We also offer a specialized Dash mode, engineered for rapid motion correction across total-body datasets. Execute complex whole-body registration tasks at unprecedented speeds with a simple command:
+We also offer a specialized 🚀 Dash mode, engineered for rapid motion correction across total-body datasets. Execute complex whole-body registration tasks at unprecedented speeds ⚡ with a simple command! 👩‍💻👨‍💻
 ```
 falconz -d /Documents/Sub001 -r deformable -m dash # for high-velocity whole-body registration
 ```
