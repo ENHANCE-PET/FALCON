@@ -67,8 +67,8 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-m",
-        "--main_folder",
+        "-d",
+        "--directory",
         type=str,
         help="path containing the images to motion correct",
         required=True,
@@ -102,9 +102,21 @@ def main():
         default=constants.MULTI_RESOLUTION_SCHEME,
         help="Number of iterations for each resolution level"
     )
+    parser.add_argument(
+        "-m",
+        "--mode",
+        type=str,
+        default='cruise',
+        choices=constants.ALLOWED_MODES,
+        help="Mode of operation: cruise | dash"
+    )
     args = parser.parse_args()
     validator = InputValidation(args)
     validator.validate()
+    # change the multi-resolution scheme if the mode of operation is dash
+    if args.mode == 'dash':
+        args.multi_resolution_iterations = constants.MULTI_RESOLUTION_SCHEME_DASH
+
 
     display.logo()
     display.citation()
@@ -153,7 +165,7 @@ def main():
     logging.info(' ')
     logging.info(' STANDARDIZING INPUT DATA TO NIFTI:')
     logging.info(' ')
-    image_dir = os.path.normpath(args.main_folder)
+    image_dir = os.path.normpath(args.directory)
     parent_dir = os.path.dirname(image_dir)
     falcon_dir = os.path.join(parent_dir, FALCON_WORKING_FOLDER)
     file_utilities.create_directory(falcon_dir)

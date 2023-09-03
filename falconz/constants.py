@@ -70,6 +70,7 @@ SPLIT_FOLDER = 'Split-Nifti-files'
 
 # Define the hyperparameters used in the registration process
 MULTI_RESOLUTION_SCHEME = '100x25x10'
+MULTI_RESOLUTION_SCHEME_DASH = '100x25x1x0'
 EXPECTED_DIMENSIONS = 4
 ALLOWED_REGISTRATION_PARADIGMS = ["rigid", "affine", "deformable"]
 IMAGE_INTERPOLATION = 'Linear'
@@ -80,3 +81,7 @@ COST_FUNCTION = 'NCC 2x2x2'
 # ALLOWED EXTENSIONS
 
 VALID_EXTENSIONS = ['.nii', '.nii.gz', '.hdr', '.img', '.nrrd', '.mha', '.mhd']
+
+# ALLOWED MODES
+
+ALLOWED_MODES = ['cruise', 'dash']

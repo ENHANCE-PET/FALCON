@@ -15,7 +15,7 @@ Usage:
 """
 import logging
 import os
-
+from falconz.constants import ALLOWED_MODES
 
 class InputValidation:
     """
@@ -37,14 +37,15 @@ class InputValidation:
         self._check_start_frame()
         self._check_registration_type()
         self._check_multi_resolution_iterations()
+        self._check_operation_mode()
         logging.info("Input validation successful.")
 
     def _check_directory_exists(self):
         """
         Checks if the specified directory exists.
         """
-        if not os.path.exists(self.args.main_folder):
-            raise ValueError(f"The specified directory does not exist: {self.args.main_folder}")
+        if not os.path.exists(self.args.directory):
+            raise ValueError(f"The specified directory does not exist: {self.args.directory}")
 
     def _check_reference_frame_index(self):
         """
@@ -77,3 +78,10 @@ class InputValidation:
                 i.isdigit() for i in self.args.multi_resolution_iterations.split('x')):
             raise ValueError(
                 f"Multi resolution iterations must be a 'x' separated numeric string: {self.args.multi_resolution_iterations}")
+
+    def _check_operation_mode(self):
+        """
+        Checks if the operation mode is valid.
+        """
+        if self.args.mode not in ALLOWED_MODES:
+            raise ValueError(f"Invalid operation mode. Allowed values are: {ALLOWED_MODES}")
