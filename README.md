@@ -144,26 +144,11 @@ FALCON doesn't just deliver high-precision motion-corrected images; it also prov
 
 ## ❤️ Citations
 
-If you find our work useful, kindly cite the following articles:
+If you find FALCON useful, please consider citing the following publications:
 
-**Total-body studies evaluation (FALCON)**:
 ```plaintext
-Lalith Kumar Shiyam Sundar, et al. “Fully-automated, fast motion correction of dynamic whole and total-body PET/CT imaging studies.” JNM, 2023.
+1. Lalith Kumar Shiyam Sundar, et al. “Fully-automated, fast motion correction of dynamic whole and total-body PET/CT imaging studies.” JNM, 2023.
+2. Gutschmayer S, et al. “A scale space theory based motion correction approach for dynamic PET brain imaging studies.” Frontiers in Physics, vol. 10, 2022.
+3. Venet L, et al. “Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration.” Appl Sci, vol. 11, 2021.
 ```
-
-**Brain studies evaluation (FALCON)**:
-```plaintext
-Gutschmayer S, et al. “A scale space theory based motion correction approach for dynamic PET brain imaging studies.” Frontiers in Physics, vol. 10, 2022.
-```
-
-**Greedy registration**:
-```plaintext
-Venet L, et al. “Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration.” Appl Sci, vol. 11, 2021.
-```
-
-
-
-
-
-
 Thank you for choosing FALCON V2. Let's soar to new heights together! 🦅
