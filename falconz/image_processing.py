@@ -29,14 +29,14 @@ import dask.bag as db
 from halo import Halo
 from mpire import WorkerPool
 from multiprocessing import Pool
-from rich.progress import Progress, BarColumn, TextColumn, SpinnerColumn
+from rich.progress import Progress, BarColumn, TextColumn, SpinnerColumn, TimeElapsedColumn, TimeRemainingColumn
 from skimage.metrics import structural_similarity as ssim
 from tqdm import tqdm
 
 from falconz import constants
 from falconz import file_utilities as fop
 from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION
-
+from falconz.resources import get_system_stats
 
 class ImageRegistration:
     """
@@ -268,21 +268,29 @@ def align(fixed_img, moving_imgs, registration_type, multi_resolution_iterations
              for moving_img in moving_imgs]
 
     with Progress(
-            SpinnerColumn(),
             "[progress.description]{task.description}",
             "[progress.percentage]{task.percentage:>3.0f}%",
             BarColumn(),
-            "({task.completed}/{task.total})"
+            "[{task.completed}/{task.total}]",
+            "• Time elapsed:",
+            TimeElapsedColumn(),
+            "• CPU Load: [cyan]{task.fields[cpu]}%",  # Adding CPU Load
+            "• Memory Load: [cyan]{task.fields[memory]}%"  # Adding Memory Load
     ) as progress:
-        task_description = "[cyan]Aligning moving images..."
-        task_id = progress.add_task(task_description, total=total_images)  # this returns an integer ID
+        task_description = "[cyan] Aligning moving images..."
+        cpu_percent, memory_percent = get_system_stats()  # Initial CPU and Memory stats
+
+        task_id = progress.add_task(task_description, total=total_images,
+                                    cpu=cpu_percent, memory=memory_percent)  # Add them to the task fields
 
         futures = client.compute(tasks)
 
         # Update progress bar as tasks complete
         for future, result in as_completed(futures, with_results=True):
+            cpu_percent, memory_percent = get_system_stats()  # Get updated stats
             progress.update(task_id, advance=1,
-                            description=f"[cyan]Aligning moving images:")
+                            description="[cyan] Aligned moving images:",
+                            cpu=cpu_percent, memory=memory_percent)  # Update the task with the new stats
 
     # Close the client to release resources after computation
     client.close()

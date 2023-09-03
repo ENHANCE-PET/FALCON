@@ -14,6 +14,7 @@ Usage:
     The variables in this module can be imported and used in other modules within the falconz to download the necessary
     binaries for the falconz.
 """
+import psutil
 
 FALCON_BINARIES = {
     "falcon-windows-x86_64": {
@@ -37,3 +38,11 @@ FALCON_BINARIES = {
         "directory": "falcon-mac-arm64",
     },
 }
+
+
+# Create a function to get CPU and Memory usage
+def get_system_stats():
+    cpu_percent = psutil.cpu_percent(interval=None)
+    memory_info = psutil.virtual_memory()
+    memory_percent = memory_info.percent
+    return cpu_percent, memory_percent

@@ -227,7 +227,7 @@ def main():
     logging.info(' ')
     logging.info(' PERFORMING MOTION CORRECTION:')
     logging.info(' ')
-    print(f' Number of files to motion correct: {len(candidate_frames)} | Reference file: '
+    print(f' Number of files to motion correct: {len(moving_frames)} | Reference file: '
           f'{os.path.basename(reference_file)} | Start frame: {start_frame}')
     moco_dir = os.path.join(falcon_dir, constants.MOCO_FOLDER)
     file_utilities.create_directory(moco_dir)
