@@ -100,14 +100,48 @@ Please note that the number of iterations is specified as a string of values sep
 
 🗂 **Required Folder Structure**:
 
-FALCON only requires the dynamic PET images of a subject. Once the path is set, along with the minimalistic arguments, FALCON takes care of the rest.
+### Required Folder Structure
 
-Here's an example of the required folder structure:
-```
-└── PET_WB_DYNAMIC_(QC)_0005  # Main folder containing the dynamic PET images to motion correct
-    └── XXX.dcm or XXX.ima or XXX.mha or XXX.nii.gz or XXX.img/hdr
-```
-In the example above, the main folder contains the dynamic PET images to be motion corrected. The input images can be DICOM, Nifti, Analyze, or Metaimage files, and they can be either a single 4D image or multiple 3D images.
+FALCON accepts the following file formats for dynamic PET images: `.dcm`, `.ima`, `.nii`, `.nii.gz`, and `.img/hdr`.
+
+Here are some examples to illustrate the accepted folder structures:
+
+1. **For a bunch of DICOM (.dcm) or IMA (.ima) files:**
+
+    ```
+    └── PET_WB_DYNAMIC_(QC)_0005  
+        ├── XXX_1.dcm
+        ├── XXX_2.dcm
+        └── ...
+    ```
+
+2. **For a single 4D Nifti (.nii or .nii.gz) file:**
+
+    ```
+    └── PET_WB_DYNAMIC_(QC)_0005  
+        └── XXX.nii.gz
+    ```
+
+3. **For a bunch of 3D Nifti (.nii or .nii.gz) files:**
+
+    ```
+    └── PET_WB_DYNAMIC_(QC)_0005  
+        ├── XXX_1.nii.gz
+        ├── XXX_2.nii.gz
+        └── ...
+    ```
+
+4. **For Analyze (.img/hdr) files:**
+
+    ```
+    └── PET_WB_DYNAMIC_(QC)_0005  
+        ├── XXX.img
+        ├── XXX.hdr
+        └── ...
+    ```
+
+The main folder, `PET_WB_DYNAMIC_(QC)_0005`, should contain the dynamic PET images to be motion corrected.
+
 
 ## 🗂 Resultant Folder Structure
 
