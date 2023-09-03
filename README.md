@@ -70,23 +70,23 @@ FALCON supports DICOM, Nifti, Analyze, and Metaimage file formats, whether it's 
 
 To use FALCON, use the following syntax:
 ```
-falcon -d path_to_4d_images -r <rigid | affine | deformable> -i <number_of_iterations_per_level> -sf <starting_frame_from_which_moco_should_be_performed> -rf <reference_frame>
+falconz -d path_to_4d_images -r <rigid | affine | deformable> -i <number_of_iterations_per_level> -sf <starting_frame_from_which_moco_should_be_performed> -rf <reference_frame>
 ```
 
 Here's an example of using FALCON in Pro mode:
 ```
-falcon -d /Documents/Sub001 -r deformable -i 100x50x25 -sf 0 -rf -1
+falconz -d /Documents/Sub001 -r deformable -i 100x50x25 -sf 0 -rf -1
 ```
 In this example, FALCON is performing deformable registration with 100, 50, and 25 iterations at each level of the multi-scale registration. The registration starts from the 1st frame and uses the last frame as the reference.
 
 Here's an example of using FALCON in lazy mode:
 ```
-falcon -d /Documents/Sub001 -r deformable # for whole-body registration
-falcon -d /Documents/Sub001 -r rigid # for brain only studies (much faster processing)
+falconz -d /Documents/Sub001 -r deformable # for whole-body registration
+falconz -d /Documents/Sub001 -r rigid # for brain only studies (much faster processing)
 ```
 We also offer a specialized Dash mode, engineered for rapid motion correction across total-body datasets. Execute complex whole-body registration tasks at unprecedented speeds with a simple command:
 ```
-falcon -d /Documents/Sub001 -r deformable -m dash # for high-velocity whole-body registration
+falconz -d /Documents/Sub001 -r deformable -m dash # for high-velocity whole-body registration
 ```
 As shown above, you don't need to specify many additional parameters. The rest of the parameters are either inferred or set automatically based on common standards.
 
@@ -95,7 +95,7 @@ If you're not satisfied with the 'inferred' start frame, you can always set it o
 
 If you need help with FALCON or want to review the command-line options, use:
 ```
-falcon --help
+falconz --help
 ```
 Please note that the number of iterations is specified as a string of values separated by 'x' in the `-i` option. For example, to perform 50 iterations at each level, you would use `-i 50x50x50`.
 
