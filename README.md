@@ -5,8 +5,7 @@
 </p>
 
 ## 🦅 About FALCON V2
-[![Documentation Status](https://readthedocs.org/projects/falconz/badge/?version=latest)](https://falconz.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://badge.fury.io/py/falconz.svg)](https://pypi.org/project/falconz/) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Documentation Status](https://readthedocs.org/projects/falconz/badge/?version=latest)](https://falconz.readthedocs.io/en/latest/?badge=latest) [![PyPI version](https://badge.fury.io/py/falconz.svg)](https://pypi.org/project/falconz/) ![Downloads](https://img.shields.io/pypi/dm/falconz?color=ff69b4) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-800080.svg?logo=discord&logoColor=white)](https://discord.gg/Q7ge3psMT9) [![YouTube](https://img.shields.io/badge/YouTube-MoCo%20Action-FF0000?logo=youtube&logoColor=white)](https://www.youtube.com/playlist?list=PLZQERorVWrbeNKLOdJMDi4lARvaK3ceeO)
 
 FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automatic tool for motion correction in dynamic total-body or whole-body PET imaging. Designed with flexibility and reliability at its core, it's now even more versatile, capable of operating across various operating systems and architectures. 🚀
 
@@ -20,11 +19,13 @@ FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automati
 
 ### 🌟 Major Features
 
-- **Cross-Platform Support**: Whether you're on Linux, Windows, or Mac, FALCON V2 has got you covered. 
-- **Universal Architecture Compatibility**: Run FALCON V2 seamlessly on x86, ARM, or even the latest M1 Silicon.
-- **Python-Powered**: As a Python package, FALCON V2 is compatible with Python 3.9 and beyond, ensuring smooth integration into modern workflows.
-- **Versatile Application**: FALCON V2 is designed to work for any region, any tracer, and any modality, making it truly universal for all your diagnostic and analytical needs.
-- **Optimized for Out-of-Core Computing**: Leveraging the power of Dask, FALCON V2 is designed for efficient out-of-core computing. This enables us to maximize CPU utilization while minimizing memory overhead, delivering both speed and performance, regardless of the data scale.
+- **🐍 Now Python-Powered for Effortless Integration**: Say goodbye to cumbersome shell scripts! FALCON V2 is now a Python package, offering seamless compatibility with Python 3.9 and beyond. Integrate it effortlessly into your modern workflows and enjoy the unparalleled convenience.
+- **💻🖥️ Unveiling Cross-Platform Freedom**: Break free from the Linux-only limitations! FALCON V2 now extends its robust support to Windows and Mac as well. A seamless, uniform experience across all platforms is no longer a wish—it's a reality!
+- **🛠️ Universal Architecture Compatibility with a Twist**: Think you've seen FALCON V2 at its best? Wait until you experience it on ARM architecture! While designed to operate seamlessly on x86 and the latest M1 Silicon, it's on ARM where FALCON V2 truly soars. Prepare to be blown away by unparalleled performance!
+- **🚀 Say Goodbye to Memory Woes and Server Farms**: Forget about expensive, beefy servers and memory constraints. With FALCON V2's optimized out-of-core computing, powered by Dask, we've redefined efficiency. Get ready to experience unparalleled speed and performance without breaking the bank or your system's RAM!
+- **🌍🔬 The Ultimate Flex: Versatility Reimagined**: For the first time ever, a tool that knows no boundaries—meet FALCON V2. Whether you're dealing with any region, tracer, or modality, FALCON V2 is the only tool you'll ever need for your diagnostic and analytical adventures. Say goodbye to specialized solutions; this is the new standard - thanks to the amazing 'greedy' registration library!
+
+
   
 ## 🚀 FALCON's motion correction in action
 
@@ -69,23 +70,23 @@ FALCON supports DICOM, Nifti, Analyze, and Metaimage file formats, whether it's 
 
 To use FALCON, use the following syntax:
 ```
-falcon -d path_to_4d_images -r <rigid | affine | deformable> -i <number_of_iterations_per_level> -sf <starting_frame_from_which_moco_should_be_performed> -rf <reference_frame>
+falconz -d path_to_4d_images -r <rigid | affine | deformable> -i <number_of_iterations_per_level> -sf <starting_frame_from_which_moco_should_be_performed> -rf <reference_frame>
 ```
 
 Here's an example of using FALCON in Pro mode:
 ```
-falcon -d /Documents/Sub001 -r deformable -i 100x50x25 -sf 0 -rf -1
+falconz -d /Documents/Sub001 -r deformable -i 100x50x25 -sf 0 -rf -1
 ```
 In this example, FALCON is performing deformable registration with 100, 50, and 25 iterations at each level of the multi-scale registration. The registration starts from the 1st frame and uses the last frame as the reference.
 
 Here's an example of using FALCON in lazy mode:
 ```
-falcon -d /Documents/Sub001 -r deformable # for whole-body registration
-falcon -d /Documents/Sub001 -r rigid # for brain only studies (much faster processing)
+falconz -d /Documents/Sub001 -r deformable # for whole-body registration
+falconz -d /Documents/Sub001 -r rigid # for brain only studies (much faster processing)
 ```
-We also offer a specialized Dash mode, engineered for rapid motion correction across total-body datasets. Execute complex whole-body registration tasks at unprecedented speeds with a simple command:
+We also offer a specialized 🚀 Dash mode, engineered for rapid motion correction across total-body datasets. Execute complex whole-body registration tasks at unprecedented speeds ⚡ with a simple command! 👩‍💻👨‍💻
 ```
-falcon -d /Documents/Sub001 -r deformable -m dash # for high-velocity whole-body registration
+falconz -d /Documents/Sub001 -r deformable -m dash # for high-velocity whole-body registration
 ```
 As shown above, you don't need to specify many additional parameters. The rest of the parameters are either inferred or set automatically based on common standards.
 
@@ -94,20 +95,54 @@ If you're not satisfied with the 'inferred' start frame, you can always set it o
 
 If you need help with FALCON or want to review the command-line options, use:
 ```
-falcon --help
+falconz --help
 ```
 Please note that the number of iterations is specified as a string of values separated by 'x' in the `-i` option. For example, to perform 50 iterations at each level, you would use `-i 50x50x50`.
 
 🗂 **Required Folder Structure**:
 
-FALCON only requires the dynamic PET images of a subject. Once the path is set, along with the minimalistic arguments, FALCON takes care of the rest.
+### Required Folder Structure
 
-Here's an example of the required folder structure:
-```
-└── PET_WB_DYNAMIC_(QC)_0005  # Main folder containing the dynamic PET images to motion correct
-    └── XXX.dcm or XXX.ima or XXX.mha or XXX.nii.gz or XXX.img/hdr
-```
-In the example above, the main folder contains the dynamic PET images to be motion corrected. The input images can be DICOM, Nifti, Analyze, or Metaimage files, and they can be either a single 4D image or multiple 3D images.
+FALCON accepts the following file formats for dynamic PET images: `.dcm`, `.ima`, `.nii`, `.nii.gz`, and `.img/hdr`.
+
+Here are some examples to illustrate the accepted folder structures:
+
+1. **For a bunch of DICOM (.dcm) or IMA (.ima) files:**
+
+    ```
+    └── PET_WB_DYNAMIC_(QC)_0005  
+        ├── XXX_1.dcm
+        ├── XXX_2.dcm
+        └── ...
+    ```
+
+2. **For a single 4D Nifti (.nii or .nii.gz) file:**
+
+    ```
+    └── PET_WB_DYNAMIC_(QC)_0005  
+        └── XXX.nii.gz
+    ```
+
+3. **For a bunch of 3D Nifti (.nii or .nii.gz) files:**
+
+    ```
+    └── PET_WB_DYNAMIC_(QC)_0005  
+        ├── XXX_1.nii.gz
+        ├── XXX_2.nii.gz
+        └── ...
+    ```
+
+4. **For Analyze (.img/hdr) files:**
+
+    ```
+    └── PET_WB_DYNAMIC_(QC)_0005  
+        ├── XXX.img
+        ├── XXX.hdr
+        └── ...
+    ```
+
+The main folder, `PET_WB_DYNAMIC_(QC)_0005`, should contain the dynamic PET images to be motion corrected.
+
 
 ## 🗂 Resultant Folder Structure
 
@@ -125,44 +160,30 @@ FALCONZ-V02-2023-09-03-17-28-17/  # Automatically generated results folder
 
 ### Folder Components
 
-#### Motion-corrected-images
-This is where you'll find the final dynamic PET images, now refined through motion correction procedures.
+#### 🖼️ Motion-corrected-images
+This is where you'll find the final dynamic PET images, now refined through motion correction procedures. 🌟
 
-#### ncc-images
-A collection of Normalized Cross-Correlation images, these serve as essential tools for determining the most appropriate start frame for motion correction.
+#### 📊 ncc-images
+A collection of Normalized Cross-Correlation images—these serve as essential tools 🛠️ for determining the most appropriate start frame for motion correction.
 
-#### Split-Nifti-files
-This folder contains individual 3D Nifti files, which are essential for conducting the motion correction operations.
+#### 📁 Split-Nifti-files
+This folder contains individual 3D Nifti files, which are crucial 🗝️ for conducting the motion correction operations.
 
-#### transforms
-This section archives the warp fields in cases of deformable registration and the transformation matrices for rigid or affine registrations, allowing for transparency and potential reusability of these parameters.
+#### 🔄 transforms
+This section archives the warp fields in cases of deformable registration and the transformation matrices 📐 for rigid or affine registrations, allowing for transparency and potential reusability of these parameters.
 
-FALCON doesn't just deliver high-precision motion-corrected images; it also provides a comprehensive, organized output structure designed for immediate utility and future analysis.
+FALCON doesn't just deliver high-precision motion-corrected images; it also provides a comprehensive, organized output structure 🗂️ designed for immediate utility and future analysis. 🚀
+
 
 
 
 ## ❤️ Citations
 
-If you find our work useful, kindly cite the following articles:
+If you find FALCON useful, please consider citing the following publications:
 
-**Total-body studies evaluation (FALCON)**:
 ```plaintext
-Lalith Kumar Shiyam Sundar, et al. “Fully-automated, fast motion correction of dynamic whole and total-body PET/CT imaging studies.” JNM, 2023.
+1. Lalith Kumar Shiyam Sundar, et al. “Fully-automated, fast motion correction of dynamic whole and total-body PET/CT imaging studies.” JNM, 2023.
+2. Gutschmayer S, et al. “A scale space theory based motion correction approach for dynamic PET brain imaging studies.” Frontiers in Physics, vol. 10, 2022.
+3. Venet L, et al. “Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration.” Appl Sci, vol. 11, 2021.
 ```
-
-**Brain studies evaluation (FALCON)**:
-```plaintext
-Gutschmayer S, et al. “A scale space theory based motion correction approach for dynamic PET brain imaging studies.” Frontiers in Physics, vol. 10, 2022.
-```
-
-**Greedy registration**:
-```plaintext
-Venet L, et al. “Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration.” Appl Sci, vol. 11, 2021.
-```
-
-
-
-
-
-
 Thank you for choosing FALCON V2. Let's soar to new heights together! 🦅
