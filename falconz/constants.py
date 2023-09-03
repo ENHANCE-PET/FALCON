@@ -76,6 +76,7 @@ ALLOWED_REGISTRATION_PARADIGMS = ["rigid", "affine", "deformable"]
 IMAGE_INTERPOLATION = 'Linear'
 MASK_INTERPOLATION = 'Nearest Neighbor'
 COST_FUNCTION = 'NCC 2x2x2'
+PROPORTION_OF_CORES = 1 / 8
 
 
 # ALLOWED EXTENSIONS
@@ -85,3 +86,4 @@ VALID_EXTENSIONS = ['.nii', '.nii.gz', '.hdr', '.img', '.nrrd', '.mha', '.mhd']
 # ALLOWED MODES
 
 ALLOWED_MODES = ['cruise', 'dash']
+

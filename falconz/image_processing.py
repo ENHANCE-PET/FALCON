@@ -35,7 +35,7 @@ from tqdm import tqdm
 
 from falconz import constants
 from falconz import file_utilities as fop
-from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION
+from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION, PROPORTION_OF_CORES
 from falconz.resources import get_system_stats
 
 class ImageRegistration:
@@ -258,7 +258,7 @@ def align_single_image(fixed_img, moving_img, registration_type, multi_resolutio
 
 def align(fixed_img, moving_imgs, registration_type, multi_resolution_iterations, moco_dir):
     # Configuring Dask Client
-    num_cores = int(multiprocessing.cpu_count() * 1 / 8)  # 1/4 of available cores
+    num_cores = int(multiprocessing.cpu_count() * PROPORTION_OF_CORES)
     client = Client(n_workers=num_cores, threads_per_worker=1)
 
     total_images = len(moving_imgs)
