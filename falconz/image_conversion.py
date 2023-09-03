@@ -27,6 +27,9 @@ import unicodedata
 from typing import Optional
 import pathlib
 import shutil
+import subprocess
+import dask
+from dask import delayed
 
 from falconz import file_utilities as fop
 from falconz.constants import C3D_PATH, VALID_EXTENSIONS
@@ -125,17 +128,17 @@ class NiftiConverter:
             raise NiftiConverterError("Only a single 3D volume provided. Expecting a 4D volume or multiple 3D volumes.")
 
     def _process_multiple_image_files(self, file_list):
-        """
-        Processes multiple image files in the directory.
-
-        :param list file_list: List of image filenames.
-        """
+        tasks = []  # List to hold delayed tasks
         for file_name in file_list:
             full_path = os.path.join(self.input_directory, file_name)
             if file_name.endswith(('.nii', '.nii.gz')):
                 shutil.copy(full_path, self.output_directory)
             elif self._has_valid_extension(file_name):
-                self._convert_to_nifti_format(full_path)
+                # Add the task to the list
+                tasks.append(self._convert_to_nifti_format(full_path))
+
+        # Compute the tasks in parallel
+        dask.compute(*tasks)
 
     def _has_valid_extension(self, file_name):
         """
@@ -191,17 +194,13 @@ class NiftiConverter:
         except Exception as e:
             raise NiftiConverterError(f"Error splitting 4D image: {e}")
 
+    @delayed
     def _convert_to_nifti_format(self, image_path):
-        """
-        Converts a given image to NIFTI format.
-
-        :param str image_path: Path to the image file.
-        :raises NiftiConverterError: If there's an error during conversion.
-        """
         try:
             output_path = os.path.join(self.output_directory, f"{pathlib.Path(image_path).stem}.nii.gz")
-            img = nib.load(image_path)
-            nib.save(img, output_path)
+            cmd_to_run = f"{C3D_PATH} {image_path} -o {output_path}"
+            cmd_to_run = cmd_to_run.replace("\n", " ").strip()
+            subprocess.run(cmd_to_run, shell=True, check=True)
         except Exception as e:
             raise NiftiConverterError(f"Error converting image to NIFTI: {e}")
 
