@@ -26,6 +26,7 @@ import re
 import unicodedata
 from typing import Optional
 import pathlib
+import shutil
 
 from falconz import file_utilities as fop
 from falconz.constants import C3D_PATH, VALID_EXTENSIONS
@@ -50,7 +51,7 @@ class NiftiConverter:
         """
         if not os.path.exists(input_directory):
             raise NiftiConverterError(f"Input directory '{input_directory}' does not exist or is not accessible.")
-
+        self.VALID_EXTENSIONS = VALID_EXTENSIONS
         self.input_directory = input_directory
         self.output_directory = output_directory if output_directory else os.path.join(input_directory, 'converted')
         self._ensure_output_directory_exists()

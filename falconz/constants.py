@@ -34,7 +34,7 @@ else:
 
 # Define color codes for console output
 ANSI_ORANGE = '\033[38;5;208m'
-ANSI_GREEN = '\033[38;5;40m'
+ANSI_GREEN = '\033[32m'
 ANSI_VIOLET = '\033[38;5;141m'
 ANSI_RED = '\033[38;5;196m'
 ANSI_RESET = '\033[0m'

@@ -62,8 +62,6 @@ def expectations():
 
     :return: None
     """
-    print(f' Expected dimensions: {constants.EXPECTED_DIMENSIONS} | Allowed modalities: {constants.MODALITIES}')
-    logging.info(f' Expected dimensions: {constants.EXPECTED_DIMENSIONS} | Allowed modalities: {constants.MODALITIES}')
     print(
         f"{constants.ANSI_ORANGE} Warning: Only 4D images will be considered in the analysis. {constants.ANSI_RESET}")
 
