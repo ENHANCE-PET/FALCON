@@ -127,19 +127,20 @@ FALCONZ-V02-2023-09-03-17-28-17/  # Automatically generated results folder
 
 ### Folder Components
 
-#### Motion-corrected-images
-This is where you'll find the final dynamic PET images, now refined through motion correction procedures.
+#### 🖼️ Motion-corrected-images
+This is where you'll find the final dynamic PET images, now refined through motion correction procedures. 🌟
 
-#### ncc-images
-A collection of Normalized Cross-Correlation images, these serve as essential tools for determining the most appropriate start frame for motion correction.
+#### 📊 ncc-images
+A collection of Normalized Cross-Correlation images—these serve as essential tools 🛠️ for determining the most appropriate start frame for motion correction.
 
-#### Split-Nifti-files
-This folder contains individual 3D Nifti files, which are essential for conducting the motion correction operations.
+#### 📁 Split-Nifti-files
+This folder contains individual 3D Nifti files, which are crucial 🗝️ for conducting the motion correction operations.
 
-#### transforms
-This section archives the warp fields in cases of deformable registration and the transformation matrices for rigid or affine registrations, allowing for transparency and potential reusability of these parameters.
+#### 🔄 transforms
+This section archives the warp fields in cases of deformable registration and the transformation matrices 📐 for rigid or affine registrations, allowing for transparency and potential reusability of these parameters.
 
-FALCON doesn't just deliver high-precision motion-corrected images; it also provides a comprehensive, organized output structure designed for immediate utility and future analysis.
+FALCON doesn't just deliver high-precision motion-corrected images; it also provides a comprehensive, organized output structure 🗂️ designed for immediate utility and future analysis. 🚀
+
 
 
 
