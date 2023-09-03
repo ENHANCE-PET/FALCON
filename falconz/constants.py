@@ -76,7 +76,7 @@ ALLOWED_REGISTRATION_PARADIGMS = ["rigid", "affine", "deformable"]
 IMAGE_INTERPOLATION = 'Linear'
 MASK_INTERPOLATION = 'Nearest Neighbor'
 COST_FUNCTION = 'NCC 2x2x2'
-PROPORTION_OF_CORES = 1 / 8
+PROPORTION_OF_CORES = 1 / 8 # 1/8th of the available cores will be used for motion correction
 
 
 # ALLOWED EXTENSIONS
