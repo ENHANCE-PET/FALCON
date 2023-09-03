@@ -22,11 +22,12 @@ FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automati
 
 ### 🌟 Major Features
 
-- **Cross-Platform Support**: Whether you're on Linux, Windows, or Mac, FALCON V2 has got you covered. 
-- **Universal Architecture Compatibility**: Run FALCON V2 seamlessly on x86, ARM, or even the latest M1 Silicon.
-- **Python-Powered**: As a Python package, FALCON V2 is compatible with Python 3.9 and beyond, ensuring smooth integration into modern workflows.
-- **Versatile Application**: FALCON V2 is designed to work for any region, any tracer, and any modality, making it truly universal for all your diagnostic and analytical needs.
-- **Optimized for Out-of-Core Computing**: Leveraging the power of Dask, FALCON V2 is designed for efficient out-of-core computing. This enables us to maximize CPU utilization while minimizing memory overhead, delivering both speed and performance, regardless of the data scale.
+- **Python-Powered**: As a Python package, FALCON V2 is compatible with Python 3.9 and beyond, making it a seamless integration into modern workflows. 🐍
+- **Cross-Platform Support**: No matter if you're on Linux, Windows, or Mac, FALCON V2 ensures a smooth experience across the board. 💻🖥️
+- **Universal Architecture Compatibility**: Engineered for flexibility, FALCON V2 runs flawlessly on x86, ARM, or even the latest M1 Silicon chips. 🛠️
+- **Optimized for Out-of-Core Computing**: With the power of Dask, FALCON V2 achieves efficient out-of-core computing, maximizing CPU utilization while minimizing memory overhead for both speed and performance. 🚀
+- **Versatile Application**: Designed to be truly universal, FALCON V2 works across any region, any tracer, and any modality, making it your one-stop solution for all diagnostic and analytical needs. 🌍🔬
+
   
 ## 🚀 FALCON's motion correction in action
 
