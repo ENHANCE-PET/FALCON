@@ -19,11 +19,11 @@ FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automati
 
 ### 🌟 Major Features
 
-- - **🐍 Now Python-Powered for Effortless Integration**: Say goodbye to cumbersome shell scripts! FALCON V2 is now a Python package, offering seamless compatibility with Python 3.9 and beyond. Integrate it effortlessly into your modern workflows and enjoy the unparalleled convenience.
-- - **💻🖥️ Unveiling Cross-Platform Freedom**: Break free from the Linux-only limitations! FALCON V2 now extends its robust support to Windows and Mac as well. A seamless, uniform experience across all platforms is no longer a wish—it's a reality!
-- - **🛠️ Universal Architecture Compatibility with a Twist**: Think you've seen FALCON V2 at its best? Wait until you experience it on ARM architecture! While designed to operate seamlessly on x86 and the latest M1 Silicon, it's on ARM where FALCON V2 truly soars. Prepare to be blown away by unparalleled performance!
-- - **🚀 Say Goodbye to Memory Woes and Server Farms**: Forget about expensive, beefy servers and memory constraints. With FALCON V2's optimized out-of-core computing, powered by Dask, we've redefined efficiency. Get ready to experience unparalleled speed and performance without breaking the bank or your system's RAM!
-- - **🌍🔬 The Ultimate Flex: Versatility Reimagined**: For the first time ever, a tool that knows no boundaries—meet FALCON V2. Whether you're dealing with any region, tracer, or modality, FALCON V2 is the only tool you'll ever need for your diagnostic and analytical adventures. Say goodbye to specialized solutions; this is the new standard - thanks to the amazing 'greedy' registration library!
+- **🐍 Now Python-Powered for Effortless Integration**: Say goodbye to cumbersome shell scripts! FALCON V2 is now a Python package, offering seamless compatibility with Python 3.9 and beyond. Integrate it effortlessly into your modern workflows and enjoy the unparalleled convenience.
+- **💻🖥️ Unveiling Cross-Platform Freedom**: Break free from the Linux-only limitations! FALCON V2 now extends its robust support to Windows and Mac as well. A seamless, uniform experience across all platforms is no longer a wish—it's a reality!
+- **🛠️ Universal Architecture Compatibility with a Twist**: Think you've seen FALCON V2 at its best? Wait until you experience it on ARM architecture! While designed to operate seamlessly on x86 and the latest M1 Silicon, it's on ARM where FALCON V2 truly soars. Prepare to be blown away by unparalleled performance!
+- **🚀 Say Goodbye to Memory Woes and Server Farms**: Forget about expensive, beefy servers and memory constraints. With FALCON V2's optimized out-of-core computing, powered by Dask, we've redefined efficiency. Get ready to experience unparalleled speed and performance without breaking the bank or your system's RAM!
+- **🌍🔬 The Ultimate Flex: Versatility Reimagined**: For the first time ever, a tool that knows no boundaries—meet FALCON V2. Whether you're dealing with any region, tracer, or modality, FALCON V2 is the only tool you'll ever need for your diagnostic and analytical adventures. Say goodbye to specialized solutions; this is the new standard - thanks to the amazing 'greedy' registration library!
 
 
   
