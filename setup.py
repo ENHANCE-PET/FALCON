@@ -53,7 +53,6 @@ setup(
         'requests',
         'emoji',
         'psutil',
-        'dcm2niix',
         'nilearn',
         'scikit-image',
         'dask',

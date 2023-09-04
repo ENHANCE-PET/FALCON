@@ -25,7 +25,7 @@ import dask
 import nibabel as nib
 import pydicom
 from dask import delayed
-from falconz.constants import C3D_PATH, VALID_EXTENSIONS
+from falconz.constants import C3D_PATH, VALID_EXTENSIONS, DCM2NIIX_PATH
 
 from falconz import file_utilities as fop
 
@@ -213,7 +213,7 @@ class NiftiConverter:
         Raises:
             NiftiConverterError: If there's an error during DICOM to NIFTI conversion.
         """
-        cmd_to_run: List[str] = ['dcm2niix', '-z', 'y', '-o', output_dir, input_path]
+        cmd_to_run: List[str] = [DCM2NIIX_PATH, '-z', 'y', '-o', output_dir, input_path]
 
         try:
             subprocess.run(cmd_to_run, capture_output=True, check=True)

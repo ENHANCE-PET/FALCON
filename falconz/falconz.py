@@ -149,6 +149,7 @@ def main():
                       item_dict=resources.FALCON_BINARIES)
     file_utilities.set_permissions(constants.GREEDY_PATH, system_os)
     file_utilities.set_permissions(constants.C3D_PATH, system_os)
+    file_utilities.set_permissions(constants.DCM2NIIX_PATH, system_os)
 
     # ----------------------------------
     # INPUT STANDARDIZATION

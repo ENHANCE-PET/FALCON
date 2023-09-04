@@ -24,11 +24,16 @@ if file_utilities.get_system()[0] == 'windows':
                                'greedy.exe')
     C3D_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                             'c3d.exe')
+    DCM2NIIX_PATH = os.path.join(BINARY_PATH,
+                                 f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+                                 'dcm2niix.exe')
 elif file_utilities.get_system()[0] in ['linux', 'mac']:
     GREEDY_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                                'greedy')
     C3D_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                             'c3d')
+    DCM2NIIX_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+                                    'dcm2niix')
 else:
     raise ValueError('Unsupported OS')
 
