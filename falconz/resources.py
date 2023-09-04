@@ -14,49 +14,36 @@ Usage:
     The variables in this module can be imported and used in other modules within the falconz to download the necessary
     binaries for the falconz.
 """
+import psutil
 
-GREEDY_BINARIES = {
-    "greedy-windows-x86_64": {
-        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/greedy-windows-x86_64.zip",
-        "filename": "greedy-windows-x86_64.zip",
-        "directory": "greedy-windows-x86_64",
+FALCON_BINARIES = {
+    "falcon-windows-x86_64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/falcon-windows-x86_64.zip",
+        "filename": "falcon-windows-x86_64.zip",
+        "directory": "falcon-windows-x86_64",
     },
-    "greedy-linux-x86_64": {
-        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/greedy-linux-x86_64.zip",
-        "filename": "greedy-linux-x86_64.zip",
-        "directory": "greedy-linux-x86_64",
+    "falcon-linux-x86_64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/falcon-linux-x86_64.zip",
+        "filename": "falcon-linux-x86_64.zip",
+        "directory": "falcon-linux-x86_64",
     },
-    "greedy-mac-x86_64": {
-        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/greedy-mac-x86_64.zip",
-        "filename": "greedy-mac-x86_64.zip",
-        "directory": "greedy-mac-x86_64",
+    "falcon-mac-x86_64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/falcon-mac-x86_64.zip",
+        "filename": "falcon-mac-x86_64.zip",
+        "directory": "falcon-mac-x86_64",
     },
-    "greedy-mac-arm64": {
-        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/greedy-mac-arm64.zip",
-        "filename": "greedy-mac-arm64.zip",
-        "directory": "greedy-mac-arm64",
+    "falcon-mac-arm64": {
+        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/falcon-mac-arm64.zip",
+        "filename": "falcon-mac-arm64.zip",
+        "directory": "falcon-mac-arm64",
     },
 }
 
-C3D_BINARIES = {
-    "c3d-windows-x86_64": {
-        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/c3d-windows-x86_64.zip",
-        "filename": "c3d-windows-x86_64.zip",
-        "directory": "c3d-windows-x86_64",
-    },
-    "c3d-linux-x86_64": {
-        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/c3d-linux-x86_64.zip",
-        "filename": "c3d-linux-x86_64.zip",
-        "directory": "c3d-linux-x86_64",
-    },
-    "c3d-mac-x86_64": {
-        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/c3d-mac-x86_64.zip",
-        "filename": "c3d-mac-x86_64.zip",
-        "directory": "c3d-mac-x86_64",
-    },
-    "c3d-mac-arm64": {
-        "url": "https://greedy.s3.eu.cloud-object-storage.appdomain.cloud/c3d-mac-arm64.zip",
-        "filename": "c3d-mac-arm64.zip",
-        "directory": "c3d-mac-arm64",
-    },
-}
+
+# Create a function to get CPU and Memory usage
+def get_system_stats():
+    cpu_percent = psutil.cpu_percent(interval=None)
+    memory_info = psutil.virtual_memory()
+    memory_percent = memory_info.percent
+    return cpu_percent, memory_percent
+

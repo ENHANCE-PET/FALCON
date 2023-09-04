@@ -20,22 +20,28 @@ BINARY_PATH = os.path.join(project_root, 'bin')
 
 # Set the paths to the binaries based on the operating system
 if file_utilities.get_system()[0] == 'windows':
-    GREEDY_PATH = os.path.join(BINARY_PATH, f'greedy-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+    GREEDY_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                                'greedy.exe')
-    C3D_PATH = os.path.join(BINARY_PATH, f'c3d-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+    C3D_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                             'c3d.exe')
+    DCM2NIIX_PATH = os.path.join(BINARY_PATH,
+                                 f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+                                 'dcm2niix.exe')
 elif file_utilities.get_system()[0] in ['linux', 'mac']:
-    GREEDY_PATH = os.path.join(BINARY_PATH, f'greedy-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+    GREEDY_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                                'greedy')
-    C3D_PATH = os.path.join(BINARY_PATH, f'c3d-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+    C3D_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
                             'c3d')
+    DCM2NIIX_PATH = os.path.join(BINARY_PATH, f'falcon-{file_utilities.get_system()[0]}-{file_utilities.get_system()[1]}',
+                                    'dcm2niix')
 else:
     raise ValueError('Unsupported OS')
 
 # Define color codes for console output
 ANSI_ORANGE = '\033[38;5;208m'
-ANSI_GREEN = '\033[38;5;40m'
+ANSI_GREEN = '\033[32m'
 ANSI_VIOLET = '\033[38;5;141m'
+ANSI_RED = '\033[38;5;196m'
 ANSI_RESET = '\033[0m'
 
 # Define the allowed modalities
@@ -64,11 +70,22 @@ MOCO_4D_FILE_NAME = 'moco_4D.nii.gz'
 FALCON_WORKING_FOLDER = 'FALCONZ-V02' + '-' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 TRANSFORMS_FOLDER = 'transforms'
 MOCO_FOLDER = 'Motion-corrected-images'
+SPLIT_FOLDER = 'Split-Nifti-files'
 
 # Define the hyperparameters used in the registration process
 MULTI_RESOLUTION_SCHEME = '100x25x10'
+MULTI_RESOLUTION_SCHEME_DASH = '100x25x10x0'
 EXPECTED_DIMENSIONS = 4
 ALLOWED_REGISTRATION_PARADIGMS = ["rigid", "affine", "deformable"]
 IMAGE_INTERPOLATION = 'Linear'
 MASK_INTERPOLATION = 'Nearest Neighbor'
 COST_FUNCTION = 'NCC 2x2x2'
+PROPORTION_OF_CORES = 1 / 8  # 1/8th of the available cores will be used for motion correction
+
+# ALLOWED EXTENSIONS
+
+VALID_EXTENSIONS = ['.nii', '.nii.gz', '.hdr', '.img', '.nrrd', '.mha', '.mhd']
+
+# ALLOWED MODES
+
+ALLOWED_MODES = ['cruise', 'dash']

@@ -14,27 +14,23 @@ Usage:
     The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
 """
 
-import SimpleITK as sitk
 import logging
 import multiprocessing
-import nibabel
 import os
-import pandas as pd
 import pathlib
-import re
 import subprocess
-from dask import delayed, compute
-from halo import Halo
+
+import SimpleITK as sitk
+import pandas as pd
+from dask import delayed
+from dask.distributed import Client, as_completed
+from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION, PROPORTION_OF_CORES
+from falconz.resources import get_system_stats
 from mpire import WorkerPool
-from multiprocessing import Pool
-from nilearn.input_data import NiftiMasker
-from rich.progress import Progress, BarColumn, TextColumn
-from skimage.metrics import structural_similarity as ssim
-from tqdm import tqdm
+from rich.progress import Progress, BarColumn, TimeElapsedColumn
 
 from falconz import constants
 from falconz import file_utilities as fop
-from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION
 
 
 class ImageRegistration:
@@ -78,13 +74,12 @@ class ImageRegistration:
         """
         Sets the moving image for registration and updates the transform files if specified.
 
-        Parameters:
-        -----------
-        moving_img : str
-            Path to the moving/source image.
-        update_transforms : bool, default=True
-            If True, will update the paths for the transformation files based on the moving image name.
+        :param moving_img: Path to the moving/source image.
+        :type moving_img: str
+        :param update_transforms: If True, will update the paths for the transformation files based on the moving image name. Default is True.
+        :type update_transforms: bool
         """
+
         self.moving_img = moving_img
         if update_transforms:
             out_dir = pathlib.Path(self.moving_img).parent
@@ -105,9 +100,9 @@ class ImageRegistration:
         str
             Path to the resulting rigid transformation file.
         """
-        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
-                     f"{mask_cmd} -ia-image-centers -dof 6 -o {re.escape(self.transform_files['rigid'])} " \
+        mask_cmd = f"-gm {self.fixed_mask}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {self.fixed_img} {self.moving_img} " \
+                     f"{mask_cmd} -ia-image-centers -dof 6 -o {self.transform_files['rigid']} " \
                      f"-n {self.multi_resolution_iterations} -m {COST_FUNCTION}"
         subprocess.run(cmd_to_run, shell=True, capture_output=True)
         logging.info(
@@ -124,9 +119,9 @@ class ImageRegistration:
         str
             Path to the resulting affine transformation file.
         """
-        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
-                     f"{mask_cmd} -ia-image-centers -dof 12 -o {re.escape(self.transform_files['affine'])} " \
+        mask_cmd = f"-gm {self.fixed_mask}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {self.fixed_img} {self.moving_img} " \
+                     f"{mask_cmd} -ia-image-centers -dof 12 -o {self.transform_files['affine']} " \
                      f"-n {self.multi_resolution_iterations} -m {COST_FUNCTION}"
         subprocess.run(cmd_to_run, shell=True, capture_output=True)
         logging.info(
@@ -144,10 +139,10 @@ class ImageRegistration:
             A tuple containing paths to the resulting affine, warp, and inverse warp transformation files.
         """
         self.affine()
-        mask_cmd = f"-gm {re.escape(self.fixed_mask)}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -m {COST_FUNCTION} -i {re.escape(self.fixed_img)} {re.escape(self.moving_img)} " \
-                     f"{mask_cmd} -it {re.escape(self.transform_files['affine'])} -o {re.escape(self.transform_files['warp'])} " \
-                     f"-oinv {re.escape(self.transform_files['inverse_warp'])} -sv -n {self.multi_resolution_iterations}"
+        mask_cmd = f"-gm {self.fixed_mask}" if self.fixed_mask else ""
+        cmd_to_run = f"{GREEDY_PATH} -d 3 -m {COST_FUNCTION} -i {self.fixed_img} {self.moving_img} " \
+                     f"{mask_cmd} -it {self.transform_files['affine']} -o {self.transform_files['warp']} " \
+                     f"-oinv {self.transform_files['inverse_warp']} -sv -n {self.multi_resolution_iterations}"
         subprocess.run(cmd_to_run, shell=True, capture_output=True)
         logging.info(
             f"Deformable alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} | "
@@ -221,12 +216,12 @@ class ImageRegistration:
         str
             The command string to run.
         """
-        cmd = f"{GREEDY_PATH} -d 3 -rf {re.escape(self.fixed_img)} -ri LINEAR -rm " \
-              f"{re.escape(self.moving_img)} {re.escape(resampled_moving_img)}"
+        cmd = f"{GREEDY_PATH} -d 3 -rf {self.fixed_img} -ri LINEAR -rm " \
+              f"{self.moving_img} {resampled_moving_img}"
         if segmentation and resampled_seg:
-            cmd += f" -ri LABEL 0.2vox -rm {re.escape(segmentation)} {re.escape(resampled_seg)}"
+            cmd += f" -ri LABEL 0.2vox -rm {segmentation} {resampled_seg}"
         for transform_file in transform_files:
-            cmd += f" -r {re.escape(transform_file)}"
+            cmd += f" -r {transform_file}"
         return cmd
 
 
@@ -256,37 +251,44 @@ def align_single_image(fixed_img, moving_img, registration_type, multi_resolutio
     return 1
 
 
-def align(fixed_img=str, moving_imgs=list, registration_type=str, multi_resolution_iterations=str, moco_dir=str):
-    """
-    Aligns the moving images to the fixed image using the specified registration type.
-
-    :param fixed_img: The path to the fixed image.
-    :type fixed_img: str
-    :param moving_imgs: A list of paths to the moving images.
-    :type moving_imgs: list
-    :param registration_type: The type of registration to use.
-    :type registration_type: str
-    :param multi_resolution_iterations: The number of iterations to use for multi-resolution registration.
-    :type multi_resolution_iterations: str
-    :param moco_dir: The directory to store the resampled moving images.
-    :type moco_dir: str
-    """
-    tasks = [
-        align_single_image(fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir)
-        for moving_img in moving_imgs
-    ]
+def align(fixed_img, moving_imgs, registration_type, multi_resolution_iterations, moco_dir):
+    # Configuring Dask Client
+    num_cores = int(multiprocessing.cpu_count() * PROPORTION_OF_CORES)
+    client = Client(n_workers=num_cores, threads_per_worker=1)
 
     total_images = len(moving_imgs)
 
-    # Initialize the progress bar
-    with Progress() as progress:
-        task_description = f"[cyan] Aligning moving images to the reference frame [0/{total_images}]"
-        task = progress.add_task(task_description, total=total_images)
+    # Define tasks outside of the progress context so that the progress bar appears first
+    tasks = [align_single_image(fixed_img, moving_img, registration_type, multi_resolution_iterations, moco_dir)
+             for moving_img in moving_imgs]
 
-        # Using dask to compute results and update the progress bar
-        for count, _ in enumerate(compute(*tasks), 1):
-            progress.update(task, advance=1,
-                            description=f"[cyan] Aligning moving images to the reference frame [{count}/{total_images}]")
+    with Progress(
+            "[progress.description]{task.description}",
+            "[progress.percentage]{task.percentage:>3.0f}%",
+            BarColumn(),
+            "[{task.completed}/{task.total}]",
+            "• Time elapsed:",
+            TimeElapsedColumn(),
+            "• CPU Load: [cyan]{task.fields[cpu]}%",  # Adding CPU Load
+            "• Memory Load: [cyan]{task.fields[memory]}%"  # Adding Memory Load
+    ) as progress:
+        task_description = "[cyan] Aligning moving images..."
+        cpu_percent, memory_percent = get_system_stats()  # Initial CPU and Memory stats
+
+        task_id = progress.add_task(task_description, total=total_images,
+                                    cpu=cpu_percent, memory=memory_percent)  # Add them to the task fields
+
+        futures = client.compute(tasks)
+
+        # Update progress bar as tasks complete
+        for future, result in as_completed(futures, with_results=True):
+            cpu_percent, memory_percent = get_system_stats()  # Get updated stats
+            progress.update(task_id, advance=1,
+                            description="[cyan] Aligned moving images:",
+                            cpu=cpu_percent, memory=memory_percent)  # Update the task with the new stats
+
+    # Close the client to release resources after computation
+    client.close()
 
 
 def get_dimensions(nifti_file: str) -> int:
@@ -340,45 +342,6 @@ def get_intensity_statistics(nifti_file: str, multi_label_file: str) -> object:
     return stats_df
 
 
-def get_body_mask(nifti_file: str, mask_file: str) -> str:
-    """
-    Get a mask file for a NIFTI image file.
-    
-    :param nifti_file: The path to the NIFTI file.
-    :type nifti_file: str
-    :param mask_file: The path to save the mask file.
-    :type mask_file: str
-    :return: The path to the mask file.
-    :rtype: str
-    """
-    nifti_masker = NiftiMasker(mask_strategy='epi', memory="nilearn_cache", memory_level=2, smoothing_fwhm=8)
-    nifti_masker.fit(nifti_file)
-    nibabel.save(nifti_masker.mask_img_, mask_file)
-    return mask_file
-
-
-def mask_img(nifti_file: str, mask_file: str, masked_file: str) -> str:
-    """
-    Mask a NIFTI image file with a mask file.
-    
-    :param nifti_file: The path to the NIFTI file.
-    :type nifti_file: str
-    :param mask_file: The path to the mask file.
-    :type mask_file: str
-    :param masked_file: The path to save the masked NIFTI file.
-    :type masked_file: str
-    :return: The path to the masked NIFTI file.
-    :rtype: str
-    """
-    img = sitk.ReadImage(nifti_file)
-    mask = sitk.ReadImage(mask_file, sitk.sitkFloat32)
-    masked_img = sitk.Compose(
-        [sitk.Multiply(sitk.VectorIndexSelectionCast(img, i), mask) for i in
-         range(img.GetNumberOfComponentsPerPixel())])
-    sitk.WriteImage(sitk.Cast(masked_img, sitk.sitkVectorFloat32), masked_file)
-    return masked_file
-
-
 def downscale_image(downscale_param: tuple, input_image: str) -> str:
     """
     Downscale an image based on the shrink factor and save it to the output directory.
@@ -396,14 +359,14 @@ def downscale_image(downscale_param: tuple, input_image: str) -> str:
     input_image_blurred = os.path.join(output_dir, f"{shrink_factor}x_blurred_{input_image_name}")
     gauss_variance = (shrink_factor / 2) ** 2
     gauss_variance = int(gauss_variance)
-    cmd_to_smooth = f"{C3D_PATH} {re.escape(input_image)} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
-                    f" {re.escape(input_image_blurred)} "
+    cmd_to_smooth = f"{C3D_PATH} {input_image} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
+                    f" {input_image_blurred} "
     subprocess.run(cmd_to_smooth, shell=True, capture_output=False)
     # Resample the smoothed input image later
     input_image_downscaled = os.path.join(output_dir, f"{shrink_factor}x_downscaled_{input_image_name}")
     shrink_percentage = str(int(100 / shrink_factor))
-    cmd_to_downscale = f"{C3D_PATH} {re.escape(input_image_blurred)} -resample {shrink_percentage}x{shrink_percentage}x" \
-                       f"{shrink_percentage}% -o {re.escape(input_image_downscaled)}"
+    cmd_to_downscale = f"{C3D_PATH} {input_image_blurred} -resample {shrink_percentage}x{shrink_percentage}x" \
+                       f"{shrink_percentage}% -o {input_image_downscaled}"
     subprocess.run(cmd_to_downscale, shell=True, capture_output=False)
     return input_image_downscaled
 
@@ -437,10 +400,10 @@ def calc_voxelwise_ncc_images(image1: str, image2: str, output_dir: str) -> str:
     image1_name = os.path.basename(image1).split(".")[0]
     image2_name = os.path.basename(image2).split(".")[0]
     output_image = os.path.join(output_dir, f"ncc_{image2_name}.nii.gz")
-    c3d_cmd = f"{C3D_PATH} {re.escape(image1)} {re.escape(image2)} -ncc {NCC_RADIUS} -o {re.escape(output_image)}"
+    c3d_cmd = f"{C3D_PATH} {image1} {image2} -ncc {NCC_RADIUS} -o {output_image}"
     subprocess.run(c3d_cmd, shell=True, capture_output=False)
     # clip the negative correlations to zero
-    c3d_cmd = f"{C3D_PATH} {re.escape(output_image)} -clip 0 inf -o {re.escape(output_image)}"
+    c3d_cmd = f"{C3D_PATH} {output_image} -clip 0 inf -o {output_image}"
     subprocess.run(c3d_cmd, shell=True, capture_output=False)
     return output_image
 

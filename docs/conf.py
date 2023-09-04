@@ -8,18 +8,18 @@ import sys
 # Insert the parent directory (where your code is) into the system path
 sys.path.insert(0, os.path.abspath('..'))
 
-project = 'FALCON'
+project = 'FALCONZ'
 copyright = '2023, Quantitative Imaging and Medical Physics Team, Medical University of Vienna'
-author = 'Lalith Kumar Shiyam Sundar | Sebastian Gutschmayer'
-release = '2.0'
+author = 'Lalith Kumar Shiyam Sundar | Sebastian Gutschmayer | Manuel Pires'
+release = '2.0'  # Update with Falconz's current version
 
 # Extensions
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx', 
+    'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
-    'sphinx.ext.linkcode', 
-    'sphinx_rtd_dark_mode', # Add this line for direct linking to GitHub source
+    'sphinx.ext.linkcode',
+    'sphinx_rtd_dark_mode',  # Add this line for direct linking to GitHub source
 ]
 
 # Intersphinx mapping for external libraries
@@ -39,7 +39,7 @@ html_static_path = ['_static']
 # GitHub linking for "Edit on Github" feature
 html_context = {
     "display_github": True,
-    "github_user": "QIMP-Team",
+    "github_user": "LalithShiyam",
     "github_repo": "FALCON",
     "github_version": "main",
     "conf_py_path": "/docs/",
@@ -52,8 +52,7 @@ def linkcode_resolve(domain, info):
     if not info['module']:
         return None
     filename = info['module'].replace('.', '/')
-    return f"https://github.com/QIMP-Team/FALCON/blob/main/{filename}.py"
-
+    return f"https://github.com/LalithShiyam/FALCON/blob/main/{filename}.py"
 
 html_theme_options = {
     "style_nav_header_background": "#343131",  # Optional: Change the navbar header color
@@ -64,4 +63,5 @@ html_css_files = [
     'custom.css',
 ]
 
-html_logo = '_static/Falcon-logo.png'
+# Update logo path if Falconz has a different logo
+html_logo = '_static/Falcon-logo.png'  # Update this path if necessary

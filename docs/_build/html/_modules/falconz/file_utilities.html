@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>falconz.file_utilities &mdash; FALCON 2.0 documentation</title>
+  <title>falconz.file_utilities &mdash; FALCONZ 2.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -33,7 +33,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            FALCON
+            FALCONZ
               <img src="../../_static/Falcon-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -44,15 +44,23 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">FALCON: The Forefront of PET Imaging Motion Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../requirements.html">FALCON System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide for FalconZ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage_guide.html">FALCON Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Strengthen FalconZ: Report Bugs and Improvements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">falconz</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">FALCON</a>
+          <a href="../../index.html">FALCONZ</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -98,7 +106,7 @@
 <span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span>
 
 
-<div class="viewcode-block" id="set_permissions"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.set_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_permissions</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">system_type</span><span class="p">):</span>
+<div class="viewcode-block" id="set_permissions"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.set_permissions">[docs]</a><span class="k">def</span> <span class="nf">set_permissions</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">system_type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets permissions for a file based on the system type.</span>
 
@@ -116,7 +124,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported OS&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_virtual_env_root"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.get_virtual_env_root">[docs]</a><span class="k">def</span> <span class="nf">get_virtual_env_root</span><span class="p">():</span>
+<div class="viewcode-block" id="get_virtual_env_root"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.get_virtual_env_root">[docs]</a><span class="k">def</span> <span class="nf">get_virtual_env_root</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the root directory of the virtual environment.</span>
 
@@ -128,7 +136,7 @@
     <span class="k">return</span> <span class="n">virtual_env_root</span></div>
 
 
-<div class="viewcode-block" id="get_system"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.get_system">[docs]</a><span class="k">def</span> <span class="nf">get_system</span><span class="p">():</span>
+<div class="viewcode-block" id="get_system"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.get_system">[docs]</a><span class="k">def</span> <span class="nf">get_system</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the system and architecture information.</span>
 
@@ -160,7 +168,7 @@
     <span class="k">return</span> <span class="n">system</span><span class="p">,</span> <span class="n">architecture</span></div>
 
 
-<div class="viewcode-block" id="create_directory"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.create_directory">[docs]</a><span class="k">def</span> <span class="nf">create_directory</span><span class="p">(</span><span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="create_directory"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.create_directory">[docs]</a><span class="k">def</span> <span class="nf">create_directory</span><span class="p">(</span><span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a directory at the specified path.</span>
 
@@ -171,7 +179,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_files"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.get_files">[docs]</a><span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span><span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="get_files"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.get_files">[docs]</a><span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span><span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the files from the specified directory using the wildcard.</span>
 
@@ -185,7 +193,7 @@
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory_path</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="copy_file"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.copy_file">[docs]</a><span class="k">def</span> <span class="nf">copy_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="copy_file"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.copy_file">[docs]</a><span class="k">def</span> <span class="nf">copy_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copies a file to the destination directory.</span>
 
@@ -197,7 +205,7 @@
     <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="copy_files_to_destination"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.copy_files_to_destination">[docs]</a><span class="k">def</span> <span class="nf">copy_files_to_destination</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="copy_files_to_destination"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.copy_files_to_destination">[docs]</a><span class="k">def</span> <span class="nf">copy_files_to_destination</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copies the files inside the list to the destination directory in a parallel fashion.</span>
 
@@ -210,7 +218,7 @@
         <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">copy_file</span><span class="p">,</span> <span class="p">[(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="select_files_by_modality"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.select_files_by_modality">[docs]</a><span class="k">def</span> <span class="nf">select_files_by_modality</span><span class="p">(</span><span class="n">tracer_dirs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">modality_tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="select_files_by_modality"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.select_files_by_modality">[docs]</a><span class="k">def</span> <span class="nf">select_files_by_modality</span><span class="p">(</span><span class="n">tracer_dirs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">modality_tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Selects the files with the selected modality tag from the tracer directory.</span>
 
@@ -230,7 +238,7 @@
     <span class="k">return</span> <span class="n">selected_files</span></div>
 
 
-<div class="viewcode-block" id="organise_files_by_modality"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.organise_files_by_modality">[docs]</a><span class="k">def</span> <span class="nf">organise_files_by_modality</span><span class="p">(</span><span class="n">tracer_dirs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">modalities</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">pumaz_dir</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="organise_files_by_modality"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.organise_files_by_modality">[docs]</a><span class="k">def</span> <span class="nf">organise_files_by_modality</span><span class="p">(</span><span class="n">tracer_dirs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">modalities</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">pumaz_dir</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Organises the files by modality.</span>
 
@@ -246,7 +254,7 @@
         <span class="n">copy_files_to_destination</span><span class="p">(</span><span class="n">files_to_copy</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pumaz_dir</span><span class="p">,</span> <span class="n">modality</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="move_file"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.move_file">[docs]</a><span class="k">def</span> <span class="nf">move_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="move_file"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.move_file">[docs]</a><span class="k">def</span> <span class="nf">move_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Moves a file to the destination directory.</span>
 
@@ -258,7 +266,7 @@
     <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_number_of_possible_jobs"><a class="viewcode-back" href="../../source/falconz.html#falconz.file_utilities.get_number_of_possible_jobs">[docs]</a><span class="k">def</span> <span class="nf">get_number_of_possible_jobs</span><span class="p">(</span><span class="n">process_memory</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">process_threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="get_number_of_possible_jobs"><a class="viewcode-back" href="../../falconz.html#falconz.file_utilities.get_number_of_possible_jobs">[docs]</a><span class="k">def</span> <span class="nf">get_number_of_possible_jobs</span><span class="p">(</span><span class="n">process_memory</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">process_threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets the number of available jobs based on system specifications and process parameters.</span>
 

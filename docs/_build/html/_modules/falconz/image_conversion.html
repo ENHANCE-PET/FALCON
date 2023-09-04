@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>falconz.image_conversion &mdash; FALCON 2.0 documentation</title>
+  <title>falconz.image_conversion &mdash; FALCONZ 2.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -33,7 +33,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            FALCON
+            FALCONZ
               <img src="../../_static/Falcon-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -44,15 +44,23 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">FALCON: The Forefront of PET Imaging Motion Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../requirements.html">FALCON System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide for FalconZ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage_guide.html">FALCON Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Strengthen FalconZ: Report Bugs and Improvements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">falconz</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">FALCON</a>
+          <a href="../../index.html">FALCONZ</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -103,7 +111,7 @@
 <span class="kn">from</span> <span class="nn">falconz</span> <span class="kn">import</span> <span class="n">file_utilities</span> <span class="k">as</span> <span class="n">fop</span>
 
 
-<div class="viewcode-block" id="ImageConverter"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter">[docs]</a><span class="k">class</span> <span class="nc">ImageConverter</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageConverter"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter">[docs]</a><span class="k">class</span> <span class="nc">ImageConverter</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes an ImageConverter object.</span>
@@ -120,7 +128,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_nifti_directory</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_nifti_directory</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ImageConverter.non_nifti_to_nifti"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter.non_nifti_to_nifti">[docs]</a>    <span class="k">def</span> <span class="nf">non_nifti_to_nifti</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageConverter.non_nifti_to_nifti"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.non_nifti_to_nifti">[docs]</a>    <span class="k">def</span> <span class="nf">non_nifti_to_nifti</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts non-NIfTI files to NIfTI format.</span>
 
@@ -154,7 +162,7 @@
         <span class="n">output_image_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">output_image_basename</span><span class="p">)</span>
         <span class="n">SimpleITK</span><span class="o">.</span><span class="n">WriteImage</span><span class="p">(</span><span class="n">output_image</span><span class="p">,</span> <span class="n">output_image_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ImageConverter.dcm2niix"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter.dcm2niix">[docs]</a>    <span class="k">def</span> <span class="nf">dcm2niix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageConverter.dcm2niix"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.dcm2niix">[docs]</a>    <span class="k">def</span> <span class="nf">dcm2niix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts DICOM files to NIfTI format using dcm2niix.</span>
 
@@ -188,7 +196,7 @@
 
         <span class="k">return</span> <span class="n">output_dir</span></div>
 
-<div class="viewcode-block" id="ImageConverter.remove_accents"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter.remove_accents">[docs]</a>    <span class="k">def</span> <span class="nf">remove_accents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unicode_filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ImageConverter.remove_accents"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.remove_accents">[docs]</a>    <span class="k">def</span> <span class="nf">remove_accents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unicode_filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes accents from a Unicode filename.</span>
 
@@ -206,7 +214,7 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">unicode_filename</span></div>
 
-<div class="viewcode-block" id="ImageConverter.is_dicom_file"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter.is_dicom_file">[docs]</a>    <span class="k">def</span> <span class="nf">is_dicom_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="ImageConverter.is_dicom_file"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.is_dicom_file">[docs]</a>    <span class="k">def</span> <span class="nf">is_dicom_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if a file is a DICOM file.</span>
 
@@ -221,7 +229,7 @@
         <span class="k">except</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">InvalidDicomError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="ImageConverter.create_dicom_lookup"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter.create_dicom_lookup">[docs]</a>    <span class="k">def</span> <span class="nf">create_dicom_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dicom_dir</span><span class="p">):</span>
+<div class="viewcode-block" id="ImageConverter.create_dicom_lookup"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.create_dicom_lookup">[docs]</a>    <span class="k">def</span> <span class="nf">create_dicom_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dicom_dir</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a dictionary of DICOM file information.</span>
 
@@ -259,7 +267,7 @@
                 <span class="n">dicom_info</span><span class="p">[</span><span class="n">anticipated_filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">modality</span>
         <span class="k">return</span> <span class="n">dicom_info</span></div>
 
-<div class="viewcode-block" id="ImageConverter.rename_nifti_files"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter.rename_nifti_files">[docs]</a>    <span class="k">def</span> <span class="nf">rename_nifti_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nifti_dir</span><span class="p">,</span> <span class="n">dicom_info</span><span class="p">):</span>
+<div class="viewcode-block" id="ImageConverter.rename_nifti_files"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.rename_nifti_files">[docs]</a>    <span class="k">def</span> <span class="nf">rename_nifti_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nifti_dir</span><span class="p">,</span> <span class="n">dicom_info</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Renames NIfTI files based on DICOM file information.</span>
 
@@ -277,7 +285,7 @@
                     <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">,</span> <span class="n">new_filename</span><span class="p">))</span>
                     <span class="k">del</span> <span class="n">dicom_info</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="ImageConverter.split4d"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter.split4d">[docs]</a>    <span class="k">def</span> <span class="nf">split4d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageConverter.split4d"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.split4d">[docs]</a>    <span class="k">def</span> <span class="nf">split4d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Splits a 4D NIfTI file into 3D NIfTI files.</span>
 
@@ -295,7 +303,7 @@
             <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="s1">&#39;vol&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.nii.gz&#39;</span><span class="p">))</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="ImageConverter.convert"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.ImageConverter.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ImageConverter.convert"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.ImageConverter.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts input files to NIfTI format and splits 4D NIfTI files into 3D NIfTI files.</span>
 
@@ -326,7 +334,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_nifti_directory</span></div></div>
 
 
-<div class="viewcode-block" id="merge3d"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_conversion.merge3d">[docs]</a><span class="k">def</span> <span class="nf">merge3d</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wild_card</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nifti_outfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="merge3d"><a class="viewcode-back" href="../../falconz.html#falconz.image_conversion.merge3d">[docs]</a><span class="k">def</span> <span class="nf">merge3d</span><span class="p">(</span><span class="n">nifti_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wild_card</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nifti_outfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Merge 3D NIFTI files into a 4D NIFTI file using nibabel</span>
 <span class="sd">    :param nifti_dir: Directory containing the 3D NIFTI files</span>

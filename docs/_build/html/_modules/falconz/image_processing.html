@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>falconz.image_processing &mdash; FALCON 2.0 documentation</title>
+  <title>falconz.image_processing &mdash; FALCONZ 2.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -33,7 +33,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            FALCON
+            FALCONZ
               <img src="../../_static/Falcon-logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -44,15 +44,24 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">FALCON: The Forefront of PET Imaging Motion Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../requirements.html">FALCON System Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation Guide for FalconZ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage_guide.html">FALCON Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Strengthen FalconZ: Report Bugs and Improvements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../qimp_philosophy.html">The ‘Z’ Factor in QIMP Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">falconz</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">FALCON</a>
+          <a href="../../index.html">FALCONZ</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -110,7 +119,7 @@
 <span class="kn">from</span> <span class="nn">falconz.constants</span> <span class="kn">import</span> <span class="n">GREEDY_PATH</span><span class="p">,</span> <span class="n">C3D_PATH</span><span class="p">,</span> <span class="n">NCC_RADIUS</span><span class="p">,</span> <span class="n">NCC_THRESHOLD</span><span class="p">,</span> <span class="n">COST_FUNCTION</span>
 
 
-<div class="viewcode-block" id="ImageRegistration"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration">[docs]</a><span class="k">class</span> <span class="nc">ImageRegistration</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageRegistration"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.ImageRegistration">[docs]</a><span class="k">class</span> <span class="nc">ImageRegistration</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for performing image registration using the Greedy method.</span>
 
@@ -147,17 +156,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="ImageRegistration.set_moving_image"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.set_moving_image">[docs]</a>    <span class="k">def</span> <span class="nf">set_moving_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moving_img</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">update_transforms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ImageRegistration.set_moving_image"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.ImageRegistration.set_moving_image">[docs]</a>    <span class="k">def</span> <span class="nf">set_moving_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moving_img</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">update_transforms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the moving image for registration and updates the transform files if specified.</span>
 
-<span class="sd">        Parameters:</span>
-<span class="sd">        -----------</span>
-<span class="sd">        moving_img : str</span>
-<span class="sd">            Path to the moving/source image.</span>
-<span class="sd">        update_transforms : bool, default=True</span>
-<span class="sd">            If True, will update the paths for the transformation files based on the moving image name.</span>
+<span class="sd">        :param moving_img: Path to the moving/source image.</span>
+<span class="sd">        :type moving_img: str</span>
+<span class="sd">        :param update_transforms: If True, will update the paths for the transformation files based on the moving image name. Default is True.</span>
+<span class="sd">        :type update_transforms: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span> <span class="o">=</span> <span class="n">moving_img</span>
         <span class="k">if</span> <span class="n">update_transforms</span><span class="p">:</span>
             <span class="n">out_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
@@ -169,7 +177,7 @@
                 <span class="s1">&#39;inverse_warp&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">moving_img_filename</span><span class="si">}</span><span class="s2">_inverse_warp.nii.gz&quot;</span><span class="p">)</span>
             <span class="p">}</span></div>
 
-<div class="viewcode-block" id="ImageRegistration.rigid"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.rigid">[docs]</a>    <span class="k">def</span> <span class="nf">rigid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageRegistration.rigid"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.ImageRegistration.rigid">[docs]</a>    <span class="k">def</span> <span class="nf">rigid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform rigid registration between the moving and fixed images.</span>
 
@@ -188,7 +196,7 @@
             <span class="sa">f</span><span class="s2">&quot;moco-</span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | Transform file: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;rigid&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;rigid&#39;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="ImageRegistration.affine"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.affine">[docs]</a>    <span class="k">def</span> <span class="nf">affine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageRegistration.affine"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.ImageRegistration.affine">[docs]</a>    <span class="k">def</span> <span class="nf">affine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform affine registration between the moving and fixed images.</span>
 
@@ -207,7 +215,7 @@
             <span class="sa">f</span><span class="s2">&quot; Aligned image: moco-</span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moving_img</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | Transform file: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="ImageRegistration.deformable"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.deformable">[docs]</a>    <span class="k">def</span> <span class="nf">deformable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageRegistration.deformable"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.ImageRegistration.deformable">[docs]</a>    <span class="k">def</span> <span class="nf">deformable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform deformable registration between the moving and fixed images.</span>
 
@@ -229,7 +237,7 @@
             <span class="sa">f</span><span class="s2">&quot; | warp file: </span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;warp&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;affine&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;warp&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_files</span><span class="p">[</span><span class="s1">&#39;inverse_warp&#39;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="ImageRegistration.registration"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.registration">[docs]</a>    <span class="k">def</span> <span class="nf">registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registration_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageRegistration.registration"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.ImageRegistration.registration">[docs]</a>    <span class="k">def</span> <span class="nf">registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registration_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register the moving image to the fixed image using the specified registration type.</span>
 
@@ -247,7 +255,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Registration type not supported!&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ImageRegistration.resample"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.ImageRegistration.resample">[docs]</a>    <span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resampled_moving_img</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">registration_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">segmentation</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">resampled_seg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageRegistration.resample"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.ImageRegistration.resample">[docs]</a>    <span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resampled_moving_img</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">registration_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">segmentation</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">resampled_seg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resample the moving image based on the computed transformation.</span>
 
@@ -329,7 +337,7 @@
     <span class="k">return</span> <span class="mi">1</span>
 
 
-<div class="viewcode-block" id="align"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.align">[docs]</a><span class="k">def</span> <span class="nf">align</span><span class="p">(</span><span class="n">fixed_img</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">moving_imgs</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">registration_type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">multi_resolution_iterations</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">moco_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="align"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.align">[docs]</a><span class="k">def</span> <span class="nf">align</span><span class="p">(</span><span class="n">fixed_img</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">moving_imgs</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">registration_type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">multi_resolution_iterations</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">moco_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Aligns the moving images to the fixed image using the specified registration type.</span>
 
@@ -362,7 +370,7 @@
                             <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[cyan] Aligning moving images to the reference frame [</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_images</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_dimensions"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.get_dimensions">[docs]</a><span class="k">def</span> <span class="nf">get_dimensions</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="get_dimensions"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.get_dimensions">[docs]</a><span class="k">def</span> <span class="nf">get_dimensions</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the dimensions of a NIFTI image file.</span>
 
@@ -376,7 +384,7 @@
     <span class="k">return</span> <span class="n">img_dim</span></div>
 
 
-<div class="viewcode-block" id="get_pixel_id_type"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.get_pixel_id_type">[docs]</a><span class="k">def</span> <span class="nf">get_pixel_id_type</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="get_pixel_id_type"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.get_pixel_id_type">[docs]</a><span class="k">def</span> <span class="nf">get_pixel_id_type</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the pixel ID type of a NIFTI image file.</span>
 
@@ -390,7 +398,7 @@
     <span class="k">return</span> <span class="n">pixel_id_type</span></div>
 
 
-<div class="viewcode-block" id="get_intensity_statistics"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.get_intensity_statistics">[docs]</a><span class="k">def</span> <span class="nf">get_intensity_statistics</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">multi_label_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<div class="viewcode-block" id="get_intensity_statistics"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.get_intensity_statistics">[docs]</a><span class="k">def</span> <span class="nf">get_intensity_statistics</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">multi_label_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the intensity statistics of a NIFTI image file.</span>
 
@@ -413,7 +421,7 @@
     <span class="k">return</span> <span class="n">stats_df</span></div>
 
 
-<div class="viewcode-block" id="get_body_mask"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.get_body_mask">[docs]</a><span class="k">def</span> <span class="nf">get_body_mask</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mask_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="get_body_mask"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.get_body_mask">[docs]</a><span class="k">def</span> <span class="nf">get_body_mask</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mask_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a mask file for a NIFTI image file.</span>
 <span class="sd">    </span>
@@ -430,7 +438,7 @@
     <span class="k">return</span> <span class="n">mask_file</span></div>
 
 
-<div class="viewcode-block" id="mask_img"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.mask_img">[docs]</a><span class="k">def</span> <span class="nf">mask_img</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mask_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">masked_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="mask_img"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.mask_img">[docs]</a><span class="k">def</span> <span class="nf">mask_img</span><span class="p">(</span><span class="n">nifti_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mask_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">masked_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mask a NIFTI image file with a mask file.</span>
 <span class="sd">    </span>
@@ -452,7 +460,7 @@
     <span class="k">return</span> <span class="n">masked_file</span></div>
 
 
-<div class="viewcode-block" id="downscale_image"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.downscale_image">[docs]</a><span class="k">def</span> <span class="nf">downscale_image</span><span class="p">(</span><span class="n">downscale_param</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">input_image</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="downscale_image"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.downscale_image">[docs]</a><span class="k">def</span> <span class="nf">downscale_image</span><span class="p">(</span><span class="n">downscale_param</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">input_image</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Downscale an image based on the shrink factor and save it to the output directory.</span>
 <span class="sd">    </span>
@@ -482,7 +490,7 @@
 
 
 <span class="c1"># Calculate the mean intensity of an image using SimpleITK</span>
-<div class="viewcode-block" id="calc_mean_intensity"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.calc_mean_intensity">[docs]</a><span class="k">def</span> <span class="nf">calc_mean_intensity</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="calc_mean_intensity"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.calc_mean_intensity">[docs]</a><span class="k">def</span> <span class="nf">calc_mean_intensity</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the mean intensity of an image using SimpleITK</span>
 <span class="sd">    :param image: path to the image</span>
@@ -493,7 +501,7 @@
     <span class="k">return</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="calc_voxelwise_ncc_images"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.calc_voxelwise_ncc_images">[docs]</a><span class="k">def</span> <span class="nf">calc_voxelwise_ncc_images</span><span class="p">(</span><span class="n">image1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="calc_voxelwise_ncc_images"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.calc_voxelwise_ncc_images">[docs]</a><span class="k">def</span> <span class="nf">calc_voxelwise_ncc_images</span><span class="p">(</span><span class="n">image1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates voxelwise normalized cross correlation between two images and writes it to the output directory.</span>
 <span class="sd">    </span>
@@ -518,7 +526,7 @@
     <span class="k">return</span> <span class="n">output_image</span></div>
 
 
-<div class="viewcode-block" id="determine_candidate_frames"><a class="viewcode-back" href="../../source/falconz.html#falconz.image_processing.determine_candidate_frames">[docs]</a><span class="k">def</span> <span class="nf">determine_candidate_frames</span><span class="p">(</span><span class="n">candidate_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">reference_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">njobs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="determine_candidate_frames"><a class="viewcode-back" href="../../falconz.html#falconz.image_processing.determine_candidate_frames">[docs]</a><span class="k">def</span> <span class="nf">determine_candidate_frames</span><span class="p">(</span><span class="n">candidate_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">reference_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">njobs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines the candidate frames of a 4D PET series on which motion correction can be performed effectively</span>
 <span class="sd">    :param candidate_files: list of 3D candidate moving PET files</span>
