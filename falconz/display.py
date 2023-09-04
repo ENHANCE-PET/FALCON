@@ -19,6 +19,7 @@ Usage:
 """
 
 import logging
+
 import pyfiglet
 
 from falconz import constants

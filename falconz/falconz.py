@@ -13,31 +13,27 @@
 # Importing necessary libraries and modules
 
 import argparse
-import colorama
-import emoji
 import logging
 import multiprocessing
 import os
 import shutil
 import sys
-import time
 from datetime import datetime
-from halo import Halo
-from rich.progress import Progress, TextColumn, TimeElapsedColumn, SpinnerColumn
+
+import colorama
+import emoji
+from falconz.constants import FALCON_WORKING_FOLDER
+from falconz.image_conversion import NiftiConverter, NiftiConverterError, merge3d
+from falconz.image_processing import determine_candidate_frames, align
+from falconz.input_validation import InputValidation
 from rich.console import Console
-from rich.live import Live
-from rich.panel import Panel
+from rich.progress import Progress, TextColumn, TimeElapsedColumn
 
 from falconz import constants
 from falconz import display
 from falconz import download
 from falconz import file_utilities
-from falconz import image_conversion
 from falconz import resources
-from falconz.constants import FALCON_WORKING_FOLDER
-from falconz.image_conversion import NiftiConverter, NiftiConverterError, merge3d
-from falconz.image_processing import determine_candidate_frames, align
-from falconz.input_validation import InputValidation
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', level=logging.INFO,
                     filename=datetime.now().strftime('falconz-v.1.0.0.%H-%M-%d-%m-%Y.log'),

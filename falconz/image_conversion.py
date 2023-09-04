@@ -14,26 +14,21 @@ Usage:
     The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
 
 """
-import SimpleITK
-import contextlib
-import dcm2niix
-import io
 import logging
-import nibabel as nib
 import os
-import pydicom
-import re
-import unicodedata
-from typing import Optional
 import pathlib
 import shutil
 import subprocess
+from typing import List
+
 import dask
+import nibabel as nib
+import pydicom
 from dask import delayed
+from falconz.constants import C3D_PATH, VALID_EXTENSIONS
 
 from falconz import file_utilities as fop
-from falconz.constants import C3D_PATH, VALID_EXTENSIONS
-from typing import List
+
 
 class NiftiConverter:
     """

@@ -15,7 +15,9 @@ Usage:
 """
 import logging
 import os
+
 from falconz.constants import ALLOWED_MODES
+
 
 class InputValidation:
     """

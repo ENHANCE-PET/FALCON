@@ -14,29 +14,24 @@ Usage:
     The functions in this module can be imported and used in other modules within the falconz to perform image conversion.
 """
 
-import SimpleITK as sitk
 import logging
 import multiprocessing
-import nibabel
 import os
-import pandas as pd
 import pathlib
-import re
 import subprocess
-from dask import delayed, compute
+
+import SimpleITK as sitk
+import pandas as pd
+from dask import delayed
 from dask.distributed import Client, as_completed
-import dask.bag as db
-from halo import Halo
+from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION, PROPORTION_OF_CORES
+from falconz.resources import get_system_stats
 from mpire import WorkerPool
-from multiprocessing import Pool
-from rich.progress import Progress, BarColumn, TextColumn, SpinnerColumn, TimeElapsedColumn, TimeRemainingColumn
-from skimage.metrics import structural_similarity as ssim
-from tqdm import tqdm
+from rich.progress import Progress, BarColumn, TimeElapsedColumn
 
 from falconz import constants
 from falconz import file_utilities as fop
-from falconz.constants import GREEDY_PATH, C3D_PATH, NCC_RADIUS, NCC_THRESHOLD, COST_FUNCTION, PROPORTION_OF_CORES
-from falconz.resources import get_system_stats
+
 
 class ImageRegistration:
     """

@@ -17,12 +17,13 @@ Usage:
 import glob
 import os
 import platform
-import psutil
 import shutil
 import stat
 import subprocess
 import sys
 from multiprocessing import Pool
+
+import psutil
 
 
 def set_permissions(file_path, system_type):
