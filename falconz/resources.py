@@ -46,3 +46,4 @@ def get_system_stats():
     memory_info = psutil.virtual_memory()
     memory_percent = memory_info.percent
     return cpu_percent, memory_percent
+
