@@ -218,28 +218,11 @@ class NiftiConverter:
         Raises:
             NiftiConverterError: If there's an error during DICOM to NIFTI conversion.
         """
-        # Save the original stdout and stderr file descriptors.
-        original_stdout_fd = os.dup(1)
-        original_stderr_fd = os.dup(2)
+        try:
+            subprocess.run(['dcm2niix', '-z', 'y', '-o', output_dir, input_path], capture_output=True, shell=True)
 
-        # Open a null file to redirect the output.
-        with open(os.devnull, 'w') as null_file:
-            null_fd = null_file.fileno()
-
-            # Redirect stdout and stderr to the null file.
-            os.dup2(null_fd, 1)
-            os.dup2(null_fd, 2)
-
-            try:
-                dcm2niix.main(['-z', 'y', '-o', output_dir, input_path])
-            except Exception as e:
-                raise NiftiConverterError(f"Error during DICOM to NIFTI conversion using dcm2niix: {e}")
-            finally:
-                # Restore the original stdout and stderr file descriptors.
-                os.dup2(original_stdout_fd, 1)
-                os.dup2(original_stderr_fd, 2)
-                os.close(original_stdout_fd)
-                os.close(original_stderr_fd)
+        except Exception as e:
+            raise NiftiConverterError(f"Error during DICOM to NIFTI conversion using dcm2niix: {e}")
 
         return output_dir
 
