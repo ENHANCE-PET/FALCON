@@ -33,7 +33,7 @@ from dask import delayed
 
 from falconz import file_utilities as fop
 from falconz.constants import C3D_PATH, VALID_EXTENSIONS
-
+from typing import List
 
 class NiftiConverter:
     """
@@ -218,11 +218,12 @@ class NiftiConverter:
         Raises:
             NiftiConverterError: If there's an error during DICOM to NIFTI conversion.
         """
-        try:
-            subprocess.run(['dcm2niix', '-z', 'y', '-o', output_dir, input_path], capture_output=True, shell=True)
+        cmd_to_run: List[str] = ['dcm2niix', '-z', 'y', '-o', output_dir, input_path]
 
-        except Exception as e:
-            raise NiftiConverterError(f"Error during DICOM to NIFTI conversion using dcm2niix: {e}")
+        try:
+            subprocess.run(cmd_to_run, capture_output=True, check=True)
+        except subprocess.CalledProcessError:
+            raise NiftiConverterError(f"Error during DICOM to NIFTI conversion using dcm2niix.")
 
         return output_dir
 
