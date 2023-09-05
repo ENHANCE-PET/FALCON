@@ -253,7 +253,7 @@ def align_single_image(fixed_img, moving_img, registration_type, multi_resolutio
 
 def align(fixed_img, moving_imgs, registration_type, multi_resolution_iterations, moco_dir):
     # Configuring Dask Client
-    num_cores = int(multiprocessing.cpu_count() * PROPORTION_OF_CORES)
+    num_cores = max(1, int(multiprocessing.cpu_count() * PROPORTION_OF_CORES))
     client = Client(n_workers=num_cores, threads_per_worker=1)
 
     total_images = len(moving_imgs)
