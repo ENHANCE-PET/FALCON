@@ -182,16 +182,16 @@ The table below outlines FalconZ's performance metrics across various operating 
 
 | 🖥️ OS / Arch |Hardware| Dataset | Voxel Size (mm³) | Matrix Size | Time (Minutes) |
 |--------------|--------------------------------------|---------|------------------|-------------|----------------|
-| Windows x86  | ... | 🧠 Brain | ... | ... | ... |
+| 🪟 **Windows x86**  | ... | 🧠 Brain | ... | ... | ... |
 |              |                                      | ❤️ Cardiac | ... | ... | ... |
 |              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | ... |
-| Linux x86    | Intel 20 cores, 60 GB RAM | 🧠 Brain | ... | ... | ... |
+| 🐧 **Linux x86**    | Intel 20 cores, 60 GB RAM | 🧠 Brain | ... | ... | ... |
 |              |                                      | ❤️ Cardiac | ... | ... | ... |
 |              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 12 min |
-| macOS x86    | ... | 🧠 Brain | ... | ... | ... |
+| 🍏 **macOS x86**    | ... | 🧠 Brain | ... | ... | ... |
 |              |                                      | ❤️ Cardiac | ... | ... | ... |
 |              |                                      | 🕺 Total-Body | ... | ... | ... |
-| macOS ARM64  | M2 8 Cores, 8GB RAM | 🧠 Brain | ... | ... | ... |
+| 🍏 **macOS ARM64**  | M2 8 Cores, 8GB RAM | 🧠 Brain | ... | ... | ... |
 |              |                                      | ❤️ Cardiac | ... | ... | ... |
 |              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 3 min |
 
