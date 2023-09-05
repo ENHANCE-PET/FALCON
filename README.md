@@ -174,24 +174,28 @@ This section archives the warp fields in cases of deformable registration and th
 
 FALCON doesn't just deliver high-precision motion-corrected images; it also provides a comprehensive, organized output structure 🗂️ designed for immediate utility and future analysis. 🚀
 
-## 📊 Performance Metrics
 
-To demonstrate the efficiency and robustness of FalconZ, we've benchmarked its performance across various operating systems, architectures, and dynamic PET datasets. The table below summarizes the results, indicating the processing time in minutes, voxel size, and matrix size for each dataset.
 
-| 🖥️ OS / Arch | Dataset | Voxel Size (mm³) | Matrix Size | Time (Minutes) |
-|--------------|---------|------------------|-------------|----------------|
-| Windows x86  | 🧠 Brain | ... | ... | ... |
-|              | ❤️ Cardiac | ... | ... | ... |
-|              | 🕺 Total-Body | 4x4x4 | 150x150x486 | ... |
-| Linux x86    | 🧠 Brain | ... | ... | ... |
-|              | ❤️ Cardiac | ... | ... | ... |
-|              | 🕺 Total-Body | 4x4x4 | 150x150x486 | 12 min |
-| macOS x86    | 🧠 Brain | ... | ... | ... |
-|              | ❤️ Cardiac | ... | ... | ... |
-|              | 🕺 Total-Body | ... | ... | ... |
-| macOS ARM64  | 🧠 Brain | ... | ... | ... |
-|              | ❤️ Cardiac | ... | ... | ... |
-|              | 🕺 Total-Body | 4x4x4 | 150x150x486 | 3 min |
+## 📊 FalconZ Performance Metrics
+
+The table below outlines FalconZ's performance metrics across various operating systems, architectures, dynamic PET datasets, and system hardware:
+
+| 🖥️ OS / Arch |Hardware| Dataset | Voxel Size (mm³) | Matrix Size | Time (Minutes) |
+|--------------|--------------------------------------|---------|------------------|-------------|----------------|
+| Windows x86  | ... | 🧠 Brain | ... | ... | ... |
+|              |                                      | ❤️ Cardiac | ... | ... | ... |
+|              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | ... |
+| Linux x86    | Intel 20 cores, 60 GB RAM | 🧠 Brain | ... | ... | ... |
+|              |                                      | ❤️ Cardiac | ... | ... | ... |
+|              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 12 min |
+| macOS x86    | ... | 🧠 Brain | ... | ... | ... |
+|              |                                      | ❤️ Cardiac | ... | ... | ... |
+|              |                                      | 🕺 Total-Body | ... | ... | ... |
+| macOS ARM64  | M2 8 Cores, 8GB RAM | 🧠 Brain | ... | ... | ... |
+|              |                                      | ❤️ Cardiac | ... | ... | ... |
+|              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 3 min |
+
+
 
 
 
