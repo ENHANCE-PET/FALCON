@@ -115,9 +115,9 @@ def derived_parameters(input_args):
         raise ValueError('Unsupported registration paradigm')
 
     print(f' Available memory: {avail_memory} GB | Available threads: {avail_threads} | Number of motion correction '
-          f'done in parallel: {max(1, int(multiprocessing.cpu_count() * PROPORTION_OF_CORES))}')
+          f'done in parallel: {max(1, int(multiprocessing.cpu_count() * constants.PROPORTION_OF_CORES))}')
     logging.info(f' Available memory: {avail_memory} GB | Available threads: {avail_threads} | Number of motion '
-                 f'correction done in parallel: {max(1, int(multiprocessing.cpu_count() * PROPORTION_OF_CORES))}')
+                 f'correction done in parallel: {max(1, int(multiprocessing.cpu_count() * constants.PROPORTION_OF_CORES))}')
     # if input arguments doesn't have start frame, display message saying it will be calculated on the fly
     if input_args.start_frame == 99:
         print(f' {constants.ANSI_ORANGE}Warning: Start frame not provided. It will be calculated on the fly. '
