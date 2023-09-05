@@ -188,9 +188,9 @@ The table below outlines FalconZ's performance metrics across various operating 
 | 🐧 **Linux x86**    | Intel 20 cores, 60 GB RAM | 🧠 Brain | ... | ... | ... |
 |              |                                      | ❤️ Cardiac | ... | ... | ... |
 |              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 12 min |
-| 🍏 **macOS x86**    | ... | 🧠 Brain | ... | ... | ... |
+| 🍏 **macOS x86**    | Intel 4 cores, 32 GB RAM | 🧠 Brain | ... | ... | ... |
 |              |                                      | ❤️ Cardiac | ... | ... | ... |
-|              |                                      | 🕺 Total-Body | ... | ... | ... |
+|              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 8 min |
 | 🍏 **macOS ARM64**  | M2 8 Cores, 8GB RAM | 🧠 Brain | ... | ... | ... |
 |              |                                      | ❤️ Cardiac | ... | ... | ... |
 |              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 3 min |
