@@ -154,7 +154,7 @@ class NiftiConverter:
         :rtype: bool
         """
         try:
-            img = nib.load(image_path)
+            img = nib.funcs.squeeze_image(nib.load(image_path))
             return img.ndim == 4
         except:
             return False
