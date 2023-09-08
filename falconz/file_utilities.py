@@ -44,6 +44,22 @@ def set_permissions(file_path, system_type):
         raise ValueError("Unsupported OS")
 
 
+def numeric_sort_key(file_path: str) -> int:
+    """
+    Extracts the numeric portion from a filename for sorting purposes.
+
+    :param file_path: The path to the file.
+    :type file_path: str
+    :return: The numeric value extracted from the filename. Returns 0 if no number is found.
+    :rtype: int
+    """
+    # Extract the number from the filename using regex
+    match = re.search(r'(\d+)', os.path.basename(file_path))
+    if match:
+        return int(match.group(1))
+    return 0
+
+
 def get_virtual_env_root():
     """
     Gets the root directory of the virtual environment.
