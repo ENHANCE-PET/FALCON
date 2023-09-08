@@ -236,6 +236,7 @@ def merge3d(nifti_dir: str, wild_card: str, nifti_outfile: str) -> None:
     """
     logging.info(f"Merging 3D nifti files in {nifti_dir} with wildcard {wild_card}")
     files_to_merge = fop.get_files(nifti_dir, wild_card)
-    nib.save(nib.funcs.concat_images(files_to_merge, False), nifti_outfile)
+    numeric_sorted_files_to_merge = sorted(files_to_merge, key=numeric_sort_key)
+    nib.save(nib.funcs.concat_images(numeric_sorted_files_to_merge, False), nifti_outfile)
     os.chdir(nifti_dir)
     logging.info("Done")
