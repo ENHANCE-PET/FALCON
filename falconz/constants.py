@@ -64,6 +64,7 @@ NCC_RADIUS = '4x4x4'
 
 # Define the file names and folder names used in the FALCONZ pipeline
 MOCO_PREFIX = 'moco_'
+NO_MOCO_PREFIX = 'no_moco_'
 ALIGNED_PREFIX = 'aligned_'
 TRANSFORMS_KEYWORD = ['*warp.nii.gz', '*rigid.mat', '*affine.mat']
 MOCO_4D_FILE_NAME = 'moco_4D.nii.gz'
