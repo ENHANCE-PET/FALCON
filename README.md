@@ -61,7 +61,7 @@ Creating a virtual environment is highly recommended to avoid any potential conf
 With your virtual environment activated, install FALCON V2 using pip:
 
 ```bash
-pip install falconz
+pip install falconz==2.0.18 # stable recommended version
 ```
 
 ## 🚀 Usage
