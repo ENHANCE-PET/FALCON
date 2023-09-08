@@ -21,6 +21,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import re
 from multiprocessing import Pool
 
 import psutil
