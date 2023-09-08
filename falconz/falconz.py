@@ -248,16 +248,16 @@ def main():
 
     # COPY THE REFERENCE FRAME FROM THE SPLIT NIFTI FOLDER TO THE MOCO FOLDER WITH MOCO PREFIX
     reference_file_name = os.path.basename(reference_file)
-    moco_reference_file = os.path.join(moco_dir, constants.MOCO_PREFIX + reference_file_name)
+    moco_reference_file = os.path.join(moco_dir, constants.NO_MOCO_PREFIX + reference_file_name)
     shutil.copy(reference_file, moco_reference_file)
 
     # COPY THE NON-MOCO FRAMES FROM THE SPLIT NIFTI FOLDER TO THE MOCO FOLDER WITH MOCO PREFIX
     for non_moco_frame in non_moco_frames:
         non_moco_frame_name = os.path.basename(non_moco_frame)
-        moco_non_moco_frame = os.path.join(moco_dir, constants.MOCO_PREFIX + non_moco_frame_name)
+        moco_non_moco_frame = os.path.join(moco_dir, constants.NO_MOCO_PREFIX + non_moco_frame_name)
         shutil.copy(non_moco_frame, moco_non_moco_frame)
 
     # MERGE THE 3D MOCO FRAMES TO A 4D NIFTI FILE
-    merge3d(moco_dir, constants.MOCO_PREFIX + '*', os.path.join(moco_dir, constants.MOCO_4D_FILE_NAME))
+    merge3d(moco_dir, '*' + constants.MOCO_PREFIX + '*', os.path.join(moco_dir, constants.MOCO_4D_FILE_NAME))
     print(f'{constants.ANSI_GREEN} Motion correction complete: '
           f'Results in {moco_dir} | 4D MoCo file: {constants.MOCO_4D_FILE_NAME}{constants.ANSI_RESET}')
