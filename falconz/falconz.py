@@ -209,8 +209,9 @@ def main():
     # choose start frame automatically if not specified
     if args.start_frame == 99:
         n_jobs = multiprocessing.cpu_count()
-        start_frame_file = determine_candidate_frames(candidate_frames, reference_file, falcon_dir,
-                                                      round(n_jobs * PROPORTION_OF_CORES))
+        # Calculate the number of cores to use, ensuring it's at least 1
+        actual_n_jobs = max(1, round(n_jobs * PROPORTION_OF_CORES))
+        start_frame_file = determine_candidate_frames(candidate_frames, reference_file, falcon_dir, actual_n_jobs)
         # find the index of the start_frame_file in the org_nifti_files list
         start_frame = org_nifti_files.index(start_frame_file)
     # everything from and after start_frame will be motion corrected and will be called moving frames
