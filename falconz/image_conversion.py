@@ -97,7 +97,7 @@ class NiftiConverter:
             os.remove(os.path.join(self.output_directory, json_file[0]))
 
         # Scan the output directory for the generated nifti files
-        converted_files = [f for f in os.listdir(self.output_directory) if f.endswith('.nii.gz')]
+        converted_files = [f for f in os.listdir(self.output_directory) if (f.endswith('.nii.gz') or f.endswith('.nii'))]
 
         for nifti_file in converted_files:
             file_path = os.path.join(self.output_directory, nifti_file)
