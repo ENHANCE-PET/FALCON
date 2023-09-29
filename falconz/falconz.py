@@ -22,7 +22,7 @@ from datetime import datetime
 
 import colorama
 import emoji
-from falconz.constants import FALCON_WORKING_FOLDER
+from falconz.constants import FALCON_WORKING_FOLDER, PROPORTION_OF_CORES
 from falconz.image_conversion import NiftiConverter, NiftiConverterError, merge3d
 from falconz.image_processing import determine_candidate_frames, align
 from falconz.input_validation import InputValidation
@@ -210,7 +210,7 @@ def main():
     if args.start_frame == 99:
         n_jobs = multiprocessing.cpu_count()
         start_frame_file = determine_candidate_frames(candidate_frames, reference_file, falcon_dir,
-                                                      round(n_jobs / 2))
+                                                      round(n_jobs * PROPORTION_OF_CORES))
         # find the index of the start_frame_file in the org_nifti_files list
         start_frame = org_nifti_files.index(start_frame_file)
     # everything from and after start_frame will be motion corrected and will be called moving frames
