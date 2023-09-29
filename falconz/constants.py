@@ -59,7 +59,7 @@ MINIMUM_THREADS_REQUIRED_DEFORMABLE = 8  # in number of threads
 SHRINK_LEVEL = [2, 4, 8]
 
 # Define the normalized cross correlation threshold and radius
-NCC_THRESHOLD = 0.5
+NCC_THRESHOLD = 0.6
 NCC_RADIUS = '4x4x4'
 
 # Define the file names and folder names used in the FALCONZ pipeline
