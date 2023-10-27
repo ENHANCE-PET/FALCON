@@ -29,20 +29,46 @@ import psutil
 
 def set_permissions(file_path, system_type):
     """
-    Sets permissions for a file based on the system type.
+    Set permissions for a file based on the operating system.
 
     :param file_path: The path to the file.
     :type file_path: str
-    :param system_type: The type of the system.
+    :param system_type: The type of the operating system.
     :type system_type: str
-    :raises ValueError: If the system type is not supported.
+    :return: None
+    :rtype: None
+    :raises: ValueError if the operating system is not supported.
+
+    This function sets permissions for a file based on the operating system. If the operating system is Windows, it uses
+    the `icacls` command to grant full access to everyone. If the operating system is Linux or Mac, it uses the `chmod`
+    command to add execute permission for the owner, read permission for the group, and read permission for others. If
+    the operating system is not supported, it raises a ValueError.
+
+    :raises: ValueError if the operating system is not supported.
+    :raises: subprocess.CalledProcessError if the `icacls` command fails on Windows.
+    :raises: PermissionError if the `chmod` command fails on Linux or Mac.
+    :raises: Exception if an unknown error occurs.
+
+    :Example:
+        >>> set_permissions('/path/to/file', 'linux')
     """
-    if system_type == "windows":
-        subprocess.check_call(["icacls", file_path, "/grant", "Everyone:(F)"])
-    elif system_type in ["linux", "mac"]:
-        os.chmod(file_path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)  # equivalent to 'chmod u+x'
-    else:
-        raise ValueError("Unsupported OS")
+    try:
+        if system_type == "windows":
+            subprocess.check_call(["icacls", file_path, "/grant", "Everyone:(F)"])
+        elif system_type in ["linux", "mac"]:
+            os.chmod(file_path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
+        else:
+            logging.error("Unsupported OS")
+            raise ValueError("Unsupported OS")
+    except subprocess.CalledProcessError:
+        logging.error(f"Could not set permissions for {file_path} on Windows")
+        exit(1)
+    except PermissionError:
+        logging.error(f"No permission to set {file_path} as executable")
+        exit(1)
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+        exit(1)
 
 
 def numeric_sort_key(file_path: str) -> int:
