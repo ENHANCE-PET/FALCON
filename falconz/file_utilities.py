@@ -23,6 +23,7 @@ import subprocess
 import sys
 import re
 from multiprocessing import Pool
+import logging
 
 import psutil
 
