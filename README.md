@@ -25,6 +25,15 @@ FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automati
 - **🚀 Say Goodbye to Memory Woes and Server Farms**: Forget about expensive, beefy servers and memory constraints. With FALCON V2's optimized out-of-core computing, powered by Dask, we've redefined efficiency. Get ready to experience unparalleled speed and performance without breaking the bank or your system's RAM!
 - **🌍🔬 The Ultimate Flex: Versatility Reimagined**: For the first time ever, a tool that knows no boundaries—meet FALCON V2. Whether you're dealing with any region, tracer, or modality, FALCON V2 is the only tool you'll ever need for your diagnostic and analytical adventures. Say goodbye to specialized solutions; this is the new standard - thanks to the amazing 'greedy' registration library!
 
+## Star History 🤩
+
+<a href="https://star-history.com/#QIMP-Team/FALCON&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=QIMP-Team/FALCON&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=QIMP-Team/FALCON&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=QIMP-Team/FALCON&type=Date" />
+  </picture>
+</a>
 
   
 ## 🚀 FALCON's motion correction in action
