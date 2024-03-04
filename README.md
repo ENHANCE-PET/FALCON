@@ -25,6 +25,15 @@ FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automati
 - **🚀 Say Goodbye to Memory Woes and Server Farms**: Forget about expensive, beefy servers and memory constraints. With FALCON V2's optimized out-of-core computing, powered by Dask, we've redefined efficiency. Get ready to experience unparalleled speed and performance without breaking the bank or your system's RAM!
 - **🌍🔬 The Ultimate Flex: Versatility Reimagined**: For the first time ever, a tool that knows no boundaries—meet FALCON V2. Whether you're dealing with any region, tracer, or modality, FALCON V2 is the only tool you'll ever need for your diagnostic and analytical adventures. Say goodbye to specialized solutions; this is the new standard - thanks to the amazing 'greedy' registration library!
 
+## ❤️ Citations
+
+If you find FALCON useful, please cite the following publications:
+
+- Sundar, L. K. S., Lassen, M. L., Gutschmayer, S., Ferrara, D., Calabrò, A., Yu, J., Kluge, K., Wang, Y., Nardo, L., Hasbak, P., Kjaer, A., Abdelhafez, Y. G., Wang, G., Cherry, S. R., Spencer, B. A., Badawi, R. D., Beyer, T., & Muzik, O. (2023). Fully Automated, Fast Motion Correction of Dynamic Whole-Body and Total-Body PET/CT Imaging Studies. Journal of Nuclear Medicine: Official Publication, Society of Nuclear Medicine. https://doi.org/10.2967/jnumed.122.265362
+- Gutschmayer, S., Muzik, O., Chalampalakis, Z., Ferrara, D., Yu, J., Kluge, K., Rausch, I., Boellaard, R., Golla, S. S. V., Zuehlsdorff, S., Newiger, H., Beyer, T., & Kumar Shiyam Sundar, L. (2022). A scale space theory based motion correction approach for dynamic PET brain imaging studies. Frontiers of Physics, 10. https://doi.org/10.3389/fphy.2022.1034783
+- Venet, L., Pati, S., Feldman, M. D., Nasrallah, M. P., Yushkevich, P., & Bakas, S. (2021). Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration. APPS. Applied Sciences, 11(4). https://doi.org/10.3390/app11041892
+
+
 ## Star History 🤩
 
 <a href="https://star-history.com/#QIMP-Team/FALCON&Date">
@@ -205,16 +214,4 @@ The table below outlines FalconZ's performance metrics across various operating 
 |              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 3 min |
 
 
-
-
-
-## ❤️ Citations
-
-If you find FALCON useful, please consider citing the following publications:
-
-```plaintext
-1. Lalith Kumar Shiyam Sundar, et al. “Fully-automated, fast motion correction of dynamic whole and total-body PET/CT imaging studies.” JNM, 2023.
-2. Gutschmayer S, et al. “A scale space theory based motion correction approach for dynamic PET brain imaging studies.” Frontiers in Physics, vol. 10, 2022.
-3. Venet L, et al. “Accurate and Robust Alignment of Differently Stained Histologic Images Based on Greedy Diffeomorphic Registration.” Appl Sci, vol. 11, 2021.
-```
 Thank you for choosing FALCON V2. Let's soar to new heights together! 🦅
