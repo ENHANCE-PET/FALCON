@@ -38,9 +38,9 @@ If you find FALCON useful, please cite the following publications:
 
 <a href="https://star-history.com/#QIMP-Team/FALCON&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=QIMP-Team/FALCON&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=QIMP-Team/FALCON&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=QIMP-Team/FALCON&type=Date" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ENHANCE-PET/FALCON&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ENHANCE-PET/FALCON&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ENHANCE-PET/FALCON&type=Date" />
   </picture>
 </a>
 
