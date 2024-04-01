@@ -9,27 +9,6 @@
 
 FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automatic tool for motion correction in dynamic total-body or whole-body PET imaging. Designed with flexibility and reliability at its core, it's now even more versatile, capable of operating across various operating systems and architectures. 🚀
 
-## Contributors
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LalithShiyam"><img src="https://github.com/LalithShiyam.png?s=100" width="100px;" alt="Lalith Kumar Shiyam Sundar"/><br /><sub><b>Lalith Kumar Shiyam Sundar</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=LalithShiyam" title="Code">💻</a> <a href="https://github.com/ENHANCE-PET/FALCON/commits?author=LalithShiyam" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Keyn34"><img src="https://github.com/Keyn34.png?s=100" width="100px;" alt="Sebastian Gutschmayer"/><br /><sub><b>Sebastian Gutschmayer</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=Keyn34" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/christanmod"><img src="https://avatars.githubusercontent.com/u/54258479?v=4?s=100" width="100px;" alt="Z.K Li"/><br /><sub><b>Z.K Li</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=christanmod" title="Documentation">📖</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-
 <div align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/QIMP-Team/FALCON/blob/main/Images/Falcon_story_darkmode.gif" width="500" height="500">
@@ -217,24 +196,24 @@ FALCON doesn't just deliver high-precision motion-corrected images; it also prov
 
 Before raising an issue, check out our growing [Frequently Asked Questions]([./path/to/faq.md](https://github.com/ENHANCE-PET/FALCON/blob/main/Q%26A.md)) section.
 
-## 📊 FalconZ Performance Metrics
+## 👥 Our Valued Contributors
 
-The table below outlines FalconZ's performance metrics across various operating systems, architectures, dynamic PET datasets, and system hardware:
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LalithShiyam"><img src="https://github.com/LalithShiyam.png?s=100" width="100px;" alt="Lalith Kumar Shiyam Sundar"/><br /><sub><b>Lalith Kumar Shiyam Sundar</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=LalithShiyam" title="Code">💻</a> <a href="https://github.com/ENHANCE-PET/FALCON/commits?author=LalithShiyam" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Keyn34"><img src="https://github.com/Keyn34.png?s=100" width="100px;" alt="Sebastian Gutschmayer"/><br /><sub><b>Sebastian Gutschmayer</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=Keyn34" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/christanmod"><img src="https://avatars.githubusercontent.com/u/54258479?v=4?s=100" width="100px;" alt="Z.K Li"/><br /><sub><b>Z.K Li</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=christanmod" title="Documentation">📖</a></td>
+    </tr>
+  </tbody>
+</table>
 
-| 🖥️ OS / Arch |Hardware| Dataset | Voxel Size (mm³) | Matrix Size | Time (Minutes) |
-|--------------|--------------------------------------|---------|------------------|-------------|----------------|
-| 🪟 **Windows x86**  | ... | 🧠 Brain | ... | ... | ... |
-|              |                                      | ❤️ Cardiac | ... | ... | ... |
-|              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | ... |
-| 🐧 **Linux x86**    | Intel 20 cores, 60 GB RAM | 🧠 Brain | ... | ... | ... |
-|              |                                      | ❤️ Cardiac | ... | ... | ... |
-|              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 12 min |
-| 🍏 **macOS x86**    | Intel 4 cores, 32 GB RAM | 🧠 Brain | ... | ... | ... |
-|              |                                      | ❤️ Cardiac | ... | ... | ... |
-|              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 8 min |
-| 🍏 **macOS ARM64**  | M2 8 Cores, 8GB RAM | 🧠 Brain | ... | ... | ... |
-|              |                                      | ❤️ Cardiac | ... | ... | ... |
-|              |                                      | 🕺 Total-Body | 4x4x4 | 150x150x486 | 3 min |
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 
-Thank you for choosing FALCON V2. Let's soar to new heights together! 🦅
