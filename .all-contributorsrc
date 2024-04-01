@@ -2,13 +2,12 @@
   "projectName": "FALCON",
   "projectOwner": "ENHANCE-PET",
   "repoType": "github",
-  "repoHost": "https://github.com/ENHANCE-PET/FALCON/",
+  "repoHost": "https://github.com",
   "files": [
     "README.md"
   ],
   "imageSize": 100,
-  "commit": false,
-  "contributorsPerLine": 7,
+  "commit": true,
   "contributors": [
     {
       "login": "LalithShiyam",
