@@ -194,7 +194,7 @@ FALCON doesn't just deliver high-precision motion-corrected images; it also prov
 
 ## ❓ Frequently Asked Questions
 
-Check out our growing [Frequently Asked Questions]([./path/to/faq.md](https://github.com/ENHANCE-PET/FALCON/blob/main/Q%26A.md)) section.
+Before raising an issue, check out our growing [Frequently Asked Questions]([./path/to/faq.md](https://github.com/ENHANCE-PET/FALCON/blob/main/Q%26A.md)) section.
 
 ## 📊 FalconZ Performance Metrics
 
