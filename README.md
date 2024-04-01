@@ -196,7 +196,7 @@ FALCON doesn't just deliver high-precision motion-corrected images; it also prov
 
 Before raising an issue, check out our growing [Frequently Asked Questions]([./path/to/faq.md](https://github.com/ENHANCE-PET/FALCON/blob/main/Q%26A.md)) section.
 
-## 👥 Our Valued Contributors
+## 👥 Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
