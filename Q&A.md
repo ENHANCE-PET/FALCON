@@ -2,7 +2,9 @@
 ## 🧐 Frequently Asked Questions (FAQ)
 
 
-### Q1: How to Resolve Permission Errors on Shared Resources in Windows Systems (Contribution
+### Q1: How to Resolve Permission Errors on Shared Resources in Windows Systems 
+
+#### Solution contributed by: [@christanmod](https://github.com/christanmod) 
 
 **Problem Description:**
 
