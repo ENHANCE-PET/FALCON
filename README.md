@@ -12,6 +12,21 @@ FALCON V2 (Fast Algorithms for motion correction) is an advanced, fully-automati
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LalithShiyam"><img src="https://github.com/LalithShiyam.png?s=100" width="100px;" alt="Lalith Kumar Shiyam Sundar"/><br /><sub><b>Lalith Kumar Shiyam Sundar</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=LalithShiyam" title="Code">💻</a> <a href="https://github.com/ENHANCE-PET/FALCON/commits?author=LalithShiyam" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Keyn34"><img src="https://github.com/Keyn34.png?s=100" width="100px;" alt="Sebastian Gutschmayer"/><br /><sub><b>Sebastian Gutschmayer</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=Keyn34" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/christanmod"><img src="https://avatars.githubusercontent.com/u/54258479?v=4?s=100" width="100px;" alt="Z.K Li"/><br /><sub><b>Z.K Li</b></sub></a><br /><a href="https://github.com/ENHANCE-PET/FALCON/commits?author=christanmod" title="Documentation">📖</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 
