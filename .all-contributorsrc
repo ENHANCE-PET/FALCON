@@ -3,25 +3,42 @@
   "projectOwner": "ENHANCE-PET",
   "repoType": "github",
   "repoHost": "https://github.com/ENHANCE-PET/FALCON/",
-  "files": ["README.md"],
+  "files": [
+    "README.md"
+  ],
   "imageSize": 100,
   "commit": false,
   "contributorsPerLine": 7,
   "contributors": [
     {
-        "login": "LalithShiyam",
-        "name": "Lalith Kumar Shiyam Sundar",
-        "avatar_url": "https://github.com/LalithShiyam.png",
-        "profile": "https://github.com/LalithShiyam",
-        "contributions": ["code", "doc"]
+      "login": "LalithShiyam",
+      "name": "Lalith Kumar Shiyam Sundar",
+      "avatar_url": "https://github.com/LalithShiyam.png",
+      "profile": "https://github.com/LalithShiyam",
+      "contributions": [
+        "code",
+        "doc"
+      ]
     },
     {
-        "login": "Keyn34",
-        "name": "Sebastian Gutschmayer",
-        "avatar_url": "https://github.com/Keyn34.png",
-        "profile": "https://github.com/Keyn34",
-        "contributions": ["code"]
+      "login": "Keyn34",
+      "name": "Sebastian Gutschmayer",
+      "avatar_url": "https://github.com/Keyn34.png",
+      "profile": "https://github.com/Keyn34",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "christanmod",
+      "name": "Z.K Li",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54258479?v=4",
+      "profile": "https://github.com/christanmod",
+      "contributions": [
+        "doc"
+      ]
     }
-]
-
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular"
 }
