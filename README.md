@@ -192,7 +192,9 @@ This section archives the warp fields in cases of deformable registration and th
 
 FALCON doesn't just deliver high-precision motion-corrected images; it also provides a comprehensive, organized output structure 🗂️ designed for immediate utility and future analysis. 🚀
 
+## ❓ Frequently Asked Questions
 
+Check out our growing [Frequently Asked Questions]([./path/to/faq.md](https://github.com/ENHANCE-PET/FALCON/blob/main/Q%26A.md)) section.
 
 ## 📊 FalconZ Performance Metrics
 
