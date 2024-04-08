@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='falconz',
-    version='2.0.27',
+    version='2.1.0',
     author='Lalith Kumar Shiyam Sundar',
     author_email='Lalith.shiyamsundar@meduniwien.ac.at',
     description='FalconZ: A streamlined Python package for PET motion correction.',
-    python_requires='>=3.9',
+    python_requires='>=3.10',
     long_description='FalconZ is a robust and comprehensive Python package that offers a simplified approach to PET ('
                      'Positron Emission Tomography) motion correction. The software is equipped to handle both head '
                      'and total-body scans, ensuring high-accuracy results in diverse settings. Built around the '

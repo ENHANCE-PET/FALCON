@@ -216,7 +216,7 @@ def main():
         start_frame = org_nifti_files.index(start_frame_file)
     # everything from and after start_frame will be motion corrected and will be called moving frames
     moving_frames = org_nifti_files[start_frame:]
-    moving_frames.remove(reference_file)
+    moving_frames = [frame for frame in moving_frames if frame != reference_file]
     # everything before that will not be motion corrected and will be called non-moco frames
     non_moco_frames = org_nifti_files[:start_frame]
     print('')
