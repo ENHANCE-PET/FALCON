@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="https://github.com/LalithShiyam/FALCON/blob/main/Images/Falcon-logo.png">
+<img src="https://github.com/ENHANCE-PET/FALCON/blob/main/Images/falcon.png">
 
 </p>
 
