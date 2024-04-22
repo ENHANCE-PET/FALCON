@@ -18,24 +18,24 @@ import psutil
 
 FALCON_BINARIES = {
     "falcon-windows-x86_64": {
-        "url": "https://ucd-emic-muv.s3.us-west-2.amazonaws.com/falcon/falcon-windows-x86_64.zip",
-        "filename": "falcon-windows-x86_64.zip",
-        "directory": "falcon-windows-x86_64",
+        "url": "https://enhance-pet.s3.eu-central-1.amazonaws.com/awesome/beast-binaries-windows-x86_64.zip",
+        "filename": "beast-binaries-windows-x86_64.zip",
+        "directory": "beast-binaries-windows-x86_64",
     },
     "falcon-linux-x86_64": {
-        "url": "https://ucd-emic-muv.s3.us-west-2.amazonaws.com/falcon/falcon-linux-x86_64.zip",
-        "filename": "falcon-linux-x86_64.zip",
-        "directory": "falcon-linux-x86_64",
+        "url": "https://enhance-pet.s3.eu-central-1.amazonaws.com/awesome/beast-binaries-linux-x86_64.zip",
+        "filename": "beast-binaries-linux-x86_64.zip",
+        "directory": "beast-binaries-linux-x86_64",
     },
     "falcon-mac-x86_64": {
-        "url": "https://ucd-emic-muv.s3.us-west-2.amazonaws.com/falcon/falcon-mac-x86_64.zip",
-        "filename": "falcon-mac-x86_64.zip",
-        "directory": "falcon-mac-x86_64",
+        "url": "https://enhance-pet.s3.eu-central-1.amazonaws.com/awesome/beast-binaries-mac-x86_64.zip",
+        "filename": "beast-binaries-mac-x86_64.zip",
+        "directory": "beast-binaries-mac-x86_64",
     },
     "falcon-mac-arm64": {
-        "url": "https://ucd-emic-muv.s3.us-west-2.amazonaws.com/falcon/falcon-mac-arm64.zip",
-        "filename": "falcon-mac-arm64.zip",
-        "directory": "falcon-mac-arm64",
+        "url": "https://enhance-pet.s3.eu-central-1.amazonaws.com/awesome/beast-binaries-mac-arm64.zip",
+        "filename": "beast-binaries-mac-arm64.zip",
+        "directory": "beast-binaries-mac-arm64",
     },
 }
 

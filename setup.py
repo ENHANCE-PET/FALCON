@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='falconz',
-    version='2.1.0',
+    version='2.1.1',
     author='Lalith Kumar Shiyam Sundar',
     author_email='Lalith.shiyamsundar@meduniwien.ac.at',
     description='FalconZ: A streamlined Python package for PET motion correction.',
