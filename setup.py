@@ -36,7 +36,7 @@ setup(
     install_requires=[
         'nibabel~=3.2.2',
         'halo~=0.0.31',
-        'SimpleITK~=2.2.1',
+        'SimpleITK',
         'pydicom~=2.2.2',
         'argparse~=1.4.0',
         'numpy~=1.25.2',
