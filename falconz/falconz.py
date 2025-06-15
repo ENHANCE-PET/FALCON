@@ -22,7 +22,7 @@ Command-line Arguments:
     -m, --mode
         Mode of operation: cruise | dash.
     -o, --output_file
-        Path to save the motion corrected 4D NIFTI file. If not provided, the file will be saved in the default location.
+        Path to save the motion corrected 4D NIFTI file (.nii or .nii.gz supported). If not provided, the file will be saved in the default location.
 
 Usage Example:
     python falconz.py -d /path/to/images -r rigid -o /path/to/output/moco.nii.gz
@@ -289,18 +289,32 @@ def main():
         moco_non_moco_frame = os.path.join(moco_dir, constants.NO_MOCO_PREFIX + non_moco_frame_name)
         shutil.copy(non_moco_frame, moco_non_moco_frame)
 
-    # MERGE THE 3D MOCO FRAMES TO A 4D NIFTI FILE
-    merge3d(moco_dir, '*' + constants.MOCO_PREFIX + '*', os.path.join(moco_dir, constants.MOCO_4D_FILE_NAME))
-    
-    # COPY THE 4D MOCO FILE TO THE OUTPUT FILE PATH IF PROVIDED, OTHERWISE IT WILL BE IN THE FALCON WORKING FOLDER
+    # Merge motion-corrected 3D frames into a 4D NIfTI file
+    if args.output_file and args.output_file.endswith('.nii'):
+        moco_4d_file_name = constants.MOCO_4D_FILE_NAME.replace('.nii.gz', '.nii')
+    else:
+        moco_4d_file_name = constants.MOCO_4D_FILE_NAME
+
+    merge3d(
+        moco_dir,
+        f'*{constants.MOCO_PREFIX}*',
+        os.path.join(moco_dir, moco_4d_file_name)
+    )
+
+    # Copy the merged 4D file to the specified output path, if provided
     if args.output_file:
         output_file_path = os.path.normpath(args.output_file)
         file_utilities.create_directory(os.path.dirname(output_file_path))
-        shutil.copy(os.path.join(moco_dir, constants.MOCO_4D_FILE_NAME), output_file_path)
+        shutil.copy(os.path.join(moco_dir, moco_4d_file_name), output_file_path)
         logging.info(f'4D MoCo file saved to: {output_file_path}')
-        print(f'{constants.ANSI_GREEN} Motion correction complete: Results in {os.path.dirname(output_file_path)} | '
-              f'4D MoCo file: {os.path.basename(output_file_path)}{constants.ANSI_RESET}')
+        print(
+            f'{constants.ANSI_GREEN} Motion correction complete: '
+            f'Results in {os.path.dirname(output_file_path)} | '
+            f'4D MoCo file: {os.path.basename(output_file_path)}{constants.ANSI_RESET}'
+        )
     else:
-        print(f'{constants.ANSI_GREEN} Motion correction complete: Results in {moco_dir} | '
-              f'4D MoCo file: {constants.MOCO_4D_FILE_NAME}{constants.ANSI_RESET}')
-    
+        print(
+            f'{constants.ANSI_GREEN} Motion correction complete: '
+            f'Results in {moco_dir} | '
+            f'4D MoCo file: {moco_4d_file_name}{constants.ANSI_RESET}'
+        )
