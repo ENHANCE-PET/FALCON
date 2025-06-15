@@ -134,7 +134,7 @@ def main():
         type=str,
         default=None,
         required=False,
-        help="Path to save the motion corrected 4D NIFTI file. If not provided, "
+        help="Path to save the motion corrected 4D NIFTI file (.nii or .nii.gz - note: use .nii.gz, to save space). If not provided, "
              "the file will be saved in the default location."
     )
     args = parser.parse_args()
