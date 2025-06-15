@@ -8,6 +8,25 @@
 
 .. moduleauthor:: Lalith Kumar Shiyam Sundar <lalith.shiyamsundar@meduniwien.ac.at>
 
+Command-line Arguments:
+    -d, --directory
+        Path containing the images to motion correct (required).
+    -rf, --reference_frame_index
+        Index of the reference frame [index starts from 0].
+    -sf, --start_frame
+        Frame from which the motion correction will be performed.
+    -r, --registration
+        Type of registration: rigid | affine | deformable (required).
+    -i, --multi_resolution_iterations
+        Number of iterations for each resolution level.
+    -m, --mode
+        Mode of operation: cruise | dash.
+    -o, --output_file
+        Path to save the motion corrected 4D NIFTI file. If not provided, the file will be saved in the default location.
+
+Usage Example:
+    python falconz.py -d /path/to/images -r rigid -o /path/to/output/moco.nii.gz
+
 """
 
 # Importing necessary libraries and modules
@@ -105,6 +124,18 @@ def main():
         default='cruise',
         choices=constants.ALLOWED_MODES,
         help="Mode of operation: cruise | dash"
+    )
+    # add optional output file argument, if this is present the moco file should be 'copied' 
+    # to the output file path, otherwise it will be saved in the default location
+    # which is the falcon working folder
+    parser.add_argument(
+        "-o",
+        "--output_file",
+        type=str,
+        default=None,
+        required=False,
+        help="Path to save the motion corrected 4D NIFTI file. If not provided, "
+             "the file will be saved in the default location."
     )
     args = parser.parse_args()
     validator = InputValidation(args)
@@ -260,5 +291,16 @@ def main():
 
     # MERGE THE 3D MOCO FRAMES TO A 4D NIFTI FILE
     merge3d(moco_dir, '*' + constants.MOCO_PREFIX + '*', os.path.join(moco_dir, constants.MOCO_4D_FILE_NAME))
-    print(f'{constants.ANSI_GREEN} Motion correction complete: '
-          f'Results in {moco_dir} | 4D MoCo file: {constants.MOCO_4D_FILE_NAME}{constants.ANSI_RESET}')
+    
+    # COPY THE 4D MOCO FILE TO THE OUTPUT FILE PATH IF PROVIDED, OTHERWISE IT WILL BE IN THE FALCON WORKING FOLDER
+    if args.output_file:
+        output_file_path = os.path.normpath(args.output_file)
+        file_utilities.create_directory(os.path.dirname(output_file_path))
+        shutil.copy(os.path.join(moco_dir, constants.MOCO_4D_FILE_NAME), output_file_path)
+        logging.info(f'4D MoCo file saved to: {output_file_path}')
+        print(f'{constants.ANSI_GREEN} Motion correction complete: Results in {os.path.dirname(output_file_path)} | '
+              f'4D MoCo file: {os.path.basename(output_file_path)}{constants.ANSI_RESET}')
+    else:
+        print(f'{constants.ANSI_GREEN} Motion correction complete: Results in {moco_dir} | '
+              f'4D MoCo file: {constants.MOCO_4D_FILE_NAME}{constants.ANSI_RESET}')
+    
