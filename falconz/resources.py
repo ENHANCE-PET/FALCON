@@ -18,22 +18,22 @@ import psutil
 
 FALCON_BINARIES = {
     "falcon-windows-x86_64": {
-        "url": "https://enhance-pet.s3.eu-central-1.amazonaws.com/awesome/beast-binaries-windows-x86_64.zip",
+        "url": "https://github.com/ENHANCE-PET/FALCON/releases/download/falconz-v.2.2.2/beast-binaries-windows-x86_64.zip",
         "filename": "beast-binaries-windows-x86_64.zip",
         "directory": "beast-binaries-windows-x86_64",
     },
     "falcon-linux-x86_64": {
-        "url": "https://enhance-pet.s3.eu-central-1.amazonaws.com/awesome/beast-binaries-linux-x86_64.zip",
+        "url": "https://github.com/ENHANCE-PET/FALCON/releases/download/falconz-v.2.2.2/beast-binaries-linux-x86_64.zip",
         "filename": "beast-binaries-linux-x86_64.zip",
         "directory": "beast-binaries-linux-x86_64",
     },
     "falcon-mac-x86_64": {
-        "url": "https://enhance-pet.s3.eu-central-1.amazonaws.com/awesome/beast-binaries-mac-x86_64.zip",
+        "url": "https://github.com/ENHANCE-PET/FALCON/releases/download/falconz-v.2.2.2/beast-binaries-mac-x86_64.zip",
         "filename": "beast-binaries-mac-x86_64.zip",
         "directory": "beast-binaries-mac-x86_64",
     },
     "falcon-mac-arm64": {
-        "url": "https://enhance-pet.s3.eu-central-1.amazonaws.com/awesome/beast-binaries-mac-arm64.zip",
+        "url": "https://github.com/ENHANCE-PET/FALCON/releases/download/falconz-v.2.2.2/beast-binaries-mac-arm64.zip",
         "filename": "beast-binaries-mac-arm64.zip",
         "directory": "beast-binaries-mac-arm64",
     },
