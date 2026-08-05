@@ -1,39 +1,55 @@
-# This workflow will upload a Python Package using Twine when a release is created
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Upload Python Package
 
 on:
   release:
     types: [published]
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
-  deploy:
-
+  build-and-verify:
+    name: Build and verify distributions
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build
-    - name: Build package
-      run: python -m build
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.14'
+      - name: Install build tooling
+        run: python -m pip install --upgrade pip build
+      - name: Build distributions
+        run: python -m build
+      - name: Install built wheel
+        run: python -m pip install dist/*.whl
+      - name: Check dependencies
+        run: python -m pip check
+      - name: Smoke-test CLI
+        run: falconz --help
+      - name: Store distributions
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: python-package-distributions
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish distributions to PyPI
+    needs: build-and-verify
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/falconz
+    permissions:
+      id-token: write
+    steps:
+      - name: Retrieve distributions
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish distributions
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2

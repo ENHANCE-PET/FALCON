@@ -6,7 +6,7 @@ Welcome to the FalconZ installation guide. Follow the steps below to install Fal
 Prerequisites
 -------------
 
-Before proceeding, ensure you have Python installed. FalconZ requires Python 3.6 or newer. You can check your Python version by running:
+Before proceeding, ensure you have Python installed. FalconZ supports Python 3.10 through 3.14. You can check your Python version by running:
 
 .. code-block:: bash
 
@@ -39,6 +39,17 @@ It's highly recommended to use a virtual environment. This keeps your main envir
 
 Once activated, your command prompt or terminal will prepend with `(falconz_env)`, indicating the virtual environment is active.
 
+Conda Environment Setup
+-----------------------
+
+Choose the Python version explicitly when creating a Conda environment:
+
+.. code-block:: bash
+
+    conda create -n falconz python=3.14 pip
+    conda activate falconz
+    python -m pip install falconz
+
 Installing FalconZ
 ------------------
 
@@ -46,7 +57,7 @@ With your virtual environment active, install FalconZ using pip:
 
 .. code-block:: bash
 
-    pip install falconz
+    python -m pip install falconz
 
 Deactivating the Virtual Environment
 ------------------------------------
@@ -61,4 +72,3 @@ Support
 -------
 
 For any installation issues or further assistance, refer to the `documentation <https://falconz.readthedocs.io/en/latest/>`_ or `contact us <https://github.com/QIMP-Team/FALCON/issues>`_.
-
