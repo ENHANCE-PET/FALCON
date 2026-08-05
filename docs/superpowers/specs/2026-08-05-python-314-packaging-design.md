@@ -21,13 +21,14 @@ and pyfiglet 0.8.post1 imports the removed `pkg_resources` module.
 - Test installation on both operating systems reported in issue #63.
 - Prevent the release workflow from uploading an artifact that cannot be
   installed and imported.
+- Replace the long-lived PyPI API token with short-lived Trusted Publishing
+  credentials issued only to the release workflow.
 - Give Conda users an explicit, reproducible environment command.
 
 ## Non-goals
 
 - Change motion-correction behavior or image-processing algorithms.
 - Refactor FalconZ's runtime modules.
-- Replace the existing PyPI API-token authentication in this patch.
 - Guarantee support for future, unreleased Python versions.
 
 ## Package metadata
@@ -69,11 +70,20 @@ supported Python endpoints, 3.10 and 3.14, on macOS and Windows. Each job will:
 3. Run `falconz --help` to exercise FalconZ's real import graph.
 
 The existing PyPI workflow directly publishes on the `release.published`
-event using `PYPI_API_TOKEN`. Retain that authentication and trigger, but add a
-pre-publication smoke test: build the wheel and source distribution, install
-the generated wheel with dependencies on the Ubuntu release runner, run
+event using `PYPI_API_TOKEN`. Retain the release trigger, but replace the
+long-lived token with PyPI Trusted Publishing. Configure PyPI to trust the
+`ENHANCE-PET/FALCON` repository, `.github/workflows/python-publish.yml`, and the
+GitHub `pypi` environment. The publish job will reference that environment,
+grant only `id-token: write`, and omit explicit usernames, passwords, and API
+tokens. PyPI will exchange the workflow's OIDC identity for a short-lived
+upload credential.
+
+Before publication, build the wheel and source distribution, install the
+generated wheel with dependencies on the Ubuntu release runner, run
 `pip check`, and run `falconz --help`. The publish action must upload those same
-validated files from `dist/`.
+validated files from `dist/`. Keep the old repository secret stored but unused
+until FalconZ 2.2.3 publishes successfully through Trusted Publishing; delete
+it only after that external verification.
 
 ## Regression strategy
 
@@ -91,6 +101,8 @@ Acceptance requires:
 - The built wheel reports version 2.2.3, Python `>=3.10`, and the new bounds.
 - The release workflow cannot reach its PyPI upload step if artifact validation
   fails.
+- The workflow contains no reference to `PYPI_API_TOKEN` and authenticates via
+  the repository-specific `pypi` environment and OIDC permission.
 
 ## Release note
 
