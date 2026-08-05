@@ -58,6 +58,8 @@ If you find FALCON useful, please cite the following publications:
 In this analysis, we are examining the mean image of 20 dynamic frames of a 68Ga-PSMA study both before and after motion correction. By comparing the two mean images, we can clearly see the significant improvement that results from motion correction. The mean image after motion correction appears noticeably sharper and more defined than the one before correction.
 ## 🛠 Installation Guide
 
+FALCON supports Python 3.10 through 3.14.
+
 ### Virtual Environment Setup
 
 Creating a virtual environment is highly recommended to avoid any potential conflicts with other Python packages.
@@ -74,12 +76,22 @@ Creating a virtual environment is highly recommended to avoid any potential conf
   source falconz_env/bin/activate
   ```
 
+### Conda Environment Setup
+
+Choose the Python version explicitly when creating a Conda environment:
+
+```bash
+conda create -n falconz python=3.14 pip
+conda activate falconz
+python -m pip install falconz
+```
+
 ### Installing FALCON V2
 
 With your virtual environment activated, install FALCON V2 using pip:
 
 ```bash
-pip install falconz # stable recommended version
+python -m pip install falconz # stable recommended version
 ```
 
 ## 🚀 Usage
@@ -216,5 +228,4 @@ Before raising an issue, check out our growing [Frequently Asked Questions]([./p
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
 
