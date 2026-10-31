@@ -26,6 +26,7 @@ import os
 import zipfile
 import stat
 import tempfile
+import shutil
 from pathlib import Path, PurePosixPath
 
 import requests
@@ -92,9 +93,13 @@ def download(item_name, item_path, item_dict):
 
         extracted = Path(staging) / "extracted"
         with zipfile.ZipFile(archive) as zip_ref:
+            # Finder adds this metadata tree to the published archives. It is
+            # not part of the executable bundle and must never be installed.
+            members = [member for member in zip_ref.infolist()
+                       if PurePosixPath(member.filename).parts[:1] != ("__MACOSX",)]
             # Validate the entire archive before writing any member. Only the
             # expected bundle may be installed; other virtualenv files are off limits.
-            for member in zip_ref.infolist():
+            for member in members:
                 name = PurePosixPath(member.filename)
                 mode = stat.S_IFMT(member.external_attr >> 16)
                 if (not name.parts or name.is_absolute() or ".." in name.parts
@@ -102,7 +107,8 @@ def download(item_name, item_path, item_dict):
                         or name.parts[0] != bundle_name
                         or mode not in {0, stat.S_IFREG, stat.S_IFDIR}):
                     raise ValueError(f"Unsafe binary archive member: {member.filename!r}")
-            zip_ref.extractall(extracted)
+            for member in members:
+                zip_ref.extract(member, extracted)
         bundle = extracted / bundle_name
         if not bundle.is_dir():
             raise ValueError("Archive does not contain the expected binary directory")
@@ -110,17 +116,32 @@ def download(item_name, item_path, item_dict):
             (bundle / marker_name).write_text(expected_digest + "\n")
         # Replace legacy bundles rather than retaining their old Windows ACLs.
         # Keep the prior installation until the verified replacement is ready.
-        backup = Path(staging) / "previous"
+        backup_root = None
         if directory.is_symlink():
             raise ValueError("Binary directory must not be a symbolic link")
         if directory.exists():
-            directory.rename(backup)
+            backup_root = Path(tempfile.mkdtemp(prefix=".falcon-backup-", dir=root))
+            backup = backup_root / "previous"
+            try:
+                directory.rename(backup)
+            except OSError:
+                shutil.rmtree(backup_root)
+                raise
         try:
             bundle.rename(directory)
         except OSError:
-            if backup.exists():
-                backup.rename(directory)
+            if backup_root is not None:
+                try:
+                    backup.rename(directory)
+                except OSError as rollback_error:
+                    raise RuntimeError(
+                        f"Binary installation and rollback failed; previous binaries remain at {backup}"
+                    ) from rollback_error
+                shutil.rmtree(backup_root)
             raise
+        else:
+            if backup_root is not None:
+                shutil.rmtree(backup_root)
 
     print(f"{constants.ANSI_GREEN} Binaries - download complete. {constants.ANSI_RESET}")
     logging.info("Binaries - download complete")

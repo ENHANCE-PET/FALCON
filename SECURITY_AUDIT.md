@@ -1,7 +1,8 @@
 # Security review — 2026-10-31
 
 Reviewed the current runtime source, dependency manifests, binary downloads,
-and publishing workflows. No patient data or native release binaries were downloaded.
+and publishing workflows. Validation uses synthetic images and the published
+macOS ARM64 native archive; no patient data was downloaded or committed.
 
 ## Repairs
 
@@ -18,6 +19,9 @@ and publishing workflows. No patient data or native release binaries were downlo
 - Replace legacy binary caches once with verified fresh files, removing the old
   per-file Windows ACL grants. A digest marker permits subsequent cache reuse;
   failed verification preserves the previous installation.
+- Ignore the `__MACOSX` metadata present in published archives without extracting
+  it. Preserve the previous bundle in a separate recovery directory if both
+  installation and rollback fail, and report that directory to the caller.
 - Raised Pillow to `>=13.0.0`, Requests to `>=2.33.0`, and pydicom to `>=3.0.2`.
   Pillow requires Python 3.11, so package metadata, CI, Docker, and documentation
   use that minimum. `requirements.txt` now installs the same dependency policy
@@ -31,11 +35,20 @@ and publishing workflows. No patient data or native release binaries were downlo
 
 ## Validation
 
-- Full available test suite: **16 passed**, Python 3.13/macOS. Regressions were
+- Full available test suite: **18 passed**, Python 3.13/macOS. Regressions were
   observed failing before repair. Tests use synthetic ZIPs, real filesystem
   operations, and a harmless executable that records its arguments.
-- Package installation, `pip check`, `falconz --help`, bytecode compilation, and
-  wheel build pass. No native processing binaries are launched by these checks.
+- Package installation, `pip check`, `falconz --help`, bytecode compilation,
+  wheel/source builds, and distribution metadata checks pass for 2.3.0.
+- The actual published macOS ARM64 archive passes SHA-256 verification and the
+  hardened installer. Its native `greedy` and `c3d` tools successfully process
+  synthetic 32-cubed images through rigid, affine and deformable registration,
+  resampling, downscaling and voxelwise correlation, including paths with spaces.
+  Normalized native argument vectors match the previous implementation exactly;
+  downscale/correlation arrays match exactly. Registration produces finite,
+  correctly sized images and improves mean squared error from the shifted input.
+  Registration itself varies between repeated baseline runs, so this check does
+  not establish bit-identical registration outputs.
 - Complete dependency resolution for the lowest supported Python 3.11 succeeds.
   `pip-audit` checked **72 resolved dependencies**, none skipped, and reported
   **no known vulnerabilities**. This is a dated database result, not a guarantee
@@ -44,8 +57,8 @@ and publishing workflows. No patient data or native release binaries were downlo
 
 ## Limits
 
-Actual motion correction and Windows ACL inheritance were not exercised on this
-Mac. Native binaries still need platform/inference validation before release.
+Full dynamic motion-correction studies and Windows/Linux native execution were
+not exercised on this Mac. Windows ACL inheritance was not exercised locally.
 Cached files are trusted after installation; users with cache write access can
 modify both binaries and their marker. Published digests establish byte identity
 with the observed release, not independent provenance. Downloads/extraction have

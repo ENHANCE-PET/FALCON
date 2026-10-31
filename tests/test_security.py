@@ -181,8 +181,42 @@ def test_failed_refresh_preserves_existing_cache(tmp_path, monkeypatch):
     assert (bundle / "greedy").read_bytes() == b"existing binary"
 
 
+def test_failed_install_and_rollback_keep_recoverable_backup(tmp_path, monkeypatch):
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    (bundle / "greedy").write_bytes(b"existing binary")
+    digest = mock_archive(monkeypatch, [("bundle/greedy", b"replacement binary")])
+    rename = Path.rename
+
+    def fail_publication_and_restore(path, target):
+        if path.parent.name == "extracted" or path.name == "previous":
+            raise OSError("simulated installation/rollback failure")
+        return rename(path, target)
+
+    monkeypatch.setattr(Path, "rename", fail_publication_and_restore)
+    with pytest.raises((OSError, RuntimeError)):
+        download.download("binary", str(tmp_path), {"binary": {
+            "url": "https://example.test/binary.zip", "filename": "binary.zip",
+            "directory": "bundle", "sha256": digest,
+        }})
+    backups = list(tmp_path.glob(".falcon-backup-*/previous/greedy"))
+    assert len(backups) == 1
+    assert backups[0].read_bytes() == b"existing binary"
+
+
 def test_download_ignores_stale_archive_and_installs_expected_tree(tmp_path, monkeypatch):
     (tmp_path / "binary.zip").write_bytes(b"stale incomplete download")
     mock_archive(monkeypatch, [("bundle/greedy", b"binary")])
     install(tmp_path)
     assert (tmp_path / "bundle" / "greedy").read_bytes() == b"binary"
+
+
+def test_download_ignores_macos_metadata_without_extracting_it(tmp_path, monkeypatch):
+    mock_archive(monkeypatch, [
+        ("bundle/greedy", b"binary"),
+        ("__MACOSX/._bundle", b"Finder metadata"),
+        ("__MACOSX/bundle/._greedy", b"Finder metadata"),
+    ])
+    install(tmp_path)
+    assert (tmp_path / "bundle" / "greedy").read_bytes() == b"binary"
+    assert not (tmp_path / "__MACOSX").exists()
