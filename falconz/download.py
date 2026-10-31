@@ -21,11 +21,15 @@ binaries and models for the falconz.
 """
 
 import logging
+import hashlib
 import os
 import zipfile
+import stat
+import tempfile
+import shutil
+from pathlib import Path, PurePosixPath
 
 import requests
-from rich.console import Console
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, FileSizeColumn, TransferSpeedColumn
 
 from falconz import constants
@@ -45,71 +49,100 @@ def download(item_name, item_path, item_dict):
     :rtype: str
     """
     item_info = item_dict[item_name]
-    url = item_info["url"]
-    filename = os.path.join(item_path, item_info["filename"])
-    directory = os.path.join(item_path, item_info["directory"])
+    root = Path(item_path)
+    bundle_name = item_info["directory"]
+    if not bundle_name or bundle_name in {".", ".."} or any(c in bundle_name for c in "/\\:"):
+        raise ValueError("Binary directory must be a single directory name")
+    directory = root / bundle_name
+    expected_digest = item_info.get("sha256")
+    marker_name = ".falcon-archive-sha256"
+    if directory.is_symlink():
+        raise ValueError("Binary directory must not be a symbolic link")
+    if directory.exists():
+        if not directory.is_dir():
+            raise ValueError("Binary destination is not a directory")
+        marker = directory / marker_name
+        if (expected_digest and marker.is_file() and not marker.is_symlink()
+                and marker.read_text().strip() == expected_digest):
+            logging.info("A verified local instance of %s binaries has been detected", item_name)
+            return os.path.join(item_path, item_name)
 
-    if not os.path.exists(directory):
-        logging.info(f" Downloading {directory}")
+    root.mkdir(parents=True, exist_ok=True)
+    # A private staging directory avoids following existing files or symlinks and
+    # keeps incomplete downloads out of the executable installation directory.
+    with tempfile.TemporaryDirectory(prefix=".falcon-download-", dir=root) as staging:
+        archive = Path(staging) / "download.zip"
+        digest = hashlib.sha256()
+        with requests.get(item_info["url"], stream=True, timeout=(10, 120)) as response:
+            response.raise_for_status()
+            with archive.open("wb") as output, Progress(
+                TextColumn("[bold blue]{task.description}"), BarColumn(),
+                FileSizeColumn(), TransferSpeedColumn(), TimeRemainingColumn(),
+            ) as progress:
+                task = progress.add_task(
+                    f"Downloading system specific binaries: {item_name}",
+                    total=int(response.headers.get("Content-Length", 0)),
+                )
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    output.write(chunk)
+                    digest.update(chunk)
+                    progress.update(task, advance=len(chunk))
 
-        # show progress using rich
-        response = requests.get(url, stream=True)
-        total_size = int(response.headers.get("Content-Length", 0))
-        chunk_size = 1024 * 10
+        if expected_digest and digest.hexdigest() != expected_digest:
+            raise ValueError("Binary archive SHA-256 does not match the published digest")
 
-        console = Console()
-        progress = Progress(
-            TextColumn("[bold blue]{task.description}"),
-            BarColumn(bar_width=None),
-            "[progress.percentage]{task.percentage:>3.0f}%",
-            "•",
-            FileSizeColumn(),
-            TransferSpeedColumn(),
-            TimeRemainingColumn(),
-            console=console,
-            expand=True
-        )
+        extracted = Path(staging) / "extracted"
+        with zipfile.ZipFile(archive) as zip_ref:
+            # Finder adds this metadata tree to the published archives. It is
+            # not part of the executable bundle and must never be installed.
+            members = [member for member in zip_ref.infolist()
+                       if PurePosixPath(member.filename).parts[:1] != ("__MACOSX",)]
+            # Validate the entire archive before writing any member. Only the
+            # expected bundle may be installed; other virtualenv files are off limits.
+            for member in members:
+                name = PurePosixPath(member.filename)
+                mode = stat.S_IFMT(member.external_attr >> 16)
+                if (not name.parts or name.is_absolute() or ".." in name.parts
+                        or "\\" in member.filename or ":" in member.filename
+                        or name.parts[0] != bundle_name
+                        or mode not in {0, stat.S_IFREG, stat.S_IFDIR}):
+                    raise ValueError(f"Unsafe binary archive member: {member.filename!r}")
+            for member in members:
+                zip_ref.extract(member, extracted)
+        bundle = extracted / bundle_name
+        if not bundle.is_dir():
+            raise ValueError("Archive does not contain the expected binary directory")
+        if expected_digest:
+            (bundle / marker_name).write_text(expected_digest + "\n")
+        # Replace legacy bundles rather than retaining their old Windows ACLs.
+        # Keep the prior installation until the verified replacement is ready.
+        backup_root = None
+        if directory.is_symlink():
+            raise ValueError("Binary directory must not be a symbolic link")
+        if directory.exists():
+            backup_root = Path(tempfile.mkdtemp(prefix=".falcon-backup-", dir=root))
+            backup = backup_root / "previous"
+            try:
+                directory.rename(backup)
+            except OSError:
+                shutil.rmtree(backup_root)
+                raise
+        try:
+            bundle.rename(directory)
+        except OSError:
+            if backup_root is not None:
+                try:
+                    backup.rename(directory)
+                except OSError as rollback_error:
+                    raise RuntimeError(
+                        f"Binary installation and rollback failed; previous binaries remain at {backup}"
+                    ) from rollback_error
+                shutil.rmtree(backup_root)
+            raise
+        else:
+            if backup_root is not None:
+                shutil.rmtree(backup_root)
 
-        with progress:
-            task = progress.add_task(f"[white] Downloading system specific binaries: {item_name}", total=total_size)
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                open(filename, "ab").write(chunk)
-                progress.update(task, advance=chunk_size)
-
-        # Unzip the item
-        progress = Progress(  # Create new instance for extraction task
-            TextColumn("[bold blue]{task.description}"),
-            BarColumn(bar_width=None),
-            "[progress.percentage]{task.percentage:>3.0f}%",
-            "•",
-            FileSizeColumn(),
-            TransferSpeedColumn(),
-            TimeRemainingColumn(),
-            console=console,
-            expand=True
-        )
-
-        with progress:
-            with zipfile.ZipFile(filename, 'r') as zip_ref:
-                total_size = sum((file.file_size for file in zip_ref.infolist()))
-                task = progress.add_task(f"[white] Extracting system specific binaries: {item_name}",
-                                         total=total_size)
-                # Get the parent directory of 'directory'
-                parent_directory = os.path.dirname(directory)
-                for file in zip_ref.infolist():
-                    zip_ref.extract(file, parent_directory)
-                    extracted_size = file.file_size
-                    progress.update(task, advance=extracted_size)
-
-        logging.info(f" {os.path.basename(directory)} extracted.")
-
-        # Delete the zip file
-        os.remove(filename)
-        print(f"{constants.ANSI_GREEN} Binaries - download complete. {constants.ANSI_RESET}")
-        logging.info(f" Binaries - download complete.")
-    else:
-        print(f"{constants.ANSI_GREEN} A local instance of {item_name} binaries has been detected. "
-              f"{constants.ANSI_RESET}")
-        logging.info(f" A local instance of {item_name} has been detected.")
-
+    print(f"{constants.ANSI_GREEN} Binaries - download complete. {constants.ANSI_RESET}")
+    logging.info("Binaries - download complete")
     return os.path.join(item_path, item_name)

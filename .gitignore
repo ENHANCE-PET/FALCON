@@ -1,3 +1,9 @@
 /falcon.log
 /src/falcon.log
 **/FALCON-files/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+.pytest_cache/
+falconz-*.log

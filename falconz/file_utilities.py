@@ -40,8 +40,7 @@ def set_permissions(file_path, system_type):
     :rtype: None
     :raises: ValueError if the operating system is not supported.
 
-    This function sets permissions for a file based on the operating system. If the operating system is Windows, it uses
-    the `icacls` command to grant full access to everyone. If the operating system is Linux or Mac, it uses the `chmod`
+    This function preserves the existing access controls on Windows. If the operating system is Linux or Mac, it uses `chmod`
     command to add execute permission for the owner, read permission for the group, and read permission for others. If
     the operating system is not supported, it raises a ValueError.
 
@@ -55,7 +54,9 @@ def set_permissions(file_path, system_type):
     """
     try:
         if system_type == "windows":
-            subprocess.check_call(["icacls", file_path, "/grant", "Everyone:(F)"])
+            # Windows executables do not require a POSIX execute bit. Preserve the
+            # installation directory's ACL instead of making binaries world-writable.
+            return
         elif system_type in ["linux", "mac"]:
             os.chmod(file_path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH)
         else:

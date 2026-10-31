@@ -193,9 +193,8 @@ class NiftiConverter:
     def _convert_to_nifti_format(self, image_path):
         try:
             output_path = os.path.join(self.output_directory, f"{pathlib.Path(image_path).stem}.nii.gz")
-            cmd_to_run = f"{C3D_PATH} {image_path} -o {output_path}"
-            cmd_to_run = cmd_to_run.replace("\n", " ").strip()
-            subprocess.run(cmd_to_run, shell=True, check=True)
+            cmd_to_run = [C3D_PATH, image_path, "-o", output_path]
+            subprocess.run(cmd_to_run, check=True)
         except Exception as e:
             raise NiftiConverterError(f"Error converting image to NIFTI: {e}")
 

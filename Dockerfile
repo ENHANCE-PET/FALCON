@@ -1,13 +1,14 @@
 # Base image
-FROM python:3.10-slim
+FROM python:3.11-slim
 
-# Install MOOSE from PyPI
-RUN pip install falconz
+# Build the reviewed source, so release images include the security fixes.
+COPY . /tmp/falconz
+RUN pip install --no-cache-dir /tmp/falconz
 
 # Set working directory
 WORKDIR /app
 
-# Entry point for the MOOSE CLI
+# Entry point for the FalconZ CLI
 ENTRYPOINT ["falconz"]
 
 # Default command

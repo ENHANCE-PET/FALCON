@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='falconz',
-    version='2.2.3',
+    version='2.3.0',
     author='Lalith Kumar Shiyam Sundar',
     author_email='Lalith.shiyamsundar@meduniwien.ac.at',
     description='FalconZ: A streamlined Python package for PET motion correction.',
-    python_requires='>=3.10',
+    python_requires='>=3.11',
     long_description='FalconZ is a robust and comprehensive Python package that offers a simplified approach to PET ('
                      'Positron Emission Tomography) motion correction. The software is equipped to handle both head '
                      'and total-body scans, ensuring high-accuracy results in diverse settings. Built around the '
@@ -25,7 +25,6 @@ setup(
         'Intended Audience :: Healthcare Industry',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
@@ -39,7 +38,7 @@ setup(
         'nibabel>=5.4.2',
         'halo~=0.0.31',
         'SimpleITK',
-        'pydicom~=2.2.2',
+        'pydicom>=3.0.2',
         'argparse~=1.4.0',
         'numpy>=1.25.2',
         'mpire~=2.3.3',
@@ -47,12 +46,18 @@ setup(
         'matplotlib',
         'pyfiglet>=1.0.4',
         'natsort~=8.1.0',
-        'pillow>=9.2.0',
+        'pillow>=13.0.0',
         'colorama~=0.4.6',
         'rich',
         'pandas',
         'dicom2nifti~=2.4.8',
-        'requests',
+        'requests>=2.33.0',
+        # Security floors also apply when upgrading an existing environment.
+        'certifi>=2026.10.18',
+        'fsspec>=2026.6.0',
+        'msgpack>=1.2.3',
+        'tornado>=6.6',
+        'urllib3>=2.8.0',
         'emoji',
         'psutil',
         'nilearn',
