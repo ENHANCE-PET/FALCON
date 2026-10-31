@@ -6,7 +6,7 @@ nibabel
 halo
 pandas
 SimpleITK
-pydicom
+pydicom>=3.0.2
 argparse
 imageio
 numpy
@@ -15,14 +15,14 @@ openpyxl
 matplotlib
 pyfiglet
 natsort
-pillow
+pillow>=13.0.0
 colorama
 dask
 rich
 dicom2nifti
 emoji
 opencv-python
-requests
+requests>=2.33.0
 psutil
 dcm2niix
 nilearn

@@ -6,7 +6,7 @@ Welcome to the FalconZ installation guide. Follow the steps below to install Fal
 Prerequisites
 -------------
 
-Before proceeding, ensure you have Python installed. FalconZ supports Python 3.10 through 3.14. You can check your Python version by running:
+Before proceeding, ensure you have Python installed. FalconZ supports Python 3.11 through 3.14; the patched Pillow dependency requires Python 3.11 or later. You can check your Python version by running:
 
 .. code-block:: bash
 

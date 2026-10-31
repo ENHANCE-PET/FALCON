@@ -1,0 +1,8 @@
+*
+!setup.py
+!README.md
+!LICENSE
+!falconz/
+!falconz/**
+**/__pycache__/
+**/*.py[cod]

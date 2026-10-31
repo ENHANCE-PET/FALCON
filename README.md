@@ -58,7 +58,7 @@ If you find FALCON useful, please cite the following publications:
 In this analysis, we are examining the mean image of 20 dynamic frames of a 68Ga-PSMA study both before and after motion correction. By comparing the two mean images, we can clearly see the significant improvement that results from motion correction. The mean image after motion correction appears noticeably sharper and more defined than the one before correction.
 ## 🛠 Installation Guide
 
-FALCON supports Python 3.10 through 3.14.
+FALCON supports Python 3.11 through 3.14. Python 3.11 is required for the patched Pillow dependency.
 
 ### Virtual Environment Setup
 

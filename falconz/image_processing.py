@@ -100,11 +100,11 @@ class ImageRegistration:
         str
             Path to the resulting rigid transformation file.
         """
-        mask_cmd = f"-gm {self.fixed_mask}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {self.fixed_img} {self.moving_img} " \
-                     f"{mask_cmd} -ia-image-centers -dof 6 -o {self.transform_files['rigid']} " \
-                     f"-n {self.multi_resolution_iterations} -m {COST_FUNCTION}"
-        subprocess.run(cmd_to_run, shell=True, capture_output=True)
+        mask_args = ["-gm", self.fixed_mask] if self.fixed_mask else []
+        cmd_to_run = [GREEDY_PATH, "-d", "3", "-a", "-i", self.fixed_img, self.moving_img,
+                      *mask_args, "-ia-image-centers", "-dof", "6", "-o", self.transform_files['rigid'],
+                      "-n", self.multi_resolution_iterations, "-m", *COST_FUNCTION.split()]
+        subprocess.run(cmd_to_run, check=True, capture_output=True)
         logging.info(
             f"Rigid alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} | Aligned image: "
             f"moco-{pathlib.Path(self.moving_img).name} | Transform file: {pathlib.Path(self.transform_files['rigid']).name}")
@@ -119,11 +119,11 @@ class ImageRegistration:
         str
             Path to the resulting affine transformation file.
         """
-        mask_cmd = f"-gm {self.fixed_mask}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -a -i {self.fixed_img} {self.moving_img} " \
-                     f"{mask_cmd} -ia-image-centers -dof 12 -o {self.transform_files['affine']} " \
-                     f"-n {self.multi_resolution_iterations} -m {COST_FUNCTION}"
-        subprocess.run(cmd_to_run, shell=True, capture_output=True)
+        mask_args = ["-gm", self.fixed_mask] if self.fixed_mask else []
+        cmd_to_run = [GREEDY_PATH, "-d", "3", "-a", "-i", self.fixed_img, self.moving_img,
+                      *mask_args, "-ia-image-centers", "-dof", "12", "-o", self.transform_files['affine'],
+                      "-n", self.multi_resolution_iterations, "-m", *COST_FUNCTION.split()]
+        subprocess.run(cmd_to_run, check=True, capture_output=True)
         logging.info(
             f"Affine alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} |"
             f" Aligned image: moco-{pathlib.Path(self.moving_img).name} | Transform file: {pathlib.Path(self.transform_files['affine']).name}")
@@ -139,11 +139,12 @@ class ImageRegistration:
             A tuple containing paths to the resulting affine, warp, and inverse warp transformation files.
         """
         self.affine()
-        mask_cmd = f"-gm {self.fixed_mask}" if self.fixed_mask else ""
-        cmd_to_run = f"{GREEDY_PATH} -d 3 -m {COST_FUNCTION} -i {self.fixed_img} {self.moving_img} " \
-                     f"{mask_cmd} -it {self.transform_files['affine']} -o {self.transform_files['warp']} " \
-                     f"-oinv {self.transform_files['inverse_warp']} -sv -n {self.multi_resolution_iterations}"
-        subprocess.run(cmd_to_run, shell=True, capture_output=True)
+        mask_args = ["-gm", self.fixed_mask] if self.fixed_mask else []
+        cmd_to_run = [GREEDY_PATH, "-d", "3", "-m", *COST_FUNCTION.split(), "-i", self.fixed_img,
+                      self.moving_img, *mask_args, "-it", self.transform_files['affine'],
+                      "-o", self.transform_files['warp'], "-oinv", self.transform_files['inverse_warp'],
+                      "-sv", "-n", self.multi_resolution_iterations]
+        subprocess.run(cmd_to_run, check=True, capture_output=True)
         logging.info(
             f"Deformable alignment: {pathlib.Path(self.moving_img).name} -> {pathlib.Path(self.fixed_img).name} | "
             f"Aligned image: moco-{pathlib.Path(self.moving_img).name} | "
@@ -193,10 +194,10 @@ class ImageRegistration:
         elif registration_type == 'deformable':
             cmd_to_run = self._build_cmd(resampled_moving_img, segmentation, resampled_seg,
                                          self.transform_files['warp'], self.transform_files['affine'])
-        subprocess.run(cmd_to_run, shell=True, capture_output=True)
+        subprocess.run(cmd_to_run, check=True, capture_output=True)
 
     def _build_cmd(self, resampled_moving_img: str, segmentation: str, resampled_seg: str,
-                   *transform_files: str) -> str:
+                   *transform_files: str) -> list[str]:
         """
         Build the command for the greedy registration tool.
 
@@ -213,15 +214,15 @@ class ImageRegistration:
 
         Returns:
         --------
-        str
-            The command string to run.
+        list[str]
+            The executable and literal arguments to run.
         """
-        cmd = f"{GREEDY_PATH} -d 3 -rf {self.fixed_img} -ri LINEAR -rm " \
-              f"{self.moving_img} {resampled_moving_img}"
+        cmd = [GREEDY_PATH, "-d", "3", "-rf", self.fixed_img, "-ri", "LINEAR", "-rm",
+               self.moving_img, resampled_moving_img]
         if segmentation and resampled_seg:
-            cmd += f" -ri LABEL 0.2vox -rm {segmentation} {resampled_seg}"
+            cmd.extend(["-ri", "LABEL", "0.2vox", "-rm", segmentation, resampled_seg])
         for transform_file in transform_files:
-            cmd += f" -r {transform_file}"
+            cmd.extend(["-r", transform_file])
         return cmd
 
 
@@ -359,15 +360,15 @@ def downscale_image(downscale_param: tuple, input_image: str) -> str:
     input_image_blurred = os.path.join(output_dir, f"{shrink_factor}x_blurred_{input_image_name}")
     gauss_variance = (shrink_factor / 2) ** 2
     gauss_variance = int(gauss_variance)
-    cmd_to_smooth = f"{C3D_PATH} {input_image} -smooth-fast {gauss_variance}x{gauss_variance}x{gauss_variance}vox -o" \
-                    f" {input_image_blurred} "
-    subprocess.run(cmd_to_smooth, shell=True, capture_output=False)
+    cmd_to_smooth = [C3D_PATH, input_image, "-smooth-fast",
+                     f"{gauss_variance}x{gauss_variance}x{gauss_variance}vox", "-o", input_image_blurred]
+    subprocess.run(cmd_to_smooth, check=True, capture_output=False)
     # Resample the smoothed input image later
     input_image_downscaled = os.path.join(output_dir, f"{shrink_factor}x_downscaled_{input_image_name}")
     shrink_percentage = str(int(100 / shrink_factor))
-    cmd_to_downscale = f"{C3D_PATH} {input_image_blurred} -resample {shrink_percentage}x{shrink_percentage}x" \
-                       f"{shrink_percentage}% -o {input_image_downscaled}"
-    subprocess.run(cmd_to_downscale, shell=True, capture_output=False)
+    cmd_to_downscale = [C3D_PATH, input_image_blurred, "-resample",
+                        f"{shrink_percentage}x{shrink_percentage}x{shrink_percentage}%", "-o", input_image_downscaled]
+    subprocess.run(cmd_to_downscale, check=True, capture_output=False)
     return input_image_downscaled
 
 
@@ -400,11 +401,11 @@ def calc_voxelwise_ncc_images(image1: str, image2: str, output_dir: str) -> str:
     image1_name = os.path.basename(image1).split(".")[0]
     image2_name = os.path.basename(image2).split(".")[0]
     output_image = os.path.join(output_dir, f"ncc_{image2_name}.nii.gz")
-    c3d_cmd = f"{C3D_PATH} {image1} {image2} -ncc {NCC_RADIUS} -o {output_image}"
-    subprocess.run(c3d_cmd, shell=True, capture_output=False)
+    c3d_cmd = [C3D_PATH, image1, image2, "-ncc", NCC_RADIUS, "-o", output_image]
+    subprocess.run(c3d_cmd, check=True, capture_output=False)
     # clip the negative correlations to zero
-    c3d_cmd = f"{C3D_PATH} {output_image} -clip 0 inf -o {output_image}"
-    subprocess.run(c3d_cmd, shell=True, capture_output=False)
+    c3d_cmd = [C3D_PATH, output_image, "-clip", "0", "inf", "-o", output_image]
+    subprocess.run(c3d_cmd, check=True, capture_output=False)
     return output_image
 
 
