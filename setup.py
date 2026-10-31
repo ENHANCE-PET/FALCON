@@ -52,6 +52,12 @@ setup(
         'pandas',
         'dicom2nifti~=2.4.8',
         'requests>=2.33.0',
+        # Security floors also apply when upgrading an existing environment.
+        'certifi>=2026.10.18',
+        'fsspec>=2026.6.0',
+        'msgpack>=1.2.3',
+        'tornado>=6.6',
+        'urllib3>=2.8.0',
         'emoji',
         'psutil',
         'nilearn',

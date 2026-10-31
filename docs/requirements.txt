@@ -23,6 +23,11 @@ dicom2nifti
 emoji
 opencv-python
 requests>=2.33.0
+certifi>=2026.10.18
+fsspec>=2026.6.0
+msgpack>=1.2.3
+tornado>=6.6
+urllib3>=2.8.0
 psutil
 dcm2niix
 nilearn

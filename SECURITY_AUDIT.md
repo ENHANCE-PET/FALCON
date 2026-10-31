@@ -22,6 +22,9 @@ and publishing workflows. No patient data or native release binaries were downlo
   Pillow requires Python 3.11, so package metadata, CI, Docker, and documentation
   use that minimum. `requirements.txt` now installs the same dependency policy
   as the package instead of stale conflicting pins.
+- Added minimum fixed versions for the shared transitive packages certifi,
+  fsspec, msgpack, tornado, and urllib3, so upgrades cannot retain versions affected
+  by the advisories observed in LION's lockfile during this review.
 - Docker builds the checked-out source rather than fetching an older PyPI release.
   Its context excludes incidental files. Publishing actions are pinned to verified
   commit SHAs and the Docker workflow has read-only repository permissions.
