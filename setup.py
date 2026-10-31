@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='falconz',
-    version='2.3.0',
+    version='2.3.1',
     author='Lalith Kumar Shiyam Sundar',
     author_email='Lalith.shiyamsundar@meduniwien.ac.at',
     description='FalconZ: A streamlined Python package for PET motion correction.',
@@ -50,7 +50,7 @@ setup(
         'colorama~=0.4.6',
         'rich',
         'pandas',
-        'dicom2nifti~=2.4.8',
+        'dicom2nifti>=2.6.2',
         'requests>=2.33.0',
         # Security floors also apply when upgrading an existing environment.
         'certifi>=2026.10.18',

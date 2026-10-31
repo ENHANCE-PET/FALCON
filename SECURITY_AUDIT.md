@@ -64,7 +64,18 @@ modify both binaries and their marker. Published digests establish byte identity
 with the observed release, not independent provenance. Downloads/extraction have
 no total size quota, and concurrent installations are not serialized.
 
-## Sources
+## Follow-up compatibility release 2.3.1
+
+The final combined-install check reproduced a dependency-resolution failure:
+FALCON 2.3.0 required dicom2nifti >=2.4.8,<2.5, while patched LION requires
+dicom2nifti >=2.6.2 for pydicom 3 compatibility. FALCON's native DICOM conversion
+uses dcm2niix, but its obsolete declared upper bound still prevented the tools
+from sharing an environment. Version 2.3.1 requires dicom2nifti >=2.6.2. The
+same combined resolution now succeeds with pydicom 3.0.2 and dicom2nifti 2.6.2;
+all 18 FALCON regressions pass. No FALCON processing code changed in 2.3.1.
+Version 2.3.0 remains immutable; users should install the 2.3.1 follow-up.
+
+## Advisory references
 
 - [FALCON binary release metadata](https://api.github.com/repos/ENHANCE-PET/FALCON/releases/tags/falconz-v-2.2.2)
 - [Pillow memory safety fixes](https://github.com/advisories/GHSA-5x8w-8jj5-q52h)
